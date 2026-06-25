@@ -14,9 +14,13 @@ export interface GameRoundContext {
   endsAt: string;
 }
 
-export interface GameStartResult<TState, TPublicState = unknown> {
+export interface GameStartResult<
+  TState,
+  TPublicState = unknown,
+  TPlayerState = unknown,
+> {
   state: TState;
-  snapshot: GameRoundSnapshot<TPublicState>;
+  snapshot: GameRoundSnapshot<TPublicState, TPlayerState>;
 }
 
 export interface GameSubmissionResult<
@@ -29,9 +33,13 @@ export interface GameSubmissionResult<
   snapshot?: GameRoundSnapshot<TPublicState, TPlayerState>;
 }
 
-export interface GameFinishResult<TState, TPublicState = unknown> {
+export interface GameFinishResult<
+  TState,
+  TPublicState = unknown,
+  TPlayerState = unknown,
+> {
   state: TState;
-  snapshot: GameRoundSnapshot<TPublicState>;
+  snapshot: GameRoundSnapshot<TPublicState, TPlayerState>;
 }
 
 export interface GameModule<
@@ -42,13 +50,16 @@ export interface GameModule<
   TPlayerState = unknown,
 > {
   manifest: GameManifest;
-  startRound(input: TStartInput, context: GameRoundContext): GameStartResult<TState, TPublicState>;
+  startRound(
+    input: TStartInput,
+    context: GameRoundContext,
+  ): GameStartResult<TState, TPublicState, TPlayerState>;
   submit(
     state: TState,
     submission: TSubmission,
     playerId: string,
   ): GameSubmissionResult<TState, TPublicState, TPlayerState>;
-  finishRound(state: TState): GameFinishResult<TState, TPublicState>;
+  finishRound(state: TState): GameFinishResult<TState, TPublicState, TPlayerState>;
   getSnapshot(state: TState, playerId?: string): GameRoundSnapshot<TPublicState, TPlayerState>;
 }
 
