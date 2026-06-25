@@ -98,7 +98,56 @@ git push -u origin feat/mobile/join-room
 
 Depois disso, abrir Pull Request no GitHub.
 
-## 5. Como atualizar uma branch com a main
+## 5. Fluxo equivalente no GitKraken
+
+### Abrir o projeto
+
+1. Abrir GitKraken.
+2. Escolher `File > Open Repo`.
+3. Selecionar a pasta `Playpint`.
+4. Confirmar que a branch ativa e `main`.
+
+### Criar uma branch nova
+
+1. Clicar em `Pull` para atualizar a `main`.
+2. Clicar no nome da branch atual.
+3. Escolher `Create branch here`.
+4. Usar um nome curto, por exemplo `feat/mobile/join-room`.
+5. Trabalhar sempre nessa branch.
+
+### Fazer commit
+
+1. Ver os ficheiros alterados no painel `Unstaged Files`.
+2. Abrir cada ficheiro alterado e rever o diff.
+3. Passar apenas os ficheiros desejados para `Staged Files`.
+4. Escrever uma mensagem objetiva, por exemplo `feat(mobile): add join room screen`.
+5. Clicar em `Commit changes`.
+
+### Enviar para o GitHub
+
+1. Clicar em `Push`.
+2. Se for a primeira vez dessa branch, aceitar publicar a branch remota.
+3. Abrir o Pull Request pelo GitHub ou pelo atalho do GitKraken, se estiver disponivel.
+
+### Atualizar a branch com a main
+
+1. Fazer `Fetch`.
+2. Garantir que a branch de trabalho esta selecionada.
+3. Arrastar `origin/main` para cima da branch atual.
+4. Escolher `Rebase <branch> onto origin/main`.
+5. Se aparecer conflito, resolver ficheiro a ficheiro no editor de conflitos do GitKraken.
+6. Depois de resolver, continuar o rebase.
+
+Se houver duvida funcional num conflito, parar e decidir em conjunto antes de continuar.
+
+### Depois do Pull Request aceite
+
+1. Selecionar `main`.
+2. Clicar em `Pull`.
+3. Apagar a branch antiga localmente.
+4. Apagar a branch remota se ainda existir.
+
+## 6. Como atualizar uma branch com a main
 
 Antes de abrir ou atualizar um Pull Request:
 
@@ -116,7 +165,7 @@ git rebase --continue
 
 Se o comportamento correto nao for obvio, os dois programadores validam a decisao antes de continuar.
 
-## 6. Depois de um Pull Request aceite
+## 7. Depois de um Pull Request aceite
 
 Voltar para a `main`:
 
@@ -137,7 +186,7 @@ Se a branch remota ainda existir:
 git push origin --delete feat/mobile/join-room
 ```
 
-## 7. Convencao de branches
+## 8. Convencao de branches
 
 Exemplos:
 
@@ -154,7 +203,7 @@ docs/game-design
 chore/ci-mobile
 ```
 
-## 8. Convencao de commits
+## 9. Convencao de commits
 
 Exemplos:
 
@@ -171,7 +220,7 @@ chore(ci): add mobile validation workflow
 
 Um commit deve ter uma unica intencao. Evitar misturar interface, backend, documentacao e configuracao no mesmo commit sem necessidade.
 
-## 9. O que pedir ao Codex
+## 10. O que pedir ao Codex
 
 Exemplos de pedidos bons:
 
@@ -186,7 +235,7 @@ Codex, explica ao outro PC como puxar as alteracoes mais recentes.
 
 O Codex deve sempre verificar `git status`, rever o diff, executar os testes aplicaveis e so depois criar commit ou push.
 
-## 10. Regras que evitam conflitos
+## 11. Regras que evitam conflitos
 
 - Nunca trabalhar diretamente na `main`.
 - Fazer `git pull --ff-only` antes de criar branch.
@@ -197,7 +246,7 @@ O Codex deve sempre verificar `git status`, rever o diff, executar os testes apl
 - Nao fazer `force push` sem decisao explicita.
 - Nao aceitar merge se testes, lint ou build falharem.
 
-## 11. Fluxo ideal para Playpint
+## 12. Fluxo ideal para Playpint
 
 1. Pessoa 1 cria `feat/mobile/join-room`.
 2. Pessoa 2 cria `feat/backend/create-room`.
