@@ -16,7 +16,7 @@ export interface GameShellState {
 
 export function createGameShellState(input: {
   manifest: GameManifest;
-  snapshot: GameRoundSnapshot;
+  snapshot: GameRoundSnapshot<unknown, unknown>;
   now: Date | string;
   submissionPending?: boolean;
   lastAck?: GameSubmissionAck;
