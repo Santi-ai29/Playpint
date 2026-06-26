@@ -1,4 +1,8 @@
-const PREVIEW_ROUNDS = 12;
+const DEFAULT_ROUNDS = 12;
+const MIN_PLAYERS = 3;
+const MAX_PLAYERS = 8;
+const MIN_ROUNDS = 0;
+const MAX_ROUNDS = 12;
 
 const spicyActions = [
   "mandar mensagem ao ex",
@@ -118,15 +122,21 @@ const questionFlavors = [
 
 const questions = createQuestionBank(1000);
 
-const basePlayers = [
+const playerPool = [
   { playerId: "p1", nickname: "Ana" },
   { playerId: "p2", nickname: "Bruno" },
   { playerId: "p3", nickname: "Carla" },
   { playerId: "p4", nickname: "Miguel" },
+  { playerId: "p5", nickname: "Rita" },
+  { playerId: "p6", nickname: "Tiago" },
+  { playerId: "p7", nickname: "Sofia" },
+  { playerId: "p8", nickname: "Pedro" },
 ];
 
+let playerCount = 4;
+let roundLimit = DEFAULT_ROUNDS;
 let roundIndex = 0;
-let phase = "question";
+let phase = "setup";
 let selectedPlayerId = null;
 let seconds = 15;
 let roundVotes = createRoundVotes(roundIndex);
@@ -135,6 +145,8 @@ window.setInterval(tick, 1000);
 
 const phaseLabel = document.querySelector("#phaseLabel");
 const timerLabel = document.querySelector("#timerLabel");
+const setupPanel = document.querySelector("#setupPanel");
+const setupControls = document.querySelector("#setupControls");
 const eyebrow = document.querySelector("#eyebrow");
 const questionPanel = document.querySelector("#questionPanel");
 const prompt = document.querySelector("#prompt");
@@ -148,6 +160,11 @@ const resultMessage = document.querySelector("#resultMessage");
 const resultTable = document.querySelector("#resultTable");
 
 primaryAction.addEventListener("click", () => {
+  if (phase === "setup") {
+    startGame();
+    return;
+  }
+
   if (phase === "question") {
     openVoting();
     return;
@@ -163,7 +180,71 @@ primaryAction.addEventListener("click", () => {
   }
 });
 
+setupControls.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-setting-action]");
+
+  if (!button) {
+    return;
+  }
+
+  updateSetting(button.dataset.settingAction);
+});
+
+setupControls.addEventListener("input", (event) => {
+  const input = event.target.closest("[data-player-name]");
+
+  if (!input) {
+    return;
+  }
+
+  updatePlayerName(input.dataset.playerName, input.value);
+});
+
 render();
+
+function updateSetting(action) {
+  if (phase !== "setup") {
+    return;
+  }
+
+  if (action === "players-down") {
+    playerCount = Math.max(MIN_PLAYERS, playerCount - 1);
+  }
+
+  if (action === "players-up") {
+    playerCount = Math.min(MAX_PLAYERS, playerCount + 1);
+  }
+
+  if (action === "rounds-down") {
+    roundLimit = Math.max(MIN_ROUNDS, roundLimit - 1);
+  }
+
+  if (action === "rounds-up") {
+    roundLimit = Math.min(MAX_ROUNDS, roundLimit + 1);
+  }
+
+  roundVotes = createRoundVotes(roundIndex);
+  render();
+}
+
+function updatePlayerName(playerId, value) {
+  const player = playerPool.find((item) => item.playerId === playerId);
+
+  if (!player) {
+    return;
+  }
+
+  player.nickname = value.trimStart().slice(0, 14);
+}
+
+function startGame() {
+  roundIndex = 0;
+  phase = "question";
+  selectedPlayerId = null;
+  seconds = 15;
+  roundVotes = createRoundVotes(roundIndex);
+  render();
+}
 
 function tick() {
   if (phase !== "voting") {
@@ -219,7 +300,7 @@ function showResult() {
 }
 
 function goToNextRound() {
-  if (roundIndex >= PREVIEW_ROUNDS - 1) {
+  if (isLastConfiguredRound()) {
     roundIndex = 0;
   } else {
     roundIndex += 1;
@@ -235,6 +316,7 @@ function goToNextRound() {
 function render() {
   document.body.dataset.phase = phase;
   renderHeader();
+  renderSetup();
   renderQuestion();
   renderPlayers();
   renderResult();
@@ -242,12 +324,22 @@ function render() {
 }
 
 function renderHeader() {
+  if (phase === "setup") {
+    phaseLabel.textContent = "Mesa";
+    timerLabel.hidden = false;
+    timerLabel.textContent = `${playerCount}p`;
+    timerLabel.classList.add("is-idle");
+    return;
+  }
+
+  const roundProgress = `${roundIndex + 1}/${formatRoundLimit()}`;
+
   phaseLabel.textContent =
     phase === "voting" || phase === "waiting"
-      ? `Votacao ${roundIndex + 1}/${PREVIEW_ROUNDS}`
+      ? `Votacao ${roundProgress}`
       : phase === "result"
-        ? `Resultado ${roundIndex + 1}/${PREVIEW_ROUNDS}`
-        : `Ronda ${roundIndex + 1}/${PREVIEW_ROUNDS}`;
+        ? `Resultado ${roundProgress}`
+        : `Ronda ${roundProgress}`;
 
   timerLabel.hidden = phase === "result";
   timerLabel.textContent =
@@ -255,13 +347,76 @@ function renderHeader() {
   timerLabel.classList.toggle("is-idle", phase !== "voting");
 }
 
-function renderQuestion() {
-  questionPanel.classList.toggle("hidden", phase === "result");
-  if (phase === "result") {
+function renderSetup() {
+  setupPanel.classList.toggle("hidden", phase !== "setup");
+
+  if (phase !== "setup") {
     return;
   }
 
-  prompt.textContent = questions[roundIndex];
+  const players = getActivePlayers();
+
+  setupControls.innerHTML = `
+    <article class="setup-card setup-card-wide">
+      <div class="setup-card-head">
+        <span>Jogadores</span>
+        <strong>${playerCount}</strong>
+      </div>
+      <div class="setup-stepper">
+        <button type="button" data-setting-action="players-down" ${playerCount <= MIN_PLAYERS ? "disabled" : ""}>-</button>
+        <span>${playerCount}</span>
+        <button type="button" data-setting-action="players-up" ${playerCount >= MAX_PLAYERS ? "disabled" : ""}>+</button>
+      </div>
+      <div class="setup-avatars" aria-label="Jogadores escolhidos">
+        ${players
+          .map(
+            (player, index) => `
+              <label class="setup-avatar">
+                <strong>${escapeHtml(getPlayerInitial(player))}</strong>
+                <input
+                  data-player-name="${player.playerId}"
+                  maxlength="14"
+                  aria-label="Nome do jogador ${index + 1}"
+                  value="${escapeHtml(player.nickname)}"
+                />
+              </label>
+            `,
+          )
+          .join("")}
+      </div>
+    </article>
+    <article class="setup-card">
+      <div class="setup-card-head">
+        <span>Rondas</span>
+        <strong>${formatRoundLimit()}</strong>
+      </div>
+      <div class="setup-stepper compact">
+        <button type="button" data-setting-action="rounds-down" ${roundLimit <= MIN_ROUNDS ? "disabled" : ""}>-</button>
+        <span>${formatRoundLimit()}</span>
+        <button type="button" data-setting-action="rounds-up" ${roundLimit >= MAX_ROUNDS ? "disabled" : ""}>+</button>
+      </div>
+    </article>
+    <article class="setup-card">
+      <div class="setup-card-head">
+        <span>Tempo</span>
+        <strong>15s</strong>
+      </div>
+      <div class="setup-time">
+        <span>Voto</span>
+        <strong>30s</strong>
+        <span>Ronda</span>
+      </div>
+    </article>
+  `;
+}
+
+function renderQuestion() {
+  questionPanel.classList.toggle("hidden", phase === "result" || phase === "setup");
+  if (phase === "result" || phase === "setup") {
+    return;
+  }
+
+  prompt.textContent = getCurrentQuestion();
   eyebrow.textContent =
     phase === "voting" || phase === "waiting"
       ? "Escolhe uma pessoa"
@@ -271,10 +426,18 @@ function renderQuestion() {
 }
 
 function renderPlayers() {
-  playersGrid.classList.toggle("hidden", phase === "result");
+  playersGrid.classList.toggle("hidden", phase === "result" || phase === "setup");
   playersGrid.classList.toggle("ready-grid", phase === "question");
-  playersGrid.innerHTML = basePlayers
+
+  if (phase === "setup" || phase === "result") {
+    playersGrid.innerHTML = "";
+    return;
+  }
+
+  playersGrid.innerHTML = getActivePlayers()
     .map((player) => {
+      const name = escapeHtml(getPlayerName(player));
+      const initial = escapeHtml(getPlayerInitial(player));
       const intro = phase === "question";
       const selected = selectedPlayerId === player.playerId;
       const disabled = phase !== "voting";
@@ -291,8 +454,8 @@ function renderPlayers() {
       return `
         <button class="${classes}" type="button" ${disabled ? "disabled" : ""} data-player-id="${player.playerId}">
           ${selected ? '<span class="selected-tag">OK</span>' : ""}
-          <span class="avatar">${player.nickname.slice(0, 1)}</span>
-          <span class="player-name">${player.nickname}</span>
+          <span class="avatar">${initial}</span>
+          <span class="player-name">${name}</span>
           ${intro ? "" : `<span class="player-meta">${getPlayerMeta(player)}</span>`}
         </button>
       `;
@@ -333,8 +496,8 @@ function renderResult() {
   const winnerVotes = roundVotes[winner.playerId] ?? 0;
   const percentage = totalVotes === 0 ? 0 : Math.round((winnerVotes / totalVotes) * 1000) / 10;
 
-  winnerName.textContent = winner.nickname;
-  winnerAvatar.textContent = winner.nickname.slice(0, 1);
+  winnerName.textContent = getPlayerName(winner);
+  winnerAvatar.textContent = getPlayerInitial(winner);
   winnerPercentage.textContent = `${percentage}%`;
   resultMessage.textContent = getSarcasticMessage(winner, winnerVotes, percentage);
   resultTable.innerHTML = getSortedResults()
@@ -347,7 +510,7 @@ function renderResult() {
       return `
         <div class="result-row ${isWinner ? "is-winner" : ""}">
           <span class="result-rank">${index + 1}</span>
-          <strong>${player.nickname}</strong>
+          <strong>${escapeHtml(getPlayerName(player))}</strong>
           <span>${votes === 1 ? "1 voto" : `${votes} votos`}</span>
           <em>${playerPercentage}%</em>
         </div>
@@ -357,6 +520,14 @@ function renderResult() {
 }
 
 function renderFooter() {
+  if (phase === "setup") {
+    primaryAction.hidden = false;
+    primaryAction.disabled = false;
+    primaryAction.classList.remove("secondary");
+    primaryAction.textContent = "Comecar jogo";
+    return;
+  }
+
   if (phase === "question") {
     primaryAction.hidden = false;
     primaryAction.disabled = false;
@@ -382,8 +553,7 @@ function renderFooter() {
   primaryAction.hidden = false;
   primaryAction.disabled = false;
   primaryAction.classList.add("secondary");
-  primaryAction.textContent =
-    roundIndex >= PREVIEW_ROUNDS - 1 ? "Recomecar" : "Proxima";
+  primaryAction.textContent = isLastConfiguredRound() ? "Recomecar" : "Proxima";
 }
 
 function createQuestionBank(targetCount) {
@@ -404,16 +574,20 @@ function createQuestionBank(targetCount) {
 }
 
 function createRoundVotes(index, selectedTargetId) {
-  const patterns = [
-    { p1: 0, p2: 2, p3: 1, p4: 0 },
-    { p1: 1, p2: 0, p3: 2, p4: 0 },
-    { p1: 0, p2: 1, p3: 0, p4: 2 },
-    { p1: 2, p2: 0, p3: 1, p4: 0 },
-  ];
-  const votes = { ...patterns[index % patterns.length] };
+  const players = getActivePlayers();
+  const votes = Object.fromEntries(players.map((player) => [player.playerId, 0]));
+
+  players.forEach((_player, playerIndex) => {
+    const targetIndex = (index + playerIndex * 2 + 1) % players.length;
+    const target = players[targetIndex];
+    votes[target.playerId] += 1;
+  });
 
   if (selectedTargetId) {
-    votes[selectedTargetId] = Math.max(votes[selectedTargetId] ?? 0, 2);
+    votes[selectedTargetId] = Math.max(
+      votes[selectedTargetId] ?? 0,
+      Math.ceil(players.length / 2),
+    );
   }
 
   return votes;
@@ -428,40 +602,78 @@ function getTotalVotes() {
 }
 
 function getSortedResults() {
-  return basePlayers
+  return getActivePlayers()
     .slice()
     .sort(
       (left, right) =>
         (roundVotes[right.playerId] ?? 0) - (roundVotes[left.playerId] ?? 0) ||
-        left.nickname.localeCompare(right.nickname),
+        getPlayerName(left).localeCompare(getPlayerName(right)),
     );
 }
 
+function getActivePlayers() {
+  return playerPool.slice(0, playerCount);
+}
+
+function getPlayerInitial(player) {
+  return (getPlayerName(player).slice(0, 1) || "?").toUpperCase();
+}
+
+function getPlayerName(player) {
+  return player.nickname.trim() || "Jogador";
+}
+
+function getCurrentQuestion() {
+  return questions[roundIndex % questions.length];
+}
+
+function escapeHtml(value) {
+  return String(value).replace(/[&<>"']/g, (character) => {
+    const entities = {
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;",
+    };
+
+    return entities[character];
+  });
+}
+
+function formatRoundLimit() {
+  return roundLimit === 0 ? "Livre" : String(roundLimit);
+}
+
+function isLastConfiguredRound() {
+  return roundLimit > 0 && roundIndex >= roundLimit - 1;
+}
+
 function getSarcasticMessage(winner, votes, percentage) {
-  const prompt = questions[roundIndex].toLowerCase();
+  const prompt = getCurrentQuestion().toLowerCase();
 
   if (prompt.includes("ex")) {
-    return `${winner.nickname}, sempre soubemos que o ex faz te falta.`;
+    return `${getPlayerName(winner)}, sempre soubemos que o ex faz te falta.`;
   }
 
   if (prompt.includes("ciume")) {
-    return `${winner.nickname}, esse ciume veio com recibo.`;
+    return `${getPlayerName(winner)}, esse ciume veio com recibo.`;
   }
 
   if (prompt.includes("crush")) {
-    return `${winner.nickname}, essa crush ja nem e segredo.`;
+    return `${getPlayerName(winner)}, essa crush ja nem e segredo.`;
   }
 
   if (prompt.includes("alcool") || prompt.includes("beber") || prompt.includes("shot")) {
-    return `${winner.nickname}, a culpa hoje vai para o copo.`;
+    return `${getPlayerName(winner)}, a culpa hoje vai para o copo.`;
   }
 
   const lines = [
-    `${winner.nickname}, nao adianta fazer cara de santo.`,
-    `${winner.nickname}, a mesa sabe coisas.`,
-    `${winner.nickname}, hoje foste apanhado.`,
-    `${winner.nickname}, ${percentage}% de suspeitas confirmadas.`,
-    `${winner.nickname}, ${votes} votos e zero surpresa.`,
+    `${getPlayerName(winner)}, nao adianta fazer cara de santo.`,
+    `${getPlayerName(winner)}, a mesa sabe coisas.`,
+    `${getPlayerName(winner)}, hoje foste apanhado.`,
+    `${getPlayerName(winner)}, ${percentage}% de suspeitas confirmadas.`,
+    `${getPlayerName(winner)}, ${votes} votos e zero surpresa.`,
   ];
 
   return lines[roundIndex % lines.length];
