@@ -105,17 +105,17 @@ const spicyActions = [
   "dizer 'eu avisei'",
 ];
 
-const questionFlavors = [
-  "",
-  "hoje",
-  "no grupo",
-  "numa festa",
-  "depois de beber",
-  "sem pensar duas vezes",
-  "so para provocar",
-  "e negar depois",
-  "quando toca a musica certa",
-  "antes de ir embora",
+const questionTemplates = [
+  (action: string) => `Quem e mais provavel de ${action}?`,
+  (action: string) => `Quem da mesa ia ${action} hoje?`,
+  (action: string) => `Quem era apanhado a ${action}?`,
+  (action: string) => `Quem jurava que nao ia ${action}?`,
+  (action: string) => `Quem tinha coragem de ${action}?`,
+  (action: string) => `Quem acabava por ${action} sem pensar?`,
+  (action: string) => `Quem nao resistia a ${action}?`,
+  (action: string) => `Quem ia ${action} so para provocar?`,
+  (action: string) => `Quem culpava o alcool depois de ${action}?`,
+  (action: string) => `Quem fazia isto antes de ir embora: ${action}?`,
 ];
 
 export const defaultMostLikelyQuestionDeck: MostLikelyQuestion[] =
@@ -125,7 +125,7 @@ export function createMostLikelyQuestionDeck(
   targetCount = TARGET_QUESTION_COUNT,
 ): MostLikelyQuestion[] {
   const questions = new Map<string, MostLikelyQuestion>();
-  const totalCombinations = spicyActions.length * questionFlavors.length;
+  const totalCombinations = spicyActions.length * questionTemplates.length;
 
   if (targetCount > totalCombinations) {
     throw new Error(
@@ -135,9 +135,10 @@ export function createMostLikelyQuestionDeck(
 
   for (let index = 0; questions.size < targetCount; index += 1) {
     const action = spicyActions[index % spicyActions.length];
-    const flavor =
-      questionFlavors[Math.floor(index / spicyActions.length) % questionFlavors.length];
-    const prompt = createPrompt(action, flavor);
+    const templateIndex =
+      (index + Math.floor(index / spicyActions.length)) %
+      questionTemplates.length;
+    const prompt = createPrompt(action, templateIndex);
 
     if (!questions.has(prompt)) {
       questions.set(prompt, {
@@ -155,8 +156,8 @@ function normalizePrompt(prompt: string): string {
   return prompt.replace(/\s+/g, " ").trim();
 }
 
-function createPrompt(action: string, flavor: string): string {
-  return normalizePrompt(
-    `Quem e mais provavel de ${action}${flavor ? ` ${flavor}` : ""}?`,
-  );
+function createPrompt(action: string, templateIndex: number): string {
+  const template = questionTemplates[templateIndex] ?? questionTemplates[0]!;
+
+  return normalizePrompt(template(action));
 }

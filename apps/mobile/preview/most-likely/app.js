@@ -107,17 +107,17 @@ const spicyActions = [
   "dizer 'eu avisei'",
 ];
 
-const questionFlavors = [
-  "",
-  "hoje",
-  "no grupo",
-  "numa festa",
-  "depois de beber",
-  "sem pensar duas vezes",
-  "so para provocar",
-  "e negar depois",
-  "quando toca a musica certa",
-  "antes de ir embora",
+const questionTemplates = [
+  (action) => `Quem e mais provavel de ${action}?`,
+  (action) => `Quem da mesa ia ${action} hoje?`,
+  (action) => `Quem era apanhado a ${action}?`,
+  (action) => `Quem jurava que nao ia ${action}?`,
+  (action) => `Quem tinha coragem de ${action}?`,
+  (action) => `Quem acabava por ${action} sem pensar?`,
+  (action) => `Quem nao resistia a ${action}?`,
+  (action) => `Quem ia ${action} so para provocar?`,
+  (action) => `Quem culpava o alcool depois de ${action}?`,
+  (action) => `Quem fazia isto antes de ir embora: ${action}?`,
 ];
 
 const questions = createQuestionBank(1000);
@@ -200,6 +200,16 @@ setupControls.addEventListener("input", (event) => {
   updatePlayerName(input.dataset.playerName, input.value);
 });
 
+setupControls.addEventListener("change", (event) => {
+  const input = event.target.closest("[data-player-photo]");
+
+  if (!input) {
+    return;
+  }
+
+  updatePlayerPhoto(input.dataset.playerPhoto, input.files?.[0]);
+});
+
 render();
 
 function updateSetting(action) {
@@ -235,6 +245,21 @@ function updatePlayerName(playerId, value) {
   }
 
   player.nickname = value.trimStart().slice(0, 14);
+}
+
+function updatePlayerPhoto(playerId, file) {
+  const player = playerPool.find((item) => item.playerId === playerId);
+
+  if (!player || !file) {
+    return;
+  }
+
+  if (player.photoUrl) {
+    URL.revokeObjectURL(player.photoUrl);
+  }
+
+  player.photoUrl = URL.createObjectURL(file);
+  render();
 }
 
 function startGame() {
@@ -357,56 +382,53 @@ function renderSetup() {
   const players = getActivePlayers();
 
   setupControls.innerHTML = `
-    <article class="setup-card setup-card-wide">
-      <div class="setup-card-head">
+    <div class="setup-counters">
+      <article class="setup-counter">
         <span>Jogadores</span>
-        <strong>${playerCount}</strong>
-      </div>
-      <div class="setup-stepper">
-        <button type="button" data-setting-action="players-down" ${playerCount <= MIN_PLAYERS ? "disabled" : ""}>-</button>
-        <span>${playerCount}</span>
-        <button type="button" data-setting-action="players-up" ${playerCount >= MAX_PLAYERS ? "disabled" : ""}>+</button>
-      </div>
-      <div class="setup-avatars" aria-label="Jogadores escolhidos">
+        <div class="setup-stepper">
+          <button type="button" data-setting-action="players-down" ${playerCount <= MIN_PLAYERS ? "disabled" : ""}>-</button>
+          <strong>${playerCount}</strong>
+          <button type="button" data-setting-action="players-up" ${playerCount >= MAX_PLAYERS ? "disabled" : ""}>+</button>
+        </div>
+      </article>
+      <article class="setup-counter">
+        <span>Rondas</span>
+        <div class="setup-stepper">
+          <button type="button" data-setting-action="rounds-down" ${roundLimit <= MIN_ROUNDS ? "disabled" : ""}>-</button>
+          <strong>${formatRoundLimit()}</strong>
+          <button type="button" data-setting-action="rounds-up" ${roundLimit >= MAX_ROUNDS ? "disabled" : ""}>+</button>
+        </div>
+      </article>
+    </div>
+    <section class="setup-players" aria-label="Jogadores escolhidos">
         ${players
           .map(
             (player, index) => `
-              <label class="setup-avatar">
-                <strong>${escapeHtml(getPlayerInitial(player))}</strong>
+              <article class="setup-player-card">
                 <input
+                  id="photo-${player.playerId}"
+                  class="photo-input"
+                  type="file"
+                  accept="image/*"
+                  data-player-photo="${player.playerId}"
+                  aria-label="Foto do jogador ${index + 1}"
+                />
+                <label class="photo-button" for="photo-${player.playerId}">
+                  ${getAvatarMarkup(player)}
+                  <span>+</span>
+                </label>
+                <input
+                  class="setup-name-input"
                   data-player-name="${player.playerId}"
                   maxlength="14"
                   aria-label="Nome do jogador ${index + 1}"
                   value="${escapeHtml(player.nickname)}"
                 />
-              </label>
+              </article>
             `,
           )
           .join("")}
-      </div>
-    </article>
-    <article class="setup-card">
-      <div class="setup-card-head">
-        <span>Rondas</span>
-        <strong>${formatRoundLimit()}</strong>
-      </div>
-      <div class="setup-stepper compact">
-        <button type="button" data-setting-action="rounds-down" ${roundLimit <= MIN_ROUNDS ? "disabled" : ""}>-</button>
-        <span>${formatRoundLimit()}</span>
-        <button type="button" data-setting-action="rounds-up" ${roundLimit >= MAX_ROUNDS ? "disabled" : ""}>+</button>
-      </div>
-    </article>
-    <article class="setup-card">
-      <div class="setup-card-head">
-        <span>Tempo</span>
-        <strong>15s</strong>
-      </div>
-      <div class="setup-time">
-        <span>Voto</span>
-        <strong>30s</strong>
-        <span>Ronda</span>
-      </div>
-    </article>
+    </section>
   `;
 }
 
@@ -437,7 +459,6 @@ function renderPlayers() {
   playersGrid.innerHTML = getActivePlayers()
     .map((player) => {
       const name = escapeHtml(getPlayerName(player));
-      const initial = escapeHtml(getPlayerInitial(player));
       const intro = phase === "question";
       const selected = selectedPlayerId === player.playerId;
       const disabled = phase !== "voting";
@@ -453,10 +474,8 @@ function renderPlayers() {
 
       return `
         <button class="${classes}" type="button" ${disabled ? "disabled" : ""} data-player-id="${player.playerId}">
-          ${selected ? '<span class="selected-tag">OK</span>' : ""}
-          <span class="avatar">${initial}</span>
+          <span class="avatar">${getAvatarMarkup(player)}</span>
           <span class="player-name">${name}</span>
-          ${intro ? "" : `<span class="player-meta">${getPlayerMeta(player)}</span>`}
         </button>
       `;
     })
@@ -465,23 +484,6 @@ function renderPlayers() {
   playersGrid.querySelectorAll(".player-card").forEach((card) => {
     card.addEventListener("click", () => selectPlayer(card.dataset.playerId));
   });
-}
-
-function getPlayerMeta(player) {
-  if (phase === "result") {
-    const votes = roundVotes[player.playerId] ?? 0;
-    return votes === 1 ? "1 voto" : `${votes} votos`;
-  }
-
-  if (selectedPlayerId === player.playerId) {
-    return "Selecionado";
-  }
-
-  if (phase === "voting") {
-    return selectedPlayerId ? "Toca para trocar" : "Disponivel";
-  }
-
-  return "Jogador";
 }
 
 function renderResult() {
@@ -497,7 +499,7 @@ function renderResult() {
   const percentage = totalVotes === 0 ? 0 : Math.round((winnerVotes / totalVotes) * 1000) / 10;
 
   winnerName.textContent = getPlayerName(winner);
-  winnerAvatar.textContent = getPlayerInitial(winner);
+  winnerAvatar.innerHTML = getAvatarMarkup(winner);
   winnerPercentage.textContent = `${percentage}%`;
   resultMessage.textContent = getSarcasticMessage(winner, winnerVotes, percentage);
   resultTable.innerHTML = getSortedResults()
@@ -561,11 +563,12 @@ function createQuestionBank(targetCount) {
 
   for (let index = 0; questionsByPrompt.size < targetCount; index += 1) {
     const action = spicyActions[index % spicyActions.length];
-    const flavor =
-      questionFlavors[Math.floor(index / spicyActions.length) % questionFlavors.length];
-    const prompt = `Quem e mais provavel de ${action}${flavor ? ` ${flavor}` : ""}?`
-      .replace(/\s+/g, " ")
-      .trim();
+    const template =
+      questionTemplates[
+        (index + Math.floor(index / spicyActions.length)) %
+          questionTemplates.length
+      ];
+    const prompt = template(action).replace(/\s+/g, " ").trim();
 
     questionsByPrompt.set(prompt, prompt);
   }
@@ -576,19 +579,18 @@ function createQuestionBank(targetCount) {
 function createRoundVotes(index, selectedTargetId) {
   const players = getActivePlayers();
   const votes = Object.fromEntries(players.map((player) => [player.playerId, 0]));
+  const preferredVotes = selectedTargetId ? Math.ceil(players.length / 2) : 0;
 
   players.forEach((_player, playerIndex) => {
+    if (selectedTargetId && playerIndex < preferredVotes) {
+      votes[selectedTargetId] += 1;
+      return;
+    }
+
     const targetIndex = (index + playerIndex * 2 + 1) % players.length;
     const target = players[targetIndex];
     votes[target.playerId] += 1;
   });
-
-  if (selectedTargetId) {
-    votes[selectedTargetId] = Math.max(
-      votes[selectedTargetId] ?? 0,
-      Math.ceil(players.length / 2),
-    );
-  }
 
   return votes;
 }
@@ -617,6 +619,14 @@ function getActivePlayers() {
 
 function getPlayerInitial(player) {
   return (getPlayerName(player).slice(0, 1) || "?").toUpperCase();
+}
+
+function getAvatarMarkup(player) {
+  if (player.photoUrl) {
+    return `<img src="${escapeHtml(player.photoUrl)}" alt="" />`;
+  }
+
+  return `<strong>${escapeHtml(getPlayerInitial(player))}</strong>`;
 }
 
 function getPlayerName(player) {
