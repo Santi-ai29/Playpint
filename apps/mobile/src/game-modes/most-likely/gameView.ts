@@ -55,6 +55,16 @@ export interface MostLikelyVoteIntent {
   reason?: "not_voting" | "already_voted" | "expired" | "unknown_target";
 }
 
+export interface MostLikelyVoteDraft {
+  selectedTargetPlayerId?: string;
+  canConfirm: boolean;
+  options: Array<{
+    playerId: string;
+    selected: boolean;
+    disabled: boolean;
+  }>;
+}
+
 export function createMostLikelyGameView(
   snapshot: RoundSnapshot<MostLikelyPublicState, MostLikelyPlayerState>,
   now: Date | string | number,
@@ -130,6 +140,33 @@ export function createMostLikelyVoteIntent(input: {
       questionId: input.model.questionId,
       targetPlayerId: input.targetPlayerId,
     }),
+  };
+}
+
+export function createMostLikelyVoteDraft(input: {
+  model: MostLikelyScreenModel;
+  selectedTargetPlayerId?: string;
+}): MostLikelyVoteDraft {
+  const canChoose =
+    input.model.status === "voting" &&
+    !input.model.hasVoted &&
+    !input.model.isExpired;
+
+  const hasValidSelection = Boolean(
+    input.selectedTargetPlayerId &&
+      input.model.players.some(
+        (player) => player.playerId === input.selectedTargetPlayerId,
+      ),
+  );
+
+  return {
+    selectedTargetPlayerId: input.selectedTargetPlayerId,
+    canConfirm: canChoose && hasValidSelection,
+    options: input.model.players.map((player) => ({
+      playerId: player.playerId,
+      selected: player.playerId === input.selectedTargetPlayerId,
+      disabled: !canChoose,
+    })),
   };
 }
 

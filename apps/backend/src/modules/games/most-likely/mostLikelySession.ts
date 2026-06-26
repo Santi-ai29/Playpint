@@ -1,3 +1,6 @@
+import {
+  MOST_LIKELY_DEFAULT_TOTAL_ROUNDS,
+} from "../../../../../../packages/contracts/src";
 import type {
   MostLikelyGameEvent,
   MostLikelyGameFinishedEvent,
@@ -59,7 +62,10 @@ export function startMostLikelySession(
   input: StartMostLikelySessionInput,
 ): MostLikelySessionTransition {
   const deck = input.deck ?? defaultMostLikelyQuestionDeck;
-  const totalRounds = normalizeTotalRounds(input.totalRounds ?? 5, deck.length);
+  const totalRounds = normalizeTotalRounds(
+    input.totalRounds ?? MOST_LIKELY_DEFAULT_TOTAL_ROUNDS,
+    deck.length,
+  );
   const roundId = createSessionRoundId(input.roomId, 1);
   const startedRound = startMostLikelyRuntimeRound({
     roomId: input.roomId,

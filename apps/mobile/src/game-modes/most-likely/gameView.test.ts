@@ -8,6 +8,7 @@ import type {
 import { createMostLikelyScreenModel } from "./screenModel";
 import {
   createMostLikelyGameView,
+  createMostLikelyVoteDraft,
   createMostLikelyVoteIntent,
 } from "./gameView";
 
@@ -51,6 +52,40 @@ test("creates a voting view and a contract-compatible vote intent", () => {
       targetPlayerId: "p2",
     },
   });
+});
+
+test("allows changing the local selected player before confirming the vote", () => {
+  const source = snapshot({
+    lifecycleState: "voting",
+    clock: {
+      startsAt: "2026-06-25T20:00:30.000Z",
+      endsAt: "2026-06-25T20:00:45.000Z",
+    },
+  });
+  const model = createMostLikelyScreenModel(source, "2026-06-25T20:00:35.000Z");
+  const firstDraft = createMostLikelyVoteDraft({
+    model,
+    selectedTargetPlayerId: "p2",
+  });
+  const changedDraft = createMostLikelyVoteDraft({
+    model,
+    selectedTargetPlayerId: "p3",
+  });
+
+  assert.equal(firstDraft.canConfirm, true);
+  assert.equal(
+    firstDraft.options.find((option) => option.playerId === "p2")?.selected,
+    true,
+  );
+  assert.equal(changedDraft.canConfirm, true);
+  assert.equal(
+    changedDraft.options.find((option) => option.playerId === "p3")?.selected,
+    true,
+  );
+  assert.equal(
+    changedDraft.options.find((option) => option.playerId === "p2")?.selected,
+    false,
+  );
 });
 
 test("blocks vote intents when the player already voted", () => {

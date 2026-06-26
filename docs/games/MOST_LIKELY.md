@@ -98,6 +98,7 @@ Responsabilidades:
 - bloquear voto antes de `voting`;
 - bloquear voto depois de o jogador votar;
 - criar a intencao de voto que sera enviada ao backend;
+- permitir trocar a selecao local antes de confirmar o voto;
 - mostrar contagem decrescente baseada no `clock` do servidor;
 - mostrar vencedores, percentagens, votos revelados e pontos no resultado.
 
