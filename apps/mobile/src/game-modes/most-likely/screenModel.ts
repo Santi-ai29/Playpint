@@ -57,6 +57,7 @@ export interface MostLikelyScreenModel {
     winnerNickname?: string;
     winnerLabel: string;
     winnerPercentage?: number;
+    sarcasticLine?: string;
   };
   resultRows: Array<{
     playerId: string;
@@ -194,5 +195,8 @@ function createResultSummary(
     winnerNickname: winner?.nickname,
     winnerLabel: mostLikelyTheme.copy.winnerLabel,
     winnerPercentage: winner?.percentage,
+    sarcasticLine: winner
+      ? `${winner.nickname} tentou passar despercebido. A mesa discordou.`
+      : "A mesa ficou em silencio. Suspeito.",
   };
 }

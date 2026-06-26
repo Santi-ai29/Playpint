@@ -90,6 +90,7 @@ test("maps official results, winners, percentages, and vote trail", () => {
     winnerNickname: "Bruno",
     winnerLabel: "mais votado",
     winnerPercentage: 66.7,
+    sarcasticLine: "Bruno tentou passar despercebido. A mesa discordou.",
   });
   assert.deepEqual(model.winners, ["Bruno"]);
   assert.deepEqual(

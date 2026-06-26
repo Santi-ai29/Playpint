@@ -106,6 +106,8 @@ const primaryAction = document.querySelector("#primaryAction");
 const winnerName = document.querySelector("#winnerName");
 const winnerAvatar = document.querySelector("#winnerAvatar");
 const winnerPercentage = document.querySelector("#winnerPercentage");
+const resultMessage = document.querySelector("#resultMessage");
+const resultTable = document.querySelector("#resultTable");
 
 primaryAction.addEventListener("click", () => {
   if (phase === "question") {
@@ -169,7 +171,7 @@ function confirmVote() {
 
   phase = "waiting";
   roundVotes = createRoundVotes(roundIndex, selectedPlayerId);
-  window.setTimeout(showResult, 850);
+  window.setTimeout(showResult, 560);
   render();
 }
 
@@ -209,7 +211,9 @@ function renderHeader() {
         ? `Resultado ${roundIndex + 1}/${PREVIEW_ROUNDS}`
         : `Ronda ${roundIndex + 1}/${PREVIEW_ROUNDS}`;
 
-  timerLabel.textContent = phase === "voting" ? `00:${String(seconds).padStart(2, "0")}` : "15s voto";
+  timerLabel.hidden = phase === "result";
+  timerLabel.textContent =
+    phase === "voting" ? `00:${String(seconds).padStart(2, "0")}` : "15s voto";
   timerLabel.classList.toggle("is-idle", phase !== "voting");
 }
 
@@ -291,6 +295,24 @@ function renderResult() {
   winnerName.textContent = winner.nickname;
   winnerAvatar.textContent = winner.nickname.slice(0, 1);
   winnerPercentage.textContent = `${percentage}%`;
+  resultMessage.textContent = getSarcasticMessage(winner, winnerVotes, percentage);
+  resultTable.innerHTML = getSortedResults()
+    .map((player, index) => {
+      const votes = roundVotes[player.playerId] ?? 0;
+      const playerPercentage =
+        totalVotes === 0 ? 0 : Math.round((votes / totalVotes) * 1000) / 10;
+      const isWinner = player.playerId === winner.playerId;
+
+      return `
+        <div class="result-row ${isWinner ? "is-winner" : ""}">
+          <span class="result-rank">${index + 1}</span>
+          <strong>${player.nickname}</strong>
+          <span>${votes === 1 ? "1 voto" : `${votes} votos`}</span>
+          <em>${playerPercentage}%</em>
+        </div>
+      `;
+    })
+    .join("");
 }
 
 function renderFooter() {
@@ -357,15 +379,31 @@ function createRoundVotes(index, selectedTargetId) {
 }
 
 function getWinner() {
+  return getSortedResults()[0];
+}
+
+function getTotalVotes() {
+  return Object.values(roundVotes).reduce((total, votes) => total + votes, 0);
+}
+
+function getSortedResults() {
   return basePlayers
     .slice()
     .sort(
       (left, right) =>
         (roundVotes[right.playerId] ?? 0) - (roundVotes[left.playerId] ?? 0) ||
         left.nickname.localeCompare(right.nickname),
-    )[0];
+    );
 }
 
-function getTotalVotes() {
-  return Object.values(roundVotes).reduce((total, votes) => total + votes, 0);
+function getSarcasticMessage(winner, votes, percentage) {
+  const lines = [
+    `${winner.nickname} tentou passar despercebido. A mesa discordou.`,
+    `${winner.nickname} levou o selo oficial da noite. Nao fui eu, foram os votos.`,
+    `${winner.nickname}, respira fundo. Isto e democracia de mesa.`,
+    `${winner.nickname} foi escolhido com ${percentage}%. Coincidencia? Claro que sim.`,
+    `${votes} votos para ${winner.nickname}. A reputacao faz o trabalho sozinha.`,
+  ];
+
+  return lines[roundIndex % lines.length];
 }

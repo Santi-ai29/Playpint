@@ -39,6 +39,14 @@ export interface MostLikelyGameView {
     winnerNickname?: string;
     winnerLabel: string;
     winnerPercentage?: string;
+    sarcasticLine?: string;
+    tableRows: Array<{
+      playerId: string;
+      label: string;
+      votesLabel: string;
+      percentageLabel: string;
+      isWinner: boolean;
+    }>;
   };
 }
 
@@ -89,6 +97,14 @@ export function createMostLikelyGameView(
             typeof model.resultSummary.winnerPercentage === "number"
               ? `${model.resultSummary.winnerPercentage}%`
               : undefined,
+          sarcasticLine: model.resultSummary.sarcasticLine,
+          tableRows: model.resultRows.map((row) => ({
+            playerId: row.playerId,
+            label: row.nickname,
+            votesLabel: row.votes === 1 ? "1 voto" : `${row.votes} votos`,
+            percentageLabel: `${row.percentage}%`,
+            isWinner: row.isWinner,
+          })),
         }
       : undefined,
   };

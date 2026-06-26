@@ -130,6 +130,33 @@ test("keeps the primary result view simple", () => {
   assert.equal(view.result?.winnerNickname, "Bruno");
   assert.equal(view.result?.winnerLabel, "mais votado");
   assert.equal(view.result?.winnerPercentage, "66.7%");
+  assert.equal(
+    view.result?.sarcasticLine,
+    "Bruno tentou passar despercebido. A mesa discordou.",
+  );
+  assert.deepEqual(view.result?.tableRows, [
+    {
+      playerId: "p2",
+      label: "Bruno",
+      votesLabel: "2 votos",
+      percentageLabel: "66.7%",
+      isWinner: true,
+    },
+    {
+      playerId: "p3",
+      label: "Carla",
+      votesLabel: "1 voto",
+      percentageLabel: "33.3%",
+      isWinner: false,
+    },
+    {
+      playerId: "p1",
+      label: "Ana",
+      votesLabel: "0 votos",
+      percentageLabel: "0%",
+      isWinner: false,
+    },
+  ]);
 });
 
 function snapshot(input: {

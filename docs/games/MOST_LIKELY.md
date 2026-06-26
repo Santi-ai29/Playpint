@@ -110,8 +110,9 @@ Direcao visual aprovada:
 - ciano apenas como acento secundario;
 - header do jogo usa o wordmark `Playpint`, nao um placeholder `P`;
 - sem scroll no ecra do jogo;
-- resultado principal simples: vencedor, percentagem e botao para avancar;
-- cartao selecionado/vencedor com brilho e animacao premium.
+- resultado mostra vencedor em destaque, frase sarcastica curta, tabela da ronda e botao para avancar;
+- cartao selecionado/vencedor com brilho, entrada animada e reflexo premium;
+- botao de confirmar fica proximo da grelha de votacao.
 
 ## Registry
 

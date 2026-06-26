@@ -55,7 +55,8 @@ button {
 .phone-screen {
   position: relative;
   display: grid;
-  grid-template-rows: auto auto minmax(0, 1fr) auto;
+  grid-template-rows: auto auto auto auto;
+  align-content: start;
   row-gap: 14px;
   width: min(100vw, 430px);
   height: 100dvh;
@@ -147,6 +148,7 @@ button {
   background:
     radial-gradient(circle at 50% 48%, rgba(255, 195, 66, 0.55), transparent 21%),
     rgba(255, 255, 255, 0.018);
+  animation: candle-flicker 2.8s ease-in-out infinite alternate;
 }
 
 .ambient-card {
@@ -323,7 +325,9 @@ button {
     0 0 0 2px rgba(255, 74, 10, 0.34),
     0 0 34px rgba(255, 195, 66, 0.38),
     0 18px 36px rgba(255, 74, 10, 0.22);
-  animation: selected-glow 1.55s ease-in-out infinite alternate;
+  animation:
+    selected-pop 220ms ease-out,
+    selected-glow 1.55s ease-in-out infinite alternate;
 }
 
 .avatar {
@@ -375,10 +379,11 @@ button {
 }
 
 .result-panel {
-  align-self: center;
+  align-self: start;
   display: grid;
-  gap: 13px;
+  gap: 9px;
   min-height: 0;
+  margin-top: clamp(28px, 7vh, 58px);
 }
 
 .result-title {
@@ -396,7 +401,7 @@ button {
   align-items: center;
   gap: 14px;
   overflow: hidden;
-  padding: 18px;
+  padding: 16px;
   border-radius: 24px;
   background: var(--yellow);
   color: var(--black);
@@ -407,6 +412,92 @@ button {
   animation:
     winner-pop 380ms cubic-bezier(0.2, 1.2, 0.3, 1),
     selected-glow 1.6s ease-in-out infinite alternate;
+}
+
+.result-message {
+  margin: 0;
+  padding: 10px 12px;
+  border: 1px solid rgba(255, 195, 66, 0.3);
+  border-radius: 18px;
+  background: rgba(255, 243, 213, 0.07);
+  color: #fff3d5;
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.22);
+  font-size: 13px;
+  font-weight: 900;
+  line-height: 1.25;
+  text-align: center;
+  text-shadow: 0 1px 14px rgba(255, 195, 66, 0.22);
+  animation: result-row-enter 360ms ease-out both;
+  animation-delay: 80ms;
+}
+
+.result-table {
+  display: grid;
+  gap: 7px;
+}
+
+.result-row {
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 9px;
+  min-height: 38px;
+  padding: 7px 10px;
+  border: 1px solid rgba(255, 195, 66, 0.18);
+  border-radius: 16px;
+  background: rgba(12, 8, 5, 0.78);
+  color: var(--cream);
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.2);
+  animation: result-row-enter 360ms ease-out both;
+}
+
+.result-row:nth-child(1) {
+  animation-delay: 120ms;
+}
+
+.result-row:nth-child(2) {
+  animation-delay: 160ms;
+}
+
+.result-row:nth-child(3) {
+  animation-delay: 200ms;
+}
+
+.result-row:nth-child(4) {
+  animation-delay: 240ms;
+}
+
+.result-row.is-winner {
+  border-color: rgba(255, 195, 66, 0.58);
+  background: rgba(255, 195, 66, 0.12);
+}
+
+.result-rank {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 9px;
+  background: rgba(255, 195, 66, 0.16);
+  color: var(--yellow);
+  font-size: 12px;
+  font-weight: 950;
+}
+
+.result-row strong {
+  overflow: hidden;
+  font-size: 15px;
+  font-weight: 950;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.result-row span:not(.result-rank),
+.result-row em {
+  color: var(--muted);
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 900;
 }
 
 .winner-card::after {
@@ -426,9 +517,9 @@ button {
 .winner-avatar {
   display: grid;
   place-items: center;
-  width: 58px;
-  height: 58px;
-  border-radius: 20px;
+  width: 54px;
+  height: 54px;
+  border-radius: 18px;
   background: rgba(0, 0, 0, 0.16);
   font-size: 28px;
   font-weight: 950;
@@ -436,7 +527,7 @@ button {
 
 .winner-card h2 {
   margin: 0;
-  font-size: 30px;
+  font-size: 29px;
   font-weight: 950;
   line-height: 1;
 }
@@ -450,7 +541,7 @@ button {
 }
 
 .winner-card strong {
-  font-size: 24px;
+  font-size: 23px;
   font-weight: 950;
 }
 
@@ -491,7 +582,8 @@ button {
 }
 
 body[data-phase="result"] .phone-screen {
-  grid-template-rows: auto 1fr auto;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  align-content: stretch;
 }
 
 body[data-phase="result"] .result-panel {
@@ -525,6 +617,16 @@ body[data-phase="result"] .result-panel {
   }
 }
 
+@keyframes selected-pop {
+  from {
+    transform: scale(0.97);
+  }
+
+  to {
+    transform: scale(1);
+  }
+}
+
 @keyframes winner-pop {
   from {
     transform: scale(0.94);
@@ -551,6 +653,30 @@ body[data-phase="result"] .result-panel {
   100% {
     transform: translateX(42%) rotate(8deg);
     opacity: 0;
+  }
+}
+
+@keyframes result-row-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes candle-flicker {
+  from {
+    filter: brightness(0.92);
+    opacity: 0.62;
+  }
+
+  to {
+    filter: brightness(1.18);
+    opacity: 0.82;
   }
 }
 
