@@ -234,13 +234,16 @@ function renderQuestion() {
 
 function renderPlayers() {
   playersGrid.classList.toggle("hidden", phase === "result");
+  playersGrid.classList.toggle("avatar-strip", phase === "question");
   playersGrid.innerHTML = basePlayers
     .map((player) => {
+      const intro = phase === "question";
       const selected = selectedPlayerId === player.playerId;
       const disabled = phase !== "voting";
       const winner = phase === "result" && player.playerId === getWinner().playerId;
       const classes = [
         "player-card",
+        intro ? "avatar-chip" : "",
         selected ? "selected" : "",
         winner ? "winner" : "",
       ]
@@ -252,7 +255,7 @@ function renderPlayers() {
           ${selected ? '<span class="selected-tag">OK</span>' : ""}
           <span class="avatar">${player.nickname.slice(0, 1)}</span>
           <span class="player-name">${player.nickname}</span>
-          <span class="player-meta">${getPlayerMeta(player)}</span>
+          ${intro ? "" : `<span class="player-meta">${getPlayerMeta(player)}</span>`}
         </button>
       `;
     })
@@ -350,8 +353,7 @@ function createQuestionBank(targetCount) {
 
   for (let index = 0; questionsByPrompt.size < targetCount; index += 1) {
     const setup = spicySetups[index % spicySetups.length];
-    const twist =
-      spicyTwists[Math.floor(index / spicySetups.length) % spicyTwists.length];
+    const twist = spicyTwists[getTwistIndex(index)];
     const prompt = `Quem e mais provavel que ${setup} ${twist}?`
       .replace(/\s+/g, " ")
       .trim();
@@ -360,6 +362,13 @@ function createQuestionBank(targetCount) {
   }
 
   return [...questionsByPrompt.values()];
+}
+
+function getTwistIndex(index) {
+  return (
+    (index + 1) * 7 +
+    Math.floor(index / spicySetups.length)
+  ) % spicyTwists.length;
 }
 
 function createRoundVotes(index, selectedTargetId) {
@@ -398,11 +407,11 @@ function getSortedResults() {
 
 function getSarcasticMessage(winner, votes, percentage) {
   const lines = [
-    `${winner.nickname} tentou passar despercebido. A mesa discordou.`,
-    `${winner.nickname} levou o selo oficial da noite. Nao fui eu, foram os votos.`,
-    `${winner.nickname}, respira fundo. Isto e democracia de mesa.`,
-    `${winner.nickname} foi escolhido com ${percentage}%. Coincidencia? Claro que sim.`,
-    `${votes} votos para ${winner.nickname}. A reputacao faz o trabalho sozinha.`,
+    `${winner.nickname} foi apanhado no radar da mesa. Esses olhares nao se explicam sozinhos.`,
+    `${winner.nickname} tentou fazer cara de santo, mas a mesa viu o resto.`,
+    `${winner.nickname}, guarda o telemovel. A reputacao ja ficou exposta.`,
+    `${winner.nickname} levou ${percentage}% dos votos. Isto cheira a historia mal contada.`,
+    `${votes} votos para ${winner.nickname}. A mesa sentiu o clima e nao perdoou.`,
   ];
 
   return lines[roundIndex % lines.length];

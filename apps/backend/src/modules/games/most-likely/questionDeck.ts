@@ -97,8 +97,7 @@ export function createMostLikelyQuestionDeck(
 
   for (let index = 0; questions.size < targetCount; index += 1) {
     const setup = spicySetups[index % spicySetups.length];
-    const twist =
-      spicyTwists[Math.floor(index / spicySetups.length) % spicyTwists.length];
+    const twist = spicyTwists[getTwistIndex(index)];
     const prompt = normalizePrompt(`Quem e mais provavel que ${setup} ${twist}?`);
 
     if (!questions.has(prompt)) {
@@ -111,6 +110,13 @@ export function createMostLikelyQuestionDeck(
   }
 
   return [...questions.values()];
+}
+
+function getTwistIndex(index: number): number {
+  return (
+    (index + 1) * 7 +
+    Math.floor(index / spicySetups.length)
+  ) % spicyTwists.length;
 }
 
 function normalizePrompt(prompt: string): string {

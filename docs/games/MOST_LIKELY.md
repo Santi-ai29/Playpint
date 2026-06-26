@@ -36,6 +36,7 @@ Regras do deck:
 - gerar 1000 perguntas unicas;
 - evitar repeticao dentro da mesma sessao;
 - manter tom divertido, picante e adequado a mesa de bar;
+- variar os contextos logo nas primeiras rondas, sem prender tudo a "numa noite de bar";
 - nao entrar em conteudo explicito ou pesado.
 
 ## Resultado oficial
@@ -111,7 +112,9 @@ Direcao visual aprovada:
 - header do jogo usa o wordmark `Playpint`, nao um placeholder `P`;
 - sem scroll no ecra do jogo;
 - resultado mostra vencedor em destaque, frase sarcastica curta, tabela da ronda e botao para avancar;
+- frase do resultado pode ser mais picante, mantendo tom de brincadeira;
 - cartao selecionado/vencedor com brilho, entrada animada e reflexo premium;
+- antes do host abrir a votacao, os jogadores aparecem numa linha de avatares;
 - botao de confirmar fica proximo da grelha de votacao.
 
 ## Registry

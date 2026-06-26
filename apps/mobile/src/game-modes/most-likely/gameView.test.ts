@@ -21,6 +21,7 @@ test("creates the approved Playpint-branded question view", () => {
   assert.equal(view.backgroundStyle, "premium_illustrated_bar");
   assert.equal(view.brand.logoText, "Playpint");
   assert.equal(view.brand.modeLabel, "Es Tu?");
+  assert.equal(view.playerLayout, "avatar_strip");
   assert.equal(view.playerGrid.every((player) => player.visualState === "disabled"), true);
 });
 
@@ -41,6 +42,7 @@ test("creates a voting view and a contract-compatible vote intent", () => {
   });
 
   assert.equal(view.status, "voting");
+  assert.equal(view.playerLayout, "vote_grid");
   assert.equal(view.footer?.text, "Escolhe uma pessoa");
   assert.equal(view.playerGrid.every((player) => player.visualState === "enabled"), true);
   assert.deepEqual(intent, {
@@ -132,7 +134,7 @@ test("keeps the primary result view simple", () => {
   assert.equal(view.result?.winnerPercentage, "66.7%");
   assert.equal(
     view.result?.sarcasticLine,
-    "Bruno tentou passar despercebido. A mesa discordou.",
+    "Bruno foi apanhado no radar da mesa. Esses olhares nao se explicam sozinhos.",
   );
   assert.deepEqual(view.result?.tableRows, [
     {

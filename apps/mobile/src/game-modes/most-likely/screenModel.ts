@@ -196,7 +196,7 @@ function createResultSummary(
     winnerLabel: mostLikelyTheme.copy.winnerLabel,
     winnerPercentage: winner?.percentage,
     sarcasticLine: winner
-      ? `${winner.nickname} tentou passar despercebido. A mesa discordou.`
+      ? `${winner.nickname} foi apanhado no radar da mesa. Esses olhares nao se explicam sozinhos.`
       : "A mesa ficou em silencio. Suspeito.",
   };
 }
