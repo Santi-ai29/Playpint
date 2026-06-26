@@ -76,7 +76,15 @@ Responsabilidades:
 - validar voto unico por jogador;
 - validar jogador votante e jogador alvo;
 - calcular percentagens, vencedores e pontos;
+- emitir eventos de runtime para a sala: `round_started`, `voting_started`, `vote_received` e `round_finished`;
 - emitir o evento `most_likely.round_finished`.
+
+Pecas principais:
+
+- `mostLikelyModule`: regras de uma ronda isolada.
+- `mostLikelyRuntime`: eventos oficiais de uma ronda.
+- `mostLikelySession`: varias rondas, perguntas usadas, pontuacao acumulada e fim de jogo.
+- `mostLikelyController`: fachada que a sala usa para arrancar o jogo, receber votos, fazer `tick` do tempo, avancar ronda e obter snapshots por jogador.
 
 O frontend nunca calcula o resultado oficial.
 
@@ -89,6 +97,7 @@ Responsabilidades:
 - transformar o snapshot oficial em screen model;
 - bloquear voto antes de `voting`;
 - bloquear voto depois de o jogador votar;
+- criar a intencao de voto que sera enviada ao backend;
 - mostrar contagem decrescente baseada no `clock` do servidor;
 - mostrar vencedores, percentagens, votos revelados e pontos no resultado.
 

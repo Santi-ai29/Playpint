@@ -78,6 +78,27 @@ export interface MostLikelyRoundResult {
   scoreDeltas: ScoreDelta[];
 }
 
+export interface MostLikelyScoreboardRow {
+  playerId: string;
+  nickname: string;
+  avatarUrl?: string;
+  score: number;
+  rank: number;
+}
+
+export interface MostLikelyGameSettings {
+  totalRounds: number;
+}
+
+export interface MostLikelyGameSessionPublicState {
+  roomId: string;
+  status: "playing" | "finished";
+  currentRoundNumber: number;
+  totalRounds: number;
+  scoreboard: MostLikelyScoreboardRow[];
+  currentRound?: MostLikelyPublicState;
+}
+
 export interface MostLikelyPublicState {
   question: MostLikelyQuestion;
   players: PublicPlayer[];
@@ -124,6 +145,27 @@ export interface MostLikelyRoundResultEvent {
   roundId: string;
   result: MostLikelyRoundResult;
 }
+
+export interface MostLikelyLeaderboardUpdatedEvent {
+  type: "most_likely.leaderboard_updated";
+  roomId: string;
+  roundId: string;
+  scoreboard: MostLikelyScoreboardRow[];
+}
+
+export interface MostLikelyGameFinishedEvent {
+  type: "most_likely.game_finished";
+  roomId: string;
+  scoreboard: MostLikelyScoreboardRow[];
+}
+
+export type MostLikelyGameEvent =
+  | MostLikelyRoundStartedEvent
+  | MostLikelyVotingStartedEvent
+  | MostLikelyVoteReceivedEvent
+  | MostLikelyRoundResultEvent
+  | MostLikelyLeaderboardUpdatedEvent
+  | MostLikelyGameFinishedEvent;
 
 export function isMostLikelyVoteRequest(
   value: unknown,
