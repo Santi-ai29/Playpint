@@ -21,6 +21,7 @@ test("shows the question phase before voting opens", () => {
 
   assert.equal(model.status, "question");
   assert.equal(model.header.brandLogoText, "Playpint");
+  assert.equal(model.header.brandLogoAsset, "./assets/playpint-logo.png");
   assert.equal(model.header.modeLabel, "Es Tu?");
   assert.equal(model.header.phaseLabel, "Ronda");
   assert.equal(model.header.timerLabel, "00:25");
@@ -90,8 +91,7 @@ test("maps official results, winners, percentages, and vote trail", () => {
     winnerNickname: "Bruno",
     winnerLabel: "mais votado",
     winnerPercentage: 66.7,
-    sarcasticLine:
-      "Bruno foi apanhado no radar da mesa. Esses olhares nao se explicam sozinhos.",
+    sarcasticLine: "Bruno, sempre soubemos que o ex faz te falta.",
   });
   assert.deepEqual(model.winners, ["Bruno"]);
   assert.deepEqual(
@@ -151,7 +151,7 @@ function snapshot(input: {
     publicState: {
       question: {
         id: "q1",
-        prompt: "Quem e mais provavel que faca planos em cima da hora?",
+        prompt: "Quem e mais provavel de mandar mensagem ao ex?",
         contentLevel: "friends",
       },
       players: [
@@ -164,7 +164,7 @@ function snapshot(input: {
       result: input.result
         ? {
             questionId: "q1",
-            prompt: "Quem e mais provavel que faca planos em cima da hora?",
+            prompt: "Quem e mais provavel de mandar mensagem ao ex?",
             totalVotes: 3,
             winners: [
               {

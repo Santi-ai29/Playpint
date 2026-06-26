@@ -1,5 +1,6 @@
 export const mostLikelyTheme = {
   brandLogoText: "Playpint",
+  brandLogoAsset: "./assets/playpint-logo.png",
   modeLabel: "Es Tu?",
   colors: {
     background: "#050403",

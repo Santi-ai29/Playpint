@@ -18,6 +18,7 @@ export interface MostLikelyGameView {
   backgroundStyle: MostLikelyGameBackgroundStyle;
   brand: {
     logoText: string;
+    logoAsset: string;
     modeLabel: string;
   };
   header: MostLikelyScreenModel["header"];
@@ -77,6 +78,7 @@ export function createMostLikelyGameView(
     backgroundStyle: "premium_illustrated_bar",
     brand: {
       logoText: mostLikelyTheme.brandLogoText,
+      logoAsset: mostLikelyTheme.brandLogoAsset,
       modeLabel: mostLikelyTheme.modeLabel,
     },
     header: model.header,

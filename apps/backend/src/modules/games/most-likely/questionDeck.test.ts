@@ -41,9 +41,12 @@ test("can build a smaller deterministic deck for tests and previews", () => {
 
   assert.equal(deck.length, 12);
   assert.equal(deck[0]?.id, "ml_0001");
+  assert.equal(
+    deck[0]?.prompt,
+    "Quem e mais provavel de mandar mensagem ao ex?",
+  );
   assert.equal(new Set(deck.map((question) => question.prompt)).size, 12);
   assert.ok(
-    deck.filter((question) => question.prompt.includes("numa noite de bar"))
-      .length < deck.length / 2,
+    deck.every((question) => question.prompt.split(" ").length <= 12),
   );
 });

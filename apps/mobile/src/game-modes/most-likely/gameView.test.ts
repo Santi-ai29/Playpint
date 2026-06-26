@@ -20,6 +20,7 @@ test("creates the approved Playpint-branded question view", () => {
 
   assert.equal(view.backgroundStyle, "premium_illustrated_bar");
   assert.equal(view.brand.logoText, "Playpint");
+  assert.equal(view.brand.logoAsset, "./assets/playpint-logo.png");
   assert.equal(view.brand.modeLabel, "Es Tu?");
   assert.equal(view.playerLayout, "ready_grid");
   assert.equal(view.playerGrid.every((player) => player.visualState === "disabled"), true);
@@ -134,7 +135,7 @@ test("keeps the primary result view simple", () => {
   assert.equal(view.result?.winnerPercentage, "66.7%");
   assert.equal(
     view.result?.sarcasticLine,
-    "Bruno foi apanhado no radar da mesa. Esses olhares nao se explicam sozinhos.",
+    "Bruno, sempre soubemos que o ex faz te falta.",
   );
   assert.deepEqual(view.result?.tableRows, [
     {
@@ -183,7 +184,7 @@ function snapshot(input: {
     publicState: {
       question: {
         id: "q1",
-        prompt: "Quem e mais provavel que chegue atrasado?",
+        prompt: "Quem e mais provavel de mandar mensagem ao ex?",
         contentLevel: "friends",
       },
       players: [
@@ -196,7 +197,7 @@ function snapshot(input: {
       result: input.result
         ? {
             questionId: "q1",
-            prompt: "Quem e mais provavel que chegue atrasado?",
+            prompt: "Quem e mais provavel de mandar mensagem ao ex?",
             totalVotes: 3,
             winners: [
               {

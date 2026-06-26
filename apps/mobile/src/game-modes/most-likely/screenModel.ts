@@ -31,6 +31,7 @@ export interface MostLikelyScreenModel {
   title: string;
   header: {
     brandLogoText: string;
+    brandLogoAsset: string;
     modeLabel: string;
     phaseLabel: string;
     timerLabel: string;
@@ -91,6 +92,7 @@ export function createMostLikelyScreenModel(
     title: MOST_LIKELY_GAME_MANIFEST.title,
     header: {
       brandLogoText: mostLikelyTheme.brandLogoText,
+      brandLogoAsset: mostLikelyTheme.brandLogoAsset,
       modeLabel: mostLikelyTheme.modeLabel,
       phaseLabel: getPhaseLabel(snapshot.lifecycleState),
       timerLabel: formatTimerLabel(timer.remainingSeconds),
@@ -195,8 +197,39 @@ function createResultSummary(
     winnerNickname: winner?.nickname,
     winnerLabel: mostLikelyTheme.copy.winnerLabel,
     winnerPercentage: winner?.percentage,
-    sarcasticLine: winner
-      ? `${winner.nickname} foi apanhado no radar da mesa. Esses olhares nao se explicam sozinhos.`
-      : "A mesa ficou em silencio. Suspeito.",
+    sarcasticLine: createSarcasticLine(result, winner),
   };
+}
+
+function createSarcasticLine(
+  result: NonNullable<MostLikelyPublicState["result"]>,
+  winner: NonNullable<MostLikelyPublicState["result"]>["winners"][number] | undefined,
+): string {
+  if (!winner) {
+    return "A mesa ficou em silencio. Suspeito.";
+  }
+
+  const prompt = result.prompt.toLowerCase();
+
+  if (prompt.includes("ex")) {
+    return `${winner.nickname}, sempre soubemos que o ex faz te falta.`;
+  }
+
+  if (prompt.includes("ciume")) {
+    return `${winner.nickname}, esse ciume veio com recibo.`;
+  }
+
+  if (prompt.includes("crush")) {
+    return `${winner.nickname}, essa crush ja nem e segredo.`;
+  }
+
+  if (
+    prompt.includes("alcool") ||
+    prompt.includes("beber") ||
+    prompt.includes("shot")
+  ) {
+    return `${winner.nickname}, a culpa hoje vai para o copo.`;
+  }
+
+  return `${winner.nickname}, nao adianta fazer cara de santo.`;
 }

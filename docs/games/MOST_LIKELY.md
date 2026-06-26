@@ -35,8 +35,9 @@ Regras do deck:
 
 - gerar 1000 perguntas unicas;
 - evitar repeticao dentro da mesma sessao;
+- manter perguntas curtas, tipo carta de jogo: "Quem e mais provavel de mandar mensagem ao ex?";
 - manter tom divertido, picante e adequado a mesa de bar;
-- variar os contextos logo nas primeiras rondas, sem prender tudo a "numa noite de bar";
+- variar contextos sem transformar a pergunta numa historia longa;
 - nao entrar em conteudo explicito ou pesado.
 
 ## Resultado oficial
@@ -109,10 +110,10 @@ Direcao visual aprovada:
 - amarelo Playpint para o jogador selecionado e para o vencedor;
 - laranja para estados importantes como voto enviado;
 - ciano apenas como acento secundario;
-- header do jogo usa o wordmark `Playpint`, nao um placeholder `P`;
+- header do jogo usa o asset local da logo `playpint-logo.png`, nao um placeholder `P`;
 - sem scroll no ecra do jogo;
 - resultado mostra vencedor em destaque, frase sarcastica curta, tabela da ronda e botao para avancar;
-- frase do resultado pode ser mais picante, mantendo tom de brincadeira;
+- frase do resultado deve ser curta e picante, tipo "Ana, sempre soubemos que o ex faz te falta.";
 - cartao selecionado/vencedor com brilho, entrada animada e reflexo premium;
 - antes do host abrir a votacao, os jogadores aparecem numa grelha compacta que preenche melhor o ecra;
 - botao de confirmar fica proximo da grelha de votacao.

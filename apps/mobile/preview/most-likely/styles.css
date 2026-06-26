@@ -179,7 +179,7 @@ button {
   min-height: 50px;
 }
 
-.brand,
+.brand-logo,
 .mode,
 .eyebrow,
 .result-title,
@@ -187,17 +187,17 @@ button {
   margin: 0;
 }
 
-.brand {
-  color: var(--yellow);
-  font-size: 24px;
-  line-height: 0.94;
-  font-weight: 950;
-  letter-spacing: 0;
+.brand-logo {
+  display: block;
+  width: clamp(122px, 34vw, 154px);
+  height: auto;
+  margin: -13px 0 -15px -10px;
+  object-fit: contain;
 }
 
 .mode {
   color: var(--cream);
-  margin-top: 5px;
+  margin-top: 0;
   font-size: 12px;
   font-weight: 900;
   text-transform: uppercase;

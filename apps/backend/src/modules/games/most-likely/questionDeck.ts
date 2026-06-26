@@ -2,82 +2,120 @@ import type { MostLikelyQuestion } from "../../../../../../packages/contracts/sr
 
 const TARGET_QUESTION_COUNT = 1000;
 
-const spicySetups = [
-  "mande mensagem ao ex depois de dizer que superou",
-  "meta like numa foto antiga e tente fingir que foi sem querer",
-  "flirte com alguem so para ganhar uma bebida",
-  "faca ciumes e depois diga que nao era nada",
-  "tenha uma crush secreta nesta mesa",
-  "se apaixone por alguem que acabou de conhecer",
-  "mande um audio demasiado honesto depois do segundo copo",
-  "apague uma conversa antes de mostrar o telemovel",
-  "diga que nao quer nada serio e depois fique com ciumes",
-  "arranje desculpa para sentar ao lado de quem quer",
-  "troque olhares a noite toda e diga que era coincidencia",
-  "mande mensagem so com 'estas acordado?'",
-  "finja que nao viu uma mensagem comprometida",
-  "fique nervoso quando alguem pega no telemovel dele",
-  "use charme para sair de uma situacao complicada",
-  "deixe alguem em visto e depois apareca como se nada fosse",
-  "prometa que vai embora cedo e acabe por fechar o bar",
-  "diga que e so amizade mas aja de forma suspeita",
-  "conte um segredo e depois peca para ninguem contar",
-  "seja apanhado a olhar para quem nao devia",
-  "mande indiretas nas stories e negue ate ao fim",
-  "volte para uma pessoa que jurou nunca mais responder",
-  "diga 'eu nao sou assim' antes de fazer exatamente isso",
-  "invente uma desculpa so para fugir de um date",
-  "se arrependa de uma mensagem logo depois de enviar",
-  "faca drama por uma resposta seca",
-  "fique todo feliz com uma notificacao especifica",
-  "tenha um plano B romantico sem admitir",
-  "leve uma rejeicao com estilo e depois conte outra versao",
-  "mande um emoji perigoso sem pensar nas consequencias",
-  "crie clima num assunto que nao tinha clima nenhum",
-  "diga que nao esta interessado e pergunte por essa pessoa cinco minutos depois",
-  "faca uma cena de filme por alguem que mal conhece",
-  "guarde prints para usar como prova",
-  "seja o primeiro a reparar em casal novo no grupo",
-  "arranje um crush em ferias e chame de destino",
-  "diga que so vai ver uma pessoa e volte tres horas depois",
-  "faca uma pergunta inocente com segunda intencao",
-  "use o alcool como desculpa para dizer a verdade",
-  "mande mensagem e depois apague para parecer misterioso",
-  "diga que nao sente saudades mas saiba tudo da vida da pessoa",
-  "fique com vergonha quando alguem le a ultima conversa",
-  "transforme uma brincadeira numa tensao estranha",
-  "faca match e depois nao saiba o que dizer",
-  "finja maturidade mas fique a espera de resposta",
-  "desapareca da mesa para atender uma chamada suspeita",
-  "volte de uma ida ao balcao com uma historia mal contada",
-  "diga que vai ficar tranquilo e cause o caos romantico",
-  "tenha sempre uma pessoa proibida na cabeca",
-  "faca amizade depressa demais com alguem atraente",
+const spicyActions = [
+  "mandar mensagem ao ex",
+  "stalkar o ex",
+  "voltar para o ex",
+  "negar uma crush",
+  "ter uma crush secreta",
+  "fazer ciumes",
+  "dar ghost",
+  "responder seco",
+  "mandar audio longo",
+  "apagar mensagens",
+  "meter like antigo",
+  "mandar indireta",
+  "flertar sem admitir",
+  "pedir o instagram",
+  "chamar amor sem querer",
+  "beijar e fingir que nada aconteceu",
+  "criar clima do nada",
+  "ficar com vergonha de uma mensagem",
+  "perder a cabeca por uma resposta",
+  "inventar desculpa para sair",
+  "aparecer so para ver alguem",
+  "sair sem avisar",
+  "chegar atrasado",
+  "dizer so mais uma",
+  "pagar uma rodada",
+  "pedir comida para todos",
+  "sumir com o copo",
+  "virar DJ",
+  "cantar alto",
+  "fazer drama",
+  "contar segredo",
+  "exagerar uma historia",
+  "prometer juizo",
+  "quebrar o juizo",
+  "rir na hora errada",
+  "tirar foto de tudo",
+  "mandar mensagem no grupo errado",
+  "responder ao crush rapido demais",
+  "fingir que nao se importa",
+  "decorar a vida do crush",
+  "guardar prints",
+  "pedir conselho e ignorar",
+  "fazer cena por pouca coisa",
+  "chamar alguem para conversar e desaparecer",
+  "ficar online e nao responder",
+  "mandar emoji perigoso",
+  "mandar 'estas acordado?'",
+  "confundir amizade com sinal",
+  "ter plano B",
+  "sair para fumar e desaparecer",
+  "voltar com historia mal contada",
+  "beijar alguem no canto",
+  "ficar ciumento sem motivo",
+  "dizer que nao e ciumento",
+  "jurar que mudou",
+  "voltar a fazer igual",
+  "pedir desculpa com charme",
+  "usar charme para escapar",
+  "cair na conversa errada",
+  "prometer nao beber muito",
+  "beber mais do que devia",
+  "pedir shot",
+  "puxar conversa com desconhecido",
+  "apaixonar-se em 10 minutos",
+  "trocar olhares",
+  "ter contacto guardado com nome falso",
+  "esconder notificacao",
+  "virar o telemovel para baixo",
+  "rir de nervoso",
+  "ficar vermelho",
+  "mandar mensagem e apagar",
+  "seguir alguem so por curiosidade",
+  "criar teoria de casal",
+  "perceber o clima primeiro",
+  "estragar o clima sem querer",
+  "confessar demais",
+  "chamar ex de amigo",
+  "dizer que superou",
+  "provar que nao superou",
+  "desaparecer do radar",
+  "reaparecer como nada fosse",
+  "pedir segunda oportunidade",
+  "aceitar convite perigoso",
+  "deixar visto de proposito",
+  "responder so de madrugada",
+  "mudar de assunto quando apertam",
+  "mandar print para o grupo",
+  "pedir opiniao sobre outfit",
+  "arranjar crush em ferias",
+  "achar que tudo e sinal",
+  "fazer match e congelar",
+  "mandar cantada fraca",
+  "ganhar bebida no charme",
+  "fazer brinde suspeito",
+  "inventar after",
+  "fechar o bar",
+  "acordar arrependido",
+  "culpar o alcool",
+  "lembrar de tudo menos do que convem",
+  "dizer 'eu avisei'",
 ];
 
-const spicyTwists = [
-  "numa noite de bar",
-  "quando ninguem esta a ver",
-  "e ainda ache perfeitamente normal",
-  "e depois negue com conviccao",
+const questionFlavors = [
+  "",
+  "hoje",
+  "no grupo",
+  "numa festa",
+  "depois de beber",
+  "sem pensar duas vezes",
+  "so para provocar",
+  "e negar depois",
+  "quando toca a musica certa",
   "antes de ir embora",
-  "durante uma festa",
-  "no grupo de amigos",
-  "com o telemovel virado para baixo",
-  "so porque tocou a musica certa",
-  "e conte a historia de forma muito diferente no dia seguinte",
-  "sem perceber que toda a mesa reparou",
-  "e depois diga que foi so brincadeira",
-  "por pura curiosidade",
-  "para provar um ponto que ninguem pediu",
-  "e acabe por se meter em confusao",
-  "com a maior cara de inocente",
-  "e ainda peca conselhos ao grupo",
-  "quando devia estar a agir com juizo",
-  "e faca de conta que tinha tudo controlado",
-  "so para ver no que dava",
-  "e depois culpe o ambiente",
-  "quando a noite ja esta perigosa",
 ];
 
 export const defaultMostLikelyQuestionDeck: MostLikelyQuestion[] =
@@ -87,7 +125,7 @@ export function createMostLikelyQuestionDeck(
   targetCount = TARGET_QUESTION_COUNT,
 ): MostLikelyQuestion[] {
   const questions = new Map<string, MostLikelyQuestion>();
-  const totalCombinations = spicySetups.length * spicyTwists.length;
+  const totalCombinations = spicyActions.length * questionFlavors.length;
 
   if (targetCount > totalCombinations) {
     throw new Error(
@@ -96,9 +134,10 @@ export function createMostLikelyQuestionDeck(
   }
 
   for (let index = 0; questions.size < targetCount; index += 1) {
-    const setup = spicySetups[index % spicySetups.length];
-    const twist = spicyTwists[getTwistIndex(index)];
-    const prompt = normalizePrompt(`Quem e mais provavel que ${setup} ${twist}?`);
+    const action = spicyActions[index % spicyActions.length];
+    const flavor =
+      questionFlavors[Math.floor(index / spicyActions.length) % questionFlavors.length];
+    const prompt = createPrompt(action, flavor);
 
     if (!questions.has(prompt)) {
       questions.set(prompt, {
@@ -112,13 +151,12 @@ export function createMostLikelyQuestionDeck(
   return [...questions.values()];
 }
 
-function getTwistIndex(index: number): number {
-  return (
-    (index + 1) * 7 +
-    Math.floor(index / spicySetups.length)
-  ) % spicyTwists.length;
-}
-
 function normalizePrompt(prompt: string): string {
   return prompt.replace(/\s+/g, " ").trim();
+}
+
+function createPrompt(action: string, flavor: string): string {
+  return normalizePrompt(
+    `Quem e mais provavel de ${action}${flavor ? ` ${flavor}` : ""}?`,
+  );
 }
