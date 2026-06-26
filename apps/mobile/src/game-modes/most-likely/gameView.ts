@@ -24,7 +24,6 @@ export interface MostLikelyGameView {
   status: MostLikelyScreenModel["status"];
   prompt: {
     text: string;
-    subtitle?: string;
   };
   playerGrid: Array<
     MostLikelyPlayerOptionModel & {
@@ -40,12 +39,6 @@ export interface MostLikelyGameView {
     winnerNickname?: string;
     winnerLabel: string;
     winnerPercentage?: string;
-    rankingRows: Array<{
-      playerId: string;
-      label: string;
-      votesLabel: string;
-    }>;
-    pointsLine?: string;
   };
 }
 
@@ -81,10 +74,6 @@ export function createMostLikelyGameView(
     status: model.status,
     prompt: {
       text: model.prompt,
-      subtitle:
-        model.status === "question"
-          ? mostLikelyTheme.copy.questionSubtitle
-          : undefined,
     },
     playerGrid: model.players.map((player) => ({
       ...player,
@@ -100,13 +89,6 @@ export function createMostLikelyGameView(
             typeof model.resultSummary.winnerPercentage === "number"
               ? `${model.resultSummary.winnerPercentage}%`
               : undefined,
-          rankingRows: model.resultSummary.rankingRows.map((row) => ({
-            playerId: row.playerId,
-            label: row.nickname,
-            votesLabel:
-              row.votes === 1 ? "1 voto" : `${row.votes} votos`,
-          })),
-          pointsLine: model.resultSummary.pointsLine,
         }
       : undefined,
   };

@@ -36,7 +36,6 @@ export interface MostLikelyScreenModel {
     timerLabel: string;
   };
   copy: {
-    questionSubtitle: string;
     votingTitle: string;
     voteSent: string;
   };
@@ -58,19 +57,12 @@ export interface MostLikelyScreenModel {
     winnerNickname?: string;
     winnerLabel: string;
     winnerPercentage?: number;
-    rankingRows: Array<{
-      playerId: string;
-      nickname: string;
-      votes: number;
-    }>;
-    pointsLine?: string;
   };
   resultRows: Array<{
     playerId: string;
     nickname: string;
     votes: number;
     percentage: number;
-    points: number;
     isWinner: boolean;
   }>;
   voteTrail: Array<{
@@ -103,7 +95,6 @@ export function createMostLikelyScreenModel(
       timerLabel: formatTimerLabel(timer.remainingSeconds),
     },
     copy: {
-      questionSubtitle: mostLikelyTheme.copy.questionSubtitle,
       votingTitle: mostLikelyTheme.copy.votingTitle,
       voteSent: mostLikelyTheme.copy.voteSent,
     },
@@ -142,9 +133,6 @@ export function createMostLikelyScreenModel(
         nickname: count.nickname,
         votes: count.votes,
         percentage: count.percentage,
-        points:
-          result.scoreDeltas.find((delta) => delta.playerId === count.playerId)
-            ?.delta ?? 0,
         isWinner: winnerIds.has(count.playerId),
       })) ?? [],
     voteTrail:
@@ -200,23 +188,11 @@ function createResultSummary(
   result: NonNullable<MostLikelyPublicState["result"]>,
 ): NonNullable<MostLikelyScreenModel["resultSummary"]> {
   const winner = result.winners[0];
-  const winnerDelta = winner
-    ? result.scoreDeltas.find((delta) => delta.playerId === winner.playerId)
-    : undefined;
 
   return {
     title: mostLikelyTheme.copy.resultTitle,
     winnerNickname: winner?.nickname,
     winnerLabel: mostLikelyTheme.copy.winnerLabel,
     winnerPercentage: winner?.percentage,
-    rankingRows: result.voteCounts.map((count) => ({
-      playerId: count.playerId,
-      nickname: count.nickname,
-      votes: count.votes,
-    })),
-    pointsLine:
-      winnerDelta && winnerDelta.delta > 0
-        ? `+${winnerDelta.delta} ${mostLikelyTheme.copy.pointsSuffix}`
-        : undefined,
   };
 }

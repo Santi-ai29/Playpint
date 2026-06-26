@@ -1,6 +1,6 @@
 :root {
   --black: #050403;
-  --surface: rgba(18, 12, 7, 0.84);
+  --surface: rgba(18, 12, 7, 0.86);
   --surface-strong: rgba(28, 18, 10, 0.94);
   --yellow: #ffc342;
   --orange: #ff4a0a;
@@ -26,7 +26,9 @@
 
 html,
 body {
-  min-height: 100%;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
 }
 
 body {
@@ -40,7 +42,8 @@ button {
 }
 
 .app-shell {
-  min-height: 100dvh;
+  height: 100dvh;
+  overflow: hidden;
   display: grid;
   place-items: center;
   padding: 0;
@@ -51,10 +54,13 @@ button {
 
 .phone-screen {
   position: relative;
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
+  row-gap: 14px;
   width: min(100vw, 430px);
-  min-height: 100dvh;
+  height: 100dvh;
   overflow: hidden;
-  padding: max(22px, env(safe-area-inset-top)) 18px max(18px, env(safe-area-inset-bottom));
+  padding: max(18px, env(safe-area-inset-top)) 16px max(14px, env(safe-area-inset-bottom));
   isolation: isolate;
   background:
     linear-gradient(155deg, rgba(255, 195, 66, 0.08), transparent 38%),
@@ -168,23 +174,20 @@ button {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  min-height: 58px;
+  min-height: 50px;
 }
 
 .brand,
 .mode,
 .eyebrow,
-.subtitle,
-.status-text,
 .result-title,
-.winner-card p,
-.points-line {
+.winner-card p {
   margin: 0;
 }
 
 .brand {
   color: var(--yellow);
-  font-size: 25px;
+  font-size: 24px;
   line-height: 0.94;
   font-weight: 950;
   letter-spacing: 0;
@@ -193,7 +196,7 @@ button {
 .mode {
   color: var(--cream);
   margin-top: 5px;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 900;
   text-transform: uppercase;
 }
@@ -201,8 +204,8 @@ button {
 .round-pill {
   display: flex;
   align-items: center;
-  gap: 9px;
-  padding: 10px 12px;
+  gap: 8px;
+  padding: 9px 11px;
   border: 1px solid rgba(255, 195, 66, 0.4);
   border-radius: 18px;
   background: rgba(16, 10, 6, 0.82);
@@ -211,27 +214,27 @@ button {
 
 .round-pill span {
   color: var(--muted);
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 850;
   text-transform: uppercase;
 }
 
 .round-pill strong {
   color: var(--yellow);
-  font-size: 19px;
+  font-size: 18px;
   font-weight: 950;
 }
 
 .round-pill strong.is-idle {
   color: var(--cream);
-  font-size: 14px;
+  font-size: 13px;
 }
 
 .question-panel {
-  margin-top: 22px;
-  padding: 19px;
+  min-height: 0;
+  padding: 16px;
   border: 1px solid var(--line);
-  border-radius: 28px;
+  border-radius: 24px;
   background: var(--surface);
   box-shadow: 0 22px 42px rgba(0, 0, 0, 0.38);
   backdrop-filter: blur(18px);
@@ -245,35 +248,30 @@ button {
 }
 
 .question-panel h1 {
-  margin: 10px 0 0;
-  max-width: 13ch;
+  margin: 8px 0 0;
+  max-width: 100%;
   color: var(--cream);
-  font-size: clamp(30px, 8.5vw, 42px);
-  line-height: 0.99;
+  font-size: clamp(25px, 7vw, 36px);
+  line-height: 1.03;
   font-weight: 950;
   letter-spacing: 0;
-}
-
-.subtitle {
-  margin-top: 14px;
-  color: var(--muted);
-  font-size: 16px;
-  font-weight: 800;
 }
 
 .players-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
-  margin-top: 22px;
+  align-content: start;
+  gap: 12px;
+  min-height: 0;
 }
 
 .player-card {
   position: relative;
-  min-height: 116px;
-  padding: 16px;
+  min-height: 98px;
+  overflow: hidden;
+  padding: 14px;
   border: 1px solid rgba(255, 195, 66, 0.24);
-  border-radius: 24px;
+  border-radius: 22px;
   background: rgba(18, 12, 7, 0.82);
   color: var(--cream);
   box-shadow: 0 15px 30px rgba(0, 0, 0, 0.26);
@@ -281,7 +279,27 @@ button {
   transition:
     transform 160ms ease,
     background 160ms ease,
-    border-color 160ms ease;
+    border-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.player-card::after {
+  content: "";
+  position: absolute;
+  inset: -45%;
+  background: linear-gradient(
+    115deg,
+    transparent 0 38%,
+    rgba(255, 255, 255, 0.34) 48%,
+    transparent 58% 100%
+  );
+  opacity: 0;
+  transform: translateX(-44%) rotate(10deg);
+  pointer-events: none;
+}
+
+.player-card:not(:disabled)::after {
+  animation: card-shine 3.4s ease-in-out infinite;
 }
 
 .player-card:not(:disabled):active {
@@ -301,18 +319,22 @@ button {
   border-color: var(--orange);
   background: var(--yellow);
   color: var(--black);
-  box-shadow: 0 18px 36px rgba(255, 74, 10, 0.22);
+  box-shadow:
+    0 0 0 2px rgba(255, 74, 10, 0.34),
+    0 0 34px rgba(255, 195, 66, 0.38),
+    0 18px 36px rgba(255, 74, 10, 0.22);
+  animation: selected-glow 1.55s ease-in-out infinite alternate;
 }
 
 .avatar {
   display: grid;
   place-items: center;
-  width: 48px;
-  height: 48px;
-  border-radius: 16px;
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
   color: var(--black);
   background: var(--yellow);
-  font-size: 23px;
+  font-size: 21px;
   font-weight: 950;
 }
 
@@ -323,8 +345,8 @@ button {
 
 .player-name {
   display: block;
-  margin-top: 12px;
-  font-size: 21px;
+  margin-top: 10px;
+  font-size: 19px;
   font-weight: 950;
 }
 
@@ -333,19 +355,19 @@ button {
   margin-top: 2px;
   color: currentColor;
   opacity: 0.66;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 850;
   text-transform: uppercase;
 }
 
 .selected-tag {
   position: absolute;
-  top: 14px;
-  right: 14px;
+  top: 12px;
+  right: 12px;
   display: grid;
   place-items: center;
-  width: 32px;
-  height: 32px;
+  width: 31px;
+  height: 31px;
   border-radius: 12px;
   background: var(--orange);
   color: var(--black);
@@ -353,27 +375,52 @@ button {
 }
 
 .result-panel {
-  margin-top: 18px;
+  align-self: center;
+  display: grid;
+  gap: 13px;
+  min-height: 0;
 }
 
 .result-title {
   color: var(--muted);
   font-size: 12px;
   font-weight: 950;
+  text-align: center;
   text-transform: uppercase;
 }
 
 .winner-card {
+  position: relative;
   display: grid;
   grid-template-columns: auto 1fr auto;
   align-items: center;
   gap: 14px;
-  margin-top: 9px;
-  padding: 15px;
+  overflow: hidden;
+  padding: 18px;
   border-radius: 24px;
   background: var(--yellow);
   color: var(--black);
-  box-shadow: 0 18px 38px rgba(255, 195, 66, 0.22);
+  box-shadow:
+    0 0 0 2px rgba(255, 74, 10, 0.26),
+    0 0 46px rgba(255, 195, 66, 0.32),
+    0 18px 38px rgba(255, 195, 66, 0.22);
+  animation:
+    winner-pop 380ms cubic-bezier(0.2, 1.2, 0.3, 1),
+    selected-glow 1.6s ease-in-out infinite alternate;
+}
+
+.winner-card::after {
+  content: "";
+  position: absolute;
+  inset: -70% -35%;
+  background: linear-gradient(
+    115deg,
+    transparent 0 42%,
+    rgba(255, 255, 255, 0.38) 50%,
+    transparent 58% 100%
+  );
+  animation: winner-shine 2.4s ease-in-out infinite;
+  pointer-events: none;
 }
 
 .winner-avatar {
@@ -407,59 +454,21 @@ button {
   font-weight: 950;
 }
 
-.ranking-list {
-  display: grid;
-  gap: 8px;
-  margin-top: 12px;
-}
-
-.ranking-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 13px 14px;
-  border: 1px solid rgba(255, 195, 66, 0.18);
-  border-radius: 18px;
-  background: rgba(15, 10, 6, 0.8);
-  color: var(--cream);
-}
-
-.ranking-row strong {
-  font-size: 16px;
-  font-weight: 950;
-}
-
-.ranking-row span {
-  color: var(--muted);
-  font-size: 13px;
-  font-weight: 900;
-}
-
-.points-line {
-  margin-top: 12px;
-  color: var(--yellow);
-  font-size: 18px;
-  font-weight: 950;
-  text-align: center;
-}
-
 .game-footer {
   position: relative;
   bottom: auto;
-  display: grid;
-  gap: 10px;
-  margin-top: 24px;
-  padding-bottom: 4px;
+  display: block;
+  min-height: 56px;
 }
 
 .primary-action {
   width: 100%;
-  min-height: 58px;
+  min-height: 56px;
   border: 0;
   border-radius: 22px;
   background: var(--orange);
   color: var(--black);
-  font-size: 18px;
+  font-size: 17px;
   font-weight: 950;
   text-transform: uppercase;
   box-shadow: 0 20px 36px rgba(255, 74, 10, 0.24);
@@ -477,15 +486,109 @@ button {
   border: 1px solid rgba(255, 195, 66, 0.32);
 }
 
-.status-text {
-  color: var(--muted);
-  font-size: 13px;
-  font-weight: 800;
-  text-align: center;
-}
-
 .hidden {
   display: none;
+}
+
+body[data-phase="result"] .phone-screen {
+  grid-template-rows: auto 1fr auto;
+}
+
+body[data-phase="result"] .result-panel {
+  grid-row: 2;
+}
+
+@keyframes card-shine {
+  0%,
+  54% {
+    opacity: 0;
+    transform: translateX(-44%) rotate(10deg);
+  }
+
+  70% {
+    opacity: 0.78;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateX(44%) rotate(10deg);
+  }
+}
+
+@keyframes selected-glow {
+  from {
+    filter: brightness(1);
+  }
+
+  to {
+    filter: brightness(1.08);
+  }
+}
+
+@keyframes winner-pop {
+  from {
+    transform: scale(0.94);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes winner-shine {
+  0%,
+  42% {
+    transform: translateX(-42%) rotate(8deg);
+    opacity: 0;
+  }
+
+  58% {
+    opacity: 0.82;
+  }
+
+  100% {
+    transform: translateX(42%) rotate(8deg);
+    opacity: 0;
+  }
+}
+
+@media (max-height: 760px) {
+  .phone-screen {
+    row-gap: 10px;
+    padding-inline: 14px;
+  }
+
+  .question-panel {
+    padding: 13px;
+  }
+
+  .question-panel h1 {
+    font-size: clamp(22px, 6.3vw, 30px);
+  }
+
+  .players-grid {
+    gap: 10px;
+  }
+
+  .player-card {
+    min-height: 88px;
+    padding: 12px;
+  }
+
+  .avatar {
+    width: 38px;
+    height: 38px;
+  }
+
+  .player-name {
+    font-size: 17px;
+  }
+
+  .primary-action {
+    min-height: 52px;
+  }
 }
 
 @media (min-width: 680px) {
@@ -494,7 +597,7 @@ button {
   }
 
   .phone-screen {
-    min-height: 880px;
+    height: min(880px, calc(100dvh - 48px));
     border: 1px solid rgba(255, 195, 66, 0.18);
     border-radius: 44px;
     box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45);

@@ -1,17 +1,84 @@
-const questions = [
-  "Quem e mais provavel que chegue atrasado?",
-  "Quem e mais provavel que transforme qualquer musica em karaoke?",
-  "Quem e mais provavel que peca comida para a mesa toda?",
-  "Quem e mais provavel que perca o telemovel estando com ele na mao?",
-  "Quem e mais provavel que diga 'so mais uma' e fique ate ao fim?",
-  "Quem e mais provavel que fique sem bateria antes da noite comecar?",
-  "Quem e mais provavel que mande mensagem no grupo errado?",
-  "Quem e mais provavel que assuma a musica como DJ da casa?",
-  "Quem e mais provavel que conte uma historia simples como novela?",
-  "Quem e mais provavel que desapareca e volte com comida?",
-  "Quem e mais provavel que discuta as regras como advogado da mesa?",
-  "Quem e mais provavel que invente planos para depois disto?",
+const PREVIEW_ROUNDS = 12;
+
+const spicySetups = [
+  "mande mensagem ao ex depois de dizer que superou",
+  "meta like numa foto antiga e tente fingir que foi sem querer",
+  "flirte com alguem so para ganhar uma bebida",
+  "faca ciumes e depois diga que nao era nada",
+  "tenha uma crush secreta nesta mesa",
+  "se apaixone por alguem que acabou de conhecer",
+  "mande um audio demasiado honesto depois do segundo copo",
+  "apague uma conversa antes de mostrar o telemovel",
+  "diga que nao quer nada serio e depois fique com ciumes",
+  "arranje desculpa para sentar ao lado de quem quer",
+  "troque olhares a noite toda e diga que era coincidencia",
+  "mande mensagem so com 'estas acordado?'",
+  "finja que nao viu uma mensagem comprometida",
+  "fique nervoso quando alguem pega no telemovel dele",
+  "use charme para sair de uma situacao complicada",
+  "deixe alguem em visto e depois apareca como se nada fosse",
+  "prometa que vai embora cedo e acabe por fechar o bar",
+  "diga que e so amizade mas aja de forma suspeita",
+  "conte um segredo e depois peca para ninguem contar",
+  "seja apanhado a olhar para quem nao devia",
+  "mande indiretas nas stories e negue ate ao fim",
+  "volte para uma pessoa que jurou nunca mais responder",
+  "diga 'eu nao sou assim' antes de fazer exatamente isso",
+  "invente uma desculpa so para fugir de um date",
+  "se arrependa de uma mensagem logo depois de enviar",
+  "faca drama por uma resposta seca",
+  "fique todo feliz com uma notificacao especifica",
+  "tenha um plano B romantico sem admitir",
+  "leve uma rejeicao com estilo e depois conte outra versao",
+  "mande um emoji perigoso sem pensar nas consequencias",
+  "crie clima num assunto que nao tinha clima nenhum",
+  "diga que nao esta interessado e pergunte por essa pessoa cinco minutos depois",
+  "faca uma cena de filme por alguem que mal conhece",
+  "guarde prints para usar como prova",
+  "seja o primeiro a reparar em casal novo no grupo",
+  "arranje um crush em ferias e chame de destino",
+  "diga que so vai ver uma pessoa e volte tres horas depois",
+  "faca uma pergunta inocente com segunda intencao",
+  "use o alcool como desculpa para dizer a verdade",
+  "mande mensagem e depois apague para parecer misterioso",
+  "diga que nao sente saudades mas saiba tudo da vida da pessoa",
+  "fique com vergonha quando alguem le a ultima conversa",
+  "transforme uma brincadeira numa tensao estranha",
+  "faca match e depois nao saiba o que dizer",
+  "finja maturidade mas fique a espera de resposta",
+  "desapareca da mesa para atender uma chamada suspeita",
+  "volte de uma ida ao balcao com uma historia mal contada",
+  "diga que vai ficar tranquilo e cause o caos romantico",
+  "tenha sempre uma pessoa proibida na cabeca",
+  "faca amizade depressa demais com alguem atraente",
 ];
+
+const spicyTwists = [
+  "numa noite de bar",
+  "quando ninguem esta a ver",
+  "e ainda ache perfeitamente normal",
+  "e depois negue com conviccao",
+  "antes de ir embora",
+  "durante uma festa",
+  "no grupo de amigos",
+  "com o telemovel virado para baixo",
+  "so porque tocou a musica certa",
+  "e conte a historia de forma muito diferente no dia seguinte",
+  "sem perceber que toda a mesa reparou",
+  "e depois diga que foi so brincadeira",
+  "por pura curiosidade",
+  "para provar um ponto que ninguem pediu",
+  "e acabe por se meter em confusao",
+  "com a maior cara de inocente",
+  "e ainda peca conselhos ao grupo",
+  "quando devia estar a agir com juizo",
+  "e faca de conta que tinha tudo controlado",
+  "so para ver no que dava",
+  "e depois culpe o ambiente",
+  "quando a noite ja esta perigosa",
+];
+
+const questions = createQuestionBank(1000);
 
 const basePlayers = [
   { playerId: "p1", nickname: "Ana" },
@@ -31,17 +98,14 @@ window.setInterval(tick, 1000);
 const phaseLabel = document.querySelector("#phaseLabel");
 const timerLabel = document.querySelector("#timerLabel");
 const eyebrow = document.querySelector("#eyebrow");
+const questionPanel = document.querySelector("#questionPanel");
 const prompt = document.querySelector("#prompt");
-const subtitle = document.querySelector("#subtitle");
 const playersGrid = document.querySelector("#playersGrid");
 const resultPanel = document.querySelector("#resultPanel");
-const rankingList = document.querySelector("#rankingList");
 const primaryAction = document.querySelector("#primaryAction");
-const statusText = document.querySelector("#statusText");
 const winnerName = document.querySelector("#winnerName");
 const winnerAvatar = document.querySelector("#winnerAvatar");
 const winnerPercentage = document.querySelector("#winnerPercentage");
-const pointsLine = document.querySelector("#pointsLine");
 
 primaryAction.addEventListener("click", () => {
   if (phase === "question") {
@@ -115,7 +179,7 @@ function showResult() {
 }
 
 function goToNextRound() {
-  if (roundIndex >= questions.length - 1) {
+  if (roundIndex >= PREVIEW_ROUNDS - 1) {
     roundIndex = 0;
   } else {
     roundIndex += 1;
@@ -129,6 +193,7 @@ function goToNextRound() {
 }
 
 function render() {
+  document.body.dataset.phase = phase;
   renderHeader();
   renderQuestion();
   renderPlayers();
@@ -139,16 +204,21 @@ function render() {
 function renderHeader() {
   phaseLabel.textContent =
     phase === "voting" || phase === "waiting"
-      ? `Votacao ${roundIndex + 1}/12`
+      ? `Votacao ${roundIndex + 1}/${PREVIEW_ROUNDS}`
       : phase === "result"
-        ? `Resultado ${roundIndex + 1}/12`
-        : `Ronda ${roundIndex + 1}/12`;
+        ? `Resultado ${roundIndex + 1}/${PREVIEW_ROUNDS}`
+        : `Ronda ${roundIndex + 1}/${PREVIEW_ROUNDS}`;
 
   timerLabel.textContent = phase === "voting" ? `00:${String(seconds).padStart(2, "0")}` : "15s voto";
   timerLabel.classList.toggle("is-idle", phase !== "voting");
 }
 
 function renderQuestion() {
+  questionPanel.classList.toggle("hidden", phase === "result");
+  if (phase === "result") {
+    return;
+  }
+
   prompt.textContent = questions[roundIndex];
   eyebrow.textContent =
     phase === "voting" || phase === "waiting"
@@ -156,14 +226,6 @@ function renderQuestion() {
       : phase === "result"
         ? "Quem ficou marcado"
         : "Quem e mais provavel?";
-  subtitle.textContent =
-    phase === "waiting"
-      ? "Voto enviado."
-      : phase === "result"
-        ? "Resultado oficial da ronda."
-        : phase === "voting"
-          ? "O cronometro esta a contar."
-          : "Sem cronometro. Le a pergunta e abre a votacao.";
 }
 
 function renderPlayers() {
@@ -229,24 +291,6 @@ function renderResult() {
   winnerName.textContent = winner.nickname;
   winnerAvatar.textContent = winner.nickname.slice(0, 1);
   winnerPercentage.textContent = `${percentage}%`;
-  pointsLine.textContent = `+${winnerVotes * 10} pontos`;
-  rankingList.innerHTML = basePlayers
-    .slice()
-    .sort(
-      (left, right) =>
-        (roundVotes[right.playerId] ?? 0) - (roundVotes[left.playerId] ?? 0) ||
-        left.nickname.localeCompare(right.nickname),
-    )
-    .map((player) => {
-      const votes = roundVotes[player.playerId] ?? 0;
-      return `
-        <div class="ranking-row">
-          <strong>${player.nickname}</strong>
-          <span>${votes === 1 ? "1 voto" : `${votes} votos`}</span>
-        </div>
-      `;
-    })
-    .join("");
 }
 
 function renderFooter() {
@@ -254,8 +298,7 @@ function renderFooter() {
     primaryAction.hidden = false;
     primaryAction.disabled = false;
     primaryAction.classList.remove("secondary");
-    primaryAction.textContent = "Comecar votacao";
-    statusText.textContent = "A pergunta fica parada ate alguem abrir a votacao.";
+    primaryAction.textContent = "Comecar";
     return;
   }
 
@@ -263,17 +306,13 @@ function renderFooter() {
     primaryAction.hidden = false;
     primaryAction.disabled = !selectedPlayerId;
     primaryAction.classList.remove("secondary");
-    primaryAction.textContent = "Confirmar voto";
-    statusText.textContent = selectedPlayerId
-      ? "Podes trocar antes de confirmar."
-      : "Escolhe uma pessoa. Ainda nao enviaste o voto.";
+    primaryAction.textContent = "Confirmar";
     return;
   }
 
   if (phase === "waiting") {
     primaryAction.hidden = true;
     primaryAction.disabled = false;
-    statusText.textContent = "Voto enviado.";
     return;
   }
 
@@ -281,11 +320,24 @@ function renderFooter() {
   primaryAction.disabled = false;
   primaryAction.classList.add("secondary");
   primaryAction.textContent =
-    roundIndex >= questions.length - 1 ? "Recomecar jogo" : "Proxima ronda";
-  statusText.textContent =
-    roundIndex >= questions.length - 1
-      ? "Fim das 12 rondas da preview."
-      : `${questions.length - roundIndex - 1} rondas por jogar.`;
+    roundIndex >= PREVIEW_ROUNDS - 1 ? "Recomecar" : "Proxima";
+}
+
+function createQuestionBank(targetCount) {
+  const questionsByPrompt = new Map();
+
+  for (let index = 0; questionsByPrompt.size < targetCount; index += 1) {
+    const setup = spicySetups[index % spicySetups.length];
+    const twist =
+      spicyTwists[Math.floor(index / spicySetups.length) % spicyTwists.length];
+    const prompt = `Quem e mais provavel que ${setup} ${twist}?`
+      .replace(/\s+/g, " ")
+      .trim();
+
+    questionsByPrompt.set(prompt, prompt);
+  }
+
+  return [...questionsByPrompt.values()];
 }
 
 function createRoundVotes(index, selectedTargetId) {

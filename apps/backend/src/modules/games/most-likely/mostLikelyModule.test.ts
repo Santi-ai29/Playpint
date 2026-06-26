@@ -1,7 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {
-  MOST_LIKELY_POINTS_PER_RECEIVED_VOTE,
   type MostLikelyQuestion,
   type PublicPlayer,
 } from "../../../../../../packages/contracts/src";
@@ -109,7 +108,7 @@ test("accepts one vote per player during the 15 second voting window", () => {
   assert.equal(invalidTarget.ack.errorCode, "target_not_in_room");
 });
 
-test("finishes when all players vote and calculates winners, percentages, vote trail, and points", () => {
+test("finishes when all players vote and calculates winners, percentages, and vote trail", () => {
   const votingState = startMostLikelyVoting(
     createRound(),
     "2026-06-25T20:00:30.000Z",
@@ -177,10 +176,6 @@ test("finishes when all players vote and calculates winners, percentages, vote t
       { voterPlayerId: "p2", targetPlayerId: "p3" },
       { voterPlayerId: "p3", targetPlayerId: "p2" },
     ],
-  );
-  assert.equal(
-    result?.scoreDeltas.find((delta) => delta.playerId === "p2")?.delta,
-    2 * MOST_LIKELY_POINTS_PER_RECEIVED_VOTE,
   );
 });
 

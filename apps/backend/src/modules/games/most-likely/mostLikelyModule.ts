@@ -1,7 +1,6 @@
 import {
   MOST_LIKELY_GAME_MANIFEST,
   MOST_LIKELY_GAME_MODE_ID,
-  MOST_LIKELY_POINTS_PER_RECEIVED_VOTE,
   MOST_LIKELY_ROUND_SECONDS,
   MOST_LIKELY_VOTING_SECONDS,
   requireMostLikelyVoteRequest,
@@ -15,7 +14,6 @@ import {
   type PublicPlayer,
   type RoundClock,
   type RoundSnapshot,
-  type ScoreDelta,
 } from "../../../../../../packages/contracts/src";
 import type { GameModule } from "../core";
 import {
@@ -356,14 +354,10 @@ function createPlayerState(
   playerId: string,
 ): MostLikelyPlayerState {
   const vote = state.votes.find((item) => item.voterPlayerId === playerId);
-  const scoreDelta = state.result?.scoreDeltas.find(
-    (item) => item.playerId === playerId,
-  );
 
   return {
     hasVoted: Boolean(vote),
     selectedTargetPlayerId: vote?.targetPlayerId,
-    points: scoreDelta?.delta,
   };
 }
 
@@ -407,27 +401,7 @@ function createMostLikelyResult(
     winners,
     voteCounts,
     votes: [...state.votes],
-    scoreDeltas: createScoreDeltas(voteCounts),
   };
-}
-
-function createScoreDeltas(voteCounts: MostLikelyRoundResult["voteCounts"]): ScoreDelta[] {
-  return voteCounts
-    .map((count) => ({
-      playerId: count.playerId,
-      nickname: count.nickname,
-      delta: count.votes * MOST_LIKELY_POINTS_PER_RECEIVED_VOTE,
-      reason:
-        count.votes === 1
-          ? "Received 1 most_likely vote"
-          : `Received ${count.votes} most_likely votes`,
-    }))
-    .sort(
-      (left, right) =>
-        right.delta - left.delta ||
-        left.nickname.localeCompare(right.nickname) ||
-        left.playerId.localeCompare(right.playerId),
-    );
 }
 
 function calculatePercentage(votes: number, totalVotes: number): number {

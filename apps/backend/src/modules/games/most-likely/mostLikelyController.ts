@@ -121,13 +121,9 @@ function cloneSessionState(
                 votes: state.currentRound.result.votes.map((vote) => ({
                   ...vote,
                 })),
-                scoreDeltas: state.currentRound.result.scoreDeltas.map(
-                  (delta) => ({ ...delta }),
-                ),
               }
             : undefined,
         }
       : undefined,
-    scoreboard: state.scoreboard.map((row) => ({ ...row })),
   };
 }

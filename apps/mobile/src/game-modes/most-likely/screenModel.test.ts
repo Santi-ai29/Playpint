@@ -71,14 +71,13 @@ test("locks selection after the current player votes", () => {
   assert.equal(model.players.find((player) => player.playerId === "p2")?.selected, true);
 });
 
-test("maps official results, winners, vote trail, and score deltas", () => {
+test("maps official results, winners, percentages, and vote trail", () => {
   const model = createMostLikelyScreenModel(
     snapshot({
       lifecycleState: "result",
       playerState: {
         hasVoted: true,
         selectedTargetPlayerId: "p2",
-        points: 0,
       },
       result: true,
     }),
@@ -91,12 +90,6 @@ test("maps official results, winners, vote trail, and score deltas", () => {
     winnerNickname: "Bruno",
     winnerLabel: "mais votado",
     winnerPercentage: 66.7,
-    rankingRows: [
-      { playerId: "p2", nickname: "Bruno", votes: 2 },
-      { playerId: "p3", nickname: "Carla", votes: 1 },
-      { playerId: "p1", nickname: "Ana", votes: 0 },
-    ],
-    pointsLine: "+20 pontos",
   });
   assert.deepEqual(model.winners, ["Bruno"]);
   assert.deepEqual(
@@ -104,13 +97,12 @@ test("maps official results, winners, vote trail, and score deltas", () => {
       playerId: row.playerId,
       votes: row.votes,
       percentage: row.percentage,
-      points: row.points,
       isWinner: row.isWinner,
     })),
     [
-      { playerId: "p2", votes: 2, percentage: 66.7, points: 20, isWinner: true },
-      { playerId: "p3", votes: 1, percentage: 33.3, points: 10, isWinner: false },
-      { playerId: "p1", votes: 0, percentage: 0, points: 0, isWinner: false },
+      { playerId: "p2", votes: 2, percentage: 66.7, isWinner: true },
+      { playerId: "p3", votes: 1, percentage: 33.3, isWinner: false },
+      { playerId: "p1", votes: 0, percentage: 0, isWinner: false },
     ],
   );
   assert.deepEqual(model.voteTrail, [
@@ -221,26 +213,6 @@ function snapshot(input: {
                 targetPlayerId: "p2",
                 targetNickname: "Bruno",
                 submittedAt: "2026-06-25T20:00:33.000Z",
-              },
-            ],
-            scoreDeltas: [
-              {
-                playerId: "p2",
-                nickname: "Bruno",
-                delta: 20,
-                reason: "Received 2 most_likely votes",
-              },
-              {
-                playerId: "p3",
-                nickname: "Carla",
-                delta: 10,
-                reason: "Received 1 most_likely vote",
-              },
-              {
-                playerId: "p1",
-                nickname: "Ana",
-                delta: 0,
-                reason: "Received 0 most_likely votes",
               },
             ],
           }

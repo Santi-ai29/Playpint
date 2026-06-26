@@ -7,7 +7,6 @@ import type {
   MostLikelyPlayerState,
   MostLikelyPublicState,
   MostLikelyQuestion,
-  MostLikelyScoreboardRow,
   MostLikelyVoteRequest,
   PublicPlayer,
   RoundSnapshot,
@@ -38,7 +37,6 @@ export interface MostLikelySessionState {
   deck: MostLikelyQuestion[];
   usedQuestionIds: string[];
   currentRound?: MostLikelyRoundState;
-  scoreboard: MostLikelyScoreboardRow[];
 }
 
 export interface StartMostLikelySessionInput {
@@ -73,7 +71,7 @@ export function startMostLikelySession(
     players: input.players,
     now: input.now,
     deck,
-    questionId: pickUnusedQuestion(deck, []),
+    questionId: pickUnusedQuestion(deck, [], `${input.roomId}:1`),
   });
 
   return {
@@ -86,7 +84,6 @@ export function startMostLikelySession(
       deck: deck.map((question) => ({ ...question })),
       usedQuestionIds: [startedRound.state.question.id],
       currentRound: startedRound.state,
-      scoreboard: createInitialScoreboard(input.players),
     },
     events: [startedRound.event],
   };
@@ -170,7 +167,11 @@ export function startNextMostLikelyRound(
     players: state.players,
     now,
     deck: state.deck,
-    questionId: pickUnusedQuestion(state.deck, state.usedQuestionIds),
+    questionId: pickUnusedQuestion(
+      state.deck,
+      state.usedQuestionIds,
+      `${state.roomId}:${nextRoundNumber}`,
+    ),
   });
 
   return {
@@ -193,7 +194,6 @@ export function getMostLikelySessionSnapshot(
   status: MostLikelySessionState["status"];
   currentRoundNumber: number;
   totalRounds: number;
-  scoreboard: MostLikelyScoreboardRow[];
   currentRound?: RoundSnapshot<MostLikelyPublicState, MostLikelyPlayerState>;
 } {
   return {
@@ -201,7 +201,6 @@ export function getMostLikelySessionSnapshot(
     status: state.status,
     currentRoundNumber: state.currentRoundNumber,
     totalRounds: state.totalRounds,
-    scoreboard: state.scoreboard.map((row) => ({ ...row })),
     currentRound: state.currentRound
       ? getMostLikelySnapshot(state.currentRound, playerId, now)
       : undefined,
@@ -228,21 +227,12 @@ function applyRoundTransition(
     };
   }
 
-  const scoreboard = applyScoreDeltas(state.scoreboard, round.result.scoreDeltas);
-  const leaderboardEvent = {
-    type: "most_likely.leaderboard_updated",
-    roomId: state.roomId,
-    roundId: round.roundId,
-    scoreboard,
-  } as const;
-
   return {
     state: {
       ...state,
       currentRound: round,
-      scoreboard,
     },
-    events: [...events, leaderboardEvent],
+    events,
   };
 }
 
@@ -252,7 +242,6 @@ function finishSession(
   const event: MostLikelyGameFinishedEvent = {
     type: "most_likely.game_finished",
     roomId: state.roomId,
-    scoreboard: state.scoreboard.map((row) => ({ ...row })),
   };
 
   return {
@@ -265,65 +254,29 @@ function finishSession(
   };
 }
 
-function createInitialScoreboard(players: PublicPlayer[]): MostLikelyScoreboardRow[] {
-  return rankScoreboard(
-    players.map((player) => ({
-      playerId: player.playerId,
-      nickname: player.nickname,
-      ...(player.avatarUrl ? { avatarUrl: player.avatarUrl } : {}),
-      score: 0,
-      rank: 1,
-    })),
-  );
-}
-
-function applyScoreDeltas(
-  scoreboard: MostLikelyScoreboardRow[],
-  scoreDeltas: Array<{ playerId: string; delta: number }>,
-): MostLikelyScoreboardRow[] {
-  return rankScoreboard(
-    scoreboard.map((row) => ({
-      ...row,
-      score:
-        row.score +
-        (scoreDeltas.find((delta) => delta.playerId === row.playerId)?.delta ??
-          0),
-    })),
-  );
-}
-
-function rankScoreboard(
-  rows: MostLikelyScoreboardRow[],
-): MostLikelyScoreboardRow[] {
-  const sortedRows = [...rows].sort(
-    (left, right) =>
-      right.score - left.score ||
-      left.nickname.localeCompare(right.nickname) ||
-      left.playerId.localeCompare(right.playerId),
-  );
-
-  return sortedRows.map((row, index) => ({
-    ...row,
-    rank:
-      index > 0 && sortedRows[index - 1]?.score === row.score
-        ? sortedRows[index - 1].rank
-        : index + 1,
-  }));
-}
-
 function pickUnusedQuestion(
   deck: MostLikelyQuestion[],
   usedQuestionIds: string[],
+  seed: string,
 ): string {
-  const unusedQuestion = deck.find(
+  const unusedQuestions = deck.filter(
     (question) => !usedQuestionIds.includes(question.id),
   );
+  const question =
+    unusedQuestions[hashString(seed) % Math.max(1, unusedQuestions.length)];
 
-  if (unusedQuestion) {
-    return unusedQuestion.id;
+  if (question) {
+    return question.id;
   }
 
   return deck[0]?.id ?? "";
+}
+
+function hashString(value: string): number {
+  return [...value].reduce(
+    (total, character) => total + character.charCodeAt(0),
+    0,
+  );
 }
 
 function normalizeTotalRounds(totalRounds: number, deckSize: number): number {

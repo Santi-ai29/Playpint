@@ -2,7 +2,6 @@ import type {
   GameModeManifest,
   PublicPlayer,
   RoundClock,
-  ScoreDelta,
 } from "./gameCore";
 
 export const MOST_LIKELY_GAME_MODE_ID = "most_likely";
@@ -10,7 +9,6 @@ export const MOST_LIKELY_ROUND_SECONDS = 30;
 export const MOST_LIKELY_VOTING_SECONDS = 15;
 export const MOST_LIKELY_MIN_PLAYERS = 2;
 export const MOST_LIKELY_RECOMMENDED_MIN_PLAYERS = 3;
-export const MOST_LIKELY_POINTS_PER_RECEIVED_VOTE = 10;
 export const MOST_LIKELY_DEFAULT_TOTAL_ROUNDS = 12;
 
 export const MOST_LIKELY_GAME_MANIFEST: GameModeManifest = {
@@ -76,15 +74,6 @@ export interface MostLikelyRoundResult {
   winners: MostLikelyWinner[];
   voteCounts: MostLikelyVoteCount[];
   votes: MostLikelyVoteRecord[];
-  scoreDeltas: ScoreDelta[];
-}
-
-export interface MostLikelyScoreboardRow {
-  playerId: string;
-  nickname: string;
-  avatarUrl?: string;
-  score: number;
-  rank: number;
 }
 
 export interface MostLikelyGameSettings {
@@ -96,7 +85,6 @@ export interface MostLikelyGameSessionPublicState {
   status: "playing" | "finished";
   currentRoundNumber: number;
   totalRounds: number;
-  scoreboard: MostLikelyScoreboardRow[];
   currentRound?: MostLikelyPublicState;
 }
 
@@ -111,7 +99,6 @@ export interface MostLikelyPublicState {
 export interface MostLikelyPlayerState {
   hasVoted: boolean;
   selectedTargetPlayerId?: string;
-  points?: number;
 }
 
 export interface MostLikelyRoundStartedEvent {
@@ -147,17 +134,9 @@ export interface MostLikelyRoundResultEvent {
   result: MostLikelyRoundResult;
 }
 
-export interface MostLikelyLeaderboardUpdatedEvent {
-  type: "most_likely.leaderboard_updated";
-  roomId: string;
-  roundId: string;
-  scoreboard: MostLikelyScoreboardRow[];
-}
-
 export interface MostLikelyGameFinishedEvent {
   type: "most_likely.game_finished";
   roomId: string;
-  scoreboard: MostLikelyScoreboardRow[];
 }
 
 export type MostLikelyGameEvent =
@@ -165,7 +144,6 @@ export type MostLikelyGameEvent =
   | MostLikelyVotingStartedEvent
   | MostLikelyVoteReceivedEvent
   | MostLikelyRoundResultEvent
-  | MostLikelyLeaderboardUpdatedEvent
   | MostLikelyGameFinishedEvent;
 
 export function isMostLikelyVoteRequest(

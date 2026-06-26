@@ -31,7 +31,7 @@ const deck: MostLikelyQuestion[] = [
   },
 ];
 
-test("starts a playable most_likely session with scoreboard and first round", () => {
+test("starts a playable most_likely session with a first round", () => {
   const started = startMostLikelySession({
     roomId: "room_1",
     players,
@@ -43,22 +43,15 @@ test("starts a playable most_likely session with scoreboard and first round", ()
   assert.equal(started.state.status, "playing");
   assert.equal(started.state.currentRoundNumber, 1);
   assert.equal(started.state.totalRounds, 2);
-  assert.equal(started.state.currentRound?.question.id, "q1");
-  assert.deepEqual(
-    started.state.scoreboard.map((row) => ({
-      playerId: row.playerId,
-      score: row.score,
-      rank: row.rank,
-    })),
-    [
-      { playerId: "p1", score: 0, rank: 1 },
-      { playerId: "p2", score: 0, rank: 1 },
-      { playerId: "p3", score: 0, rank: 1 },
-    ],
+  assert.ok(
+    deck.some((question) => question.id === started.state.currentRound?.question.id),
   );
+  assert.deepEqual(started.state.usedQuestionIds, [
+    started.state.currentRound?.question.id,
+  ]);
 });
 
-test("accumulates official scores after a completed round", () => {
+test("publishes an official result after a completed round", () => {
   const session = openVoting(startSession());
   const first = vote(session, "p1", "p2", "2026-06-25T20:00:32.000Z");
   const second = vote(first.state, "p2", "p3", "2026-06-25T20:00:33.000Z");
@@ -67,32 +60,24 @@ test("accumulates official scores after a completed round", () => {
   assert.equal(third.state.currentRound?.lifecycleState, "result");
   assert.deepEqual(
     third.events.map((event) => event.type),
-    ["most_likely.vote_received", "most_likely.round_finished", "most_likely.leaderboard_updated"],
+    ["most_likely.vote_received", "most_likely.round_finished"],
   );
   assert.deepEqual(
-    third.state.scoreboard.map((row) => ({
-      playerId: row.playerId,
-      score: row.score,
-      rank: row.rank,
-    })),
-    [
-      { playerId: "p2", score: 20, rank: 1 },
-      { playerId: "p3", score: 10, rank: 2 },
-      { playerId: "p1", score: 0, rank: 3 },
-    ],
+    third.state.currentRound?.result?.winners.map((winner) => winner.playerId),
+    ["p2"],
   );
 });
 
-test("starts the next round with a fresh question and keeps the leaderboard", () => {
+test("starts the next round with a fresh question", () => {
   const finishedRound = finishOneRound();
+  const previousQuestionId = finishedRound.currentRound?.question.id;
   const next = startNextMostLikelyRound(
     finishedRound,
     "2026-06-25T20:01:00.000Z",
   );
 
   assert.equal(next.state.currentRoundNumber, 2);
-  assert.equal(next.state.currentRound?.question.id, "q2");
-  assert.equal(next.state.scoreboard[0]?.playerId, "p2");
+  assert.notEqual(next.state.currentRound?.question.id, previousQuestionId);
   assert.deepEqual(
     next.events.map((event) => event.type),
     ["most_likely.round_started"],
@@ -141,7 +126,6 @@ test("creates a player-specific session snapshot", () => {
   assert.equal(snapshot.status, "playing");
   assert.equal(snapshot.currentRoundNumber, 1);
   assert.equal(snapshot.currentRound?.playerState?.hasVoted, false);
-  assert.equal(snapshot.scoreboard.length, 3);
 });
 
 function startSession() {

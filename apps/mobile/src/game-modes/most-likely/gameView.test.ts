@@ -21,7 +21,6 @@ test("creates the approved Playpint-branded question view", () => {
   assert.equal(view.backgroundStyle, "premium_illustrated_bar");
   assert.equal(view.brand.logoText, "Playpint");
   assert.equal(view.brand.modeLabel, "Es Tu?");
-  assert.equal(view.prompt.subtitle, "Pensa bem.");
   assert.equal(view.playerGrid.every((player) => player.visualState === "disabled"), true);
 });
 
@@ -131,12 +130,6 @@ test("keeps the primary result view simple", () => {
   assert.equal(view.result?.winnerNickname, "Bruno");
   assert.equal(view.result?.winnerLabel, "mais votado");
   assert.equal(view.result?.winnerPercentage, "66.7%");
-  assert.equal(view.result?.pointsLine, "+20 pontos");
-  assert.deepEqual(view.result?.rankingRows, [
-    { playerId: "p2", label: "Bruno", votesLabel: "2 votos" },
-    { playerId: "p3", label: "Carla", votesLabel: "1 voto" },
-    { playerId: "p1", label: "Ana", votesLabel: "0 votos" },
-  ]);
 });
 
 function snapshot(input: {
@@ -205,26 +198,6 @@ function snapshot(input: {
               },
             ],
             votes: [],
-            scoreDeltas: [
-              {
-                playerId: "p2",
-                nickname: "Bruno",
-                delta: 20,
-                reason: "Received 2 most_likely votes",
-              },
-              {
-                playerId: "p3",
-                nickname: "Carla",
-                delta: 10,
-                reason: "Received 1 most_likely vote",
-              },
-              {
-                playerId: "p1",
-                nickname: "Ana",
-                delta: 0,
-                reason: "Received 0 most_likely votes",
-              },
-            ],
           }
         : undefined,
     },

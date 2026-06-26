@@ -12,11 +12,9 @@ export const mostLikelyTheme = {
     textDark: "#050403",
   },
   copy: {
-    questionSubtitle: "Pensa bem.",
     votingTitle: "Escolhe uma pessoa",
     voteSent: "Voto enviado",
     resultTitle: "Resultado",
     winnerLabel: "mais votado",
-    pointsSuffix: "pontos",
   },
 } as const;
