@@ -21,7 +21,7 @@ test("creates the approved Playpint-branded question view", () => {
   assert.equal(view.backgroundStyle, "premium_illustrated_bar");
   assert.equal(view.brand.logoText, "Playpint");
   assert.equal(view.brand.modeLabel, "Es Tu?");
-  assert.equal(view.playerLayout, "avatar_strip");
+  assert.equal(view.playerLayout, "ready_grid");
   assert.equal(view.playerGrid.every((player) => player.visualState === "disabled"), true);
 });
 

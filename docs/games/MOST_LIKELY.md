@@ -114,7 +114,7 @@ Direcao visual aprovada:
 - resultado mostra vencedor em destaque, frase sarcastica curta, tabela da ronda e botao para avancar;
 - frase do resultado pode ser mais picante, mantendo tom de brincadeira;
 - cartao selecionado/vencedor com brilho, entrada animada e reflexo premium;
-- antes do host abrir a votacao, os jogadores aparecem numa linha de avatares;
+- antes do host abrir a votacao, os jogadores aparecem numa grelha compacta que preenche melhor o ecra;
 - botao de confirmar fica proximo da grelha de votacao.
 
 ## Registry

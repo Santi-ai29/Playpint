@@ -25,7 +25,7 @@ export interface MostLikelyGameView {
   prompt: {
     text: string;
   };
-  playerLayout: "avatar_strip" | "vote_grid";
+  playerLayout: "ready_grid" | "vote_grid";
   playerGrid: Array<
     MostLikelyPlayerOptionModel & {
       visualState: "selected" | "enabled" | "disabled" | "winner";
@@ -84,7 +84,7 @@ export function createMostLikelyGameView(
     prompt: {
       text: model.prompt,
     },
-    playerLayout: model.status === "question" ? "avatar_strip" : "vote_grid",
+    playerLayout: model.status === "question" ? "ready_grid" : "vote_grid",
     playerGrid: model.players.map((player) => ({
       ...player,
       visualState: getPlayerVisualState(model.status, player),

@@ -234,7 +234,7 @@ function renderQuestion() {
 
 function renderPlayers() {
   playersGrid.classList.toggle("hidden", phase === "result");
-  playersGrid.classList.toggle("avatar-strip", phase === "question");
+  playersGrid.classList.toggle("ready-grid", phase === "question");
   playersGrid.innerHTML = basePlayers
     .map((player) => {
       const intro = phase === "question";
@@ -243,7 +243,7 @@ function renderPlayers() {
       const winner = phase === "result" && player.playerId === getWinner().playerId;
       const classes = [
         "player-card",
-        intro ? "avatar-chip" : "",
+        intro ? "ready-player" : "",
         selected ? "selected" : "",
         winner ? "winner" : "",
       ]
