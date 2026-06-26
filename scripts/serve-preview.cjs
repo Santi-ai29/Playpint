@@ -18,6 +18,7 @@ const contentTypes = {
 };
 
 const mostLikelySession = {
+  roomName: "Es Tu",
   players: [],
 };
 const mostLikelyMaxPlayers = 8;
@@ -62,7 +63,19 @@ async function handleMostLikelyApi(request, response, url) {
     writeJson(response, {
       players: mostLikelySession.players,
       totalPlayers: mostLikelySession.players.length,
+      roomName: mostLikelySession.roomName,
     });
+    return;
+  }
+
+  if (request.method === "POST" && url.pathname === "/api/most-likely/room") {
+    try {
+      const body = await readJsonBody(request);
+      mostLikelySession.roomName = normalizeRoomName(body.roomName);
+      writeJson(response, { roomName: mostLikelySession.roomName });
+    } catch (error) {
+      writeJson(response, { error: "invalid_room_payload" }, 400);
+    }
     return;
   }
 
@@ -174,6 +187,14 @@ function normalizeNickname(value) {
   }
 
   return value.trim().slice(0, 14) || "Jogador";
+}
+
+function normalizeRoomName(value) {
+  if (typeof value !== "string") {
+    return "Es Tu";
+  }
+
+  return value.trim().slice(0, 18) || "Es Tu";
 }
 
 function normalizePhoto(value) {

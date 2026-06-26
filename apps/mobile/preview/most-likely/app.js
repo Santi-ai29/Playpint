@@ -3,7 +3,7 @@ const MIN_PLAYERS = 3;
 const MAX_PLAYERS = 8;
 const MIN_ROUNDS = 0;
 const MAX_ROUNDS = 12;
-const ROOM_CODE = "ES TU";
+const DEFAULT_ROOM_NAME = "Es Tu";
 const JOIN_CLIENT_ID_KEY = "playpint-most-likely-client-id";
 
 const spicyActions = [
@@ -133,8 +133,10 @@ let phase = isJoinView ? "join" : "setup";
 let selectedPlayerId = null;
 let seconds = 15;
 let roundVotes = createRoundVotes(roundIndex);
+let roomName = DEFAULT_ROOM_NAME;
 let joinPhotoDataUrl = "";
 let joinedPlayerName = "";
+let roomNameSyncTimer;
 
 window.setInterval(tick, 1000);
 window.setInterval(refreshJoinedPlayers, 1500);
@@ -148,7 +150,6 @@ const joinForm = document.querySelector("#joinForm");
 const joinPhotoInput = document.querySelector("#joinPhotoInput");
 const joinPhotoPreview = document.querySelector("#joinPhotoPreview");
 const joinNameInput = document.querySelector("#joinNameInput");
-const joinSkipPhoto = document.querySelector("#joinSkipPhoto");
 const joinStatus = document.querySelector("#joinStatus");
 const eyebrow = document.querySelector("#eyebrow");
 const questionPanel = document.querySelector("#questionPanel");
@@ -193,6 +194,16 @@ setupControls.addEventListener("click", (event) => {
   updateSetting(button.dataset.settingAction);
 });
 
+setupControls.addEventListener("input", (event) => {
+  const input = event.target.closest("[data-room-name]");
+
+  if (!input) {
+    return;
+  }
+
+  updateRoomName(input.value);
+});
+
 joinPhotoInput.addEventListener("change", () => {
   updateJoinPhoto(joinPhotoInput.files?.[0]);
 });
@@ -200,10 +211,6 @@ joinPhotoInput.addEventListener("change", () => {
 joinForm.addEventListener("submit", (event) => {
   event.preventDefault();
   submitJoin(false);
-});
-
-joinSkipPhoto.addEventListener("click", () => {
-  submitJoin(true);
 });
 
 render();
@@ -226,6 +233,32 @@ function updateSetting(action) {
   render();
 }
 
+function updateRoomName(value) {
+  roomName = value.trimStart().slice(0, 18);
+  window.clearTimeout(roomNameSyncTimer);
+  roomNameSyncTimer = window.setTimeout(syncRoomName, 250);
+}
+
+async function syncRoomName() {
+  try {
+    const response = await fetch("/api/most-likely/room", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ roomName: getRoomName() }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Room name request failed");
+    }
+
+    const data = await response.json();
+    roomName = data.roomName ?? roomName;
+    renderHeader();
+  } catch (error) {
+    renderHeader();
+  }
+}
+
 function updateJoinPhoto(file) {
   if (!file) {
     joinPhotoDataUrl = "";
@@ -243,15 +276,9 @@ function updateJoinPhoto(file) {
   reader.readAsDataURL(file);
 }
 
-async function submitJoin(skipPhoto) {
+async function submitJoin() {
   const nickname = joinNameInput.value.trim() || "Jogador";
-
-  if (skipPhoto) {
-    joinPhotoDataUrl = "";
-    renderJoinPhotoPreview();
-  }
-
-  const photoUrl = skipPhoto ? "" : joinPhotoDataUrl;
+  const photoUrl = joinPhotoDataUrl;
   joinStatus.textContent = "A entrar...";
 
   try {
@@ -280,7 +307,7 @@ async function submitJoin(skipPhoto) {
 }
 
 async function refreshJoinedPlayers() {
-  if (phase !== "setup") {
+  if (phase !== "setup" && phase !== "join") {
     return;
   }
 
@@ -292,11 +319,20 @@ async function refreshJoinedPlayers() {
     }
 
     const data = await response.json();
+    const isEditingRoomName = document.activeElement?.matches("[data-room-name]");
     joinedPlayers = Array.isArray(data.players) ? data.players.slice(0, MAX_PLAYERS) : [];
+    roomName = isEditingRoomName ? roomName : (data.roomName ?? roomName);
     roundVotes = createRoundVotes(roundIndex);
+    if (isEditingRoomName) {
+      renderHeader();
+      return;
+    }
+
     render();
   } catch (error) {
-    joinedPlayers = [];
+    if (phase === "setup") {
+      joinedPlayers = [];
+    }
     render();
   }
 }
@@ -396,7 +432,7 @@ function renderHeader() {
   if (phase === "join") {
     phaseLabel.textContent = "Mesa";
     timerLabel.hidden = false;
-    timerLabel.textContent = ROOM_CODE;
+    timerLabel.textContent = getRoomName();
     timerLabel.classList.add("is-idle");
     return;
   }
@@ -450,8 +486,14 @@ function renderSetup() {
         alt="QR da mesa"
       />
       <div class="invite-copy">
-        <span>Codigo</span>
-        <strong>${ROOM_CODE}</strong>
+        <span>Nome da sala</span>
+        <input
+          class="room-name-input"
+          data-room-name="true"
+          maxlength="18"
+          value="${escapeHtml(getRoomName())}"
+          aria-label="Nome da sala"
+        />
         <small>${escapeHtml(getShortJoinUrl())}</small>
       </div>
     </section>
@@ -692,7 +734,11 @@ function renderJoinPhotoPreview() {
     return;
   }
 
-  joinPhotoPreview.textContent = "+";
+  joinPhotoPreview.textContent = "Adicionar foto";
+}
+
+function getRoomName() {
+  return roomName.trim() || DEFAULT_ROOM_NAME;
 }
 
 function getJoinClientId() {

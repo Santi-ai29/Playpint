@@ -119,7 +119,7 @@ Direcao visual aprovada:
 - frase do resultado deve ser curta e picante, tipo "Ana, sempre soubemos que o ex faz te falta.";
 - cartao selecionado/vencedor com brilho, entrada animada e reflexo premium;
 - antes de comecar, o host ve um painel compacto com QR, jogadores que entraram e rondas, sem bloco visual de tempo;
-- cada jogador entra pelo link/QR, escolhe nome e foto, ou salta a foto e fica com avatar generico;
+- cada jogador entra pelo link/QR, escolhe nome e pode tocar no avatar para adicionar foto; sem foto, fica com avatar generico;
 - antes do host abrir a votacao, os jogadores aparecem numa grelha compacta que preenche melhor o ecra;
 - botao de confirmar fica proximo da grelha de votacao.
 

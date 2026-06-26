@@ -324,13 +324,6 @@ button {
   text-transform: uppercase;
 }
 
-.invite-copy strong {
-  color: var(--yellow);
-  font-size: 32px;
-  font-weight: 950;
-  line-height: 1;
-}
-
 .invite-copy small {
   overflow: hidden;
   color: var(--cream);
@@ -339,6 +332,27 @@ button {
   opacity: 0.7;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.room-name-input {
+  width: 100%;
+  min-width: 0;
+  height: 48px;
+  border: 1px solid rgba(255, 195, 66, 0.26);
+  border-radius: 17px;
+  background: rgba(255, 195, 66, 0.12);
+  color: var(--yellow);
+  font-size: clamp(20px, 5.5vw, 24px);
+  font-weight: 950;
+  outline: 0;
+  padding: 0 12px;
+  text-transform: uppercase;
+}
+
+.room-name-input:focus {
+  box-shadow:
+    0 0 0 2px rgba(255, 195, 66, 0.32),
+    0 0 26px rgba(255, 195, 66, 0.22);
 }
 
 .setup-counters {
@@ -571,10 +585,15 @@ button {
 .join-photo-button span {
   display: grid;
   place-items: center;
+  max-width: 92px;
   width: 100%;
   height: 100%;
-  font-size: 56px;
+  color: var(--cream);
+  font-size: 15px;
   font-weight: 950;
+  line-height: 1.08;
+  text-align: center;
+  text-transform: uppercase;
 }
 
 .join-photo-button img {
@@ -606,12 +625,9 @@ button {
 
 .join-actions {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 10px;
 }
 
-.join-submit,
-.join-skip {
+.join-submit {
   min-height: 54px;
   border-radius: 18px;
   font-size: 15px;
@@ -623,12 +639,6 @@ button {
   border: 0;
   background: var(--orange);
   color: var(--black);
-}
-
-.join-skip {
-  border: 1px solid rgba(255, 195, 66, 0.3);
-  background: rgba(255, 243, 213, 0.07);
-  color: var(--cream);
 }
 
 .join-status {
