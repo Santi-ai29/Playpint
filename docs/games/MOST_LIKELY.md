@@ -15,7 +15,7 @@ O backend escolhe uma pergunta do tipo "Quem e mais provavel...?" e todos os jog
 - Tempo de pergunta/ronda: 30 segundos.
 - Tempo de votacao: 15 segundos.
 - Rondas por defeito: 12.
-- Setup antes de jogar: escolher numero de jogadores, editar nomes, adicionar fotos e definir rondas de 0 a 12 (`0` = livre na UI).
+- Setup antes de jogar: admin mostra QR da mesa, jogadores entram pelo telemovel, escolhem nome/foto opcional e o admin define rondas de 0 a 12 (`0` = livre na UI).
 - Banco default: 1000 perguntas unicas, com tom de bar/adulto leve.
 
 ## Fluxo da ronda
@@ -98,7 +98,7 @@ Modulo: `apps/mobile/src/game-modes/most-likely`.
 
 Responsabilidades:
 
-- oferecer um ecra antes de comecar com numero de jogadores, nomes editaveis, fotos e numero de rondas;
+- oferecer um ecra antes de comecar com QR da mesa, jogadores ligados, fotos opcionais e numero de rondas;
 - transformar o snapshot oficial em screen model;
 - bloquear voto antes de `voting`;
 - bloquear voto depois de o jogador votar;
@@ -118,7 +118,8 @@ Direcao visual aprovada:
 - resultado mostra vencedor em destaque, frase sarcastica curta, tabela da ronda e botao para avancar;
 - frase do resultado deve ser curta e picante, tipo "Ana, sempre soubemos que o ex faz te falta.";
 - cartao selecionado/vencedor com brilho, entrada animada e reflexo premium;
-- antes de comecar, o host ve um painel compacto para configurar jogadores, fotos, nomes e rondas, sem bloco visual de tempo;
+- antes de comecar, o host ve um painel compacto com QR, jogadores que entraram e rondas, sem bloco visual de tempo;
+- cada jogador entra pelo link/QR, escolhe nome e foto, ou salta a foto e fica com avatar generico;
 - antes do host abrir a votacao, os jogadores aparecem numa grelha compacta que preenche melhor o ecra;
 - botao de confirmar fica proximo da grelha de votacao.
 

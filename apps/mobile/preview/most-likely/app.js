@@ -3,6 +3,8 @@ const MIN_PLAYERS = 3;
 const MAX_PLAYERS = 8;
 const MIN_ROUNDS = 0;
 const MAX_ROUNDS = 12;
+const ROOM_CODE = "ES TU";
+const JOIN_CLIENT_ID_KEY = "playpint-most-likely-client-id";
 
 const spicyActions = [
   "mandar mensagem ao ex",
@@ -121,32 +123,33 @@ const questionTemplates = [
 ];
 
 const questions = createQuestionBank(1000);
+const isJoinView = new URLSearchParams(window.location.search).has("join");
+const joinUrl = `${window.location.origin}${window.location.pathname}?join=1`;
 
-const playerPool = [
-  { playerId: "p1", nickname: "Ana" },
-  { playerId: "p2", nickname: "Bruno" },
-  { playerId: "p3", nickname: "Carla" },
-  { playerId: "p4", nickname: "Miguel" },
-  { playerId: "p5", nickname: "Rita" },
-  { playerId: "p6", nickname: "Tiago" },
-  { playerId: "p7", nickname: "Sofia" },
-  { playerId: "p8", nickname: "Pedro" },
-];
-
-let playerCount = 4;
+let joinedPlayers = [];
 let roundLimit = DEFAULT_ROUNDS;
 let roundIndex = 0;
-let phase = "setup";
+let phase = isJoinView ? "join" : "setup";
 let selectedPlayerId = null;
 let seconds = 15;
 let roundVotes = createRoundVotes(roundIndex);
+let joinPhotoDataUrl = "";
+let joinedPlayerName = "";
 
 window.setInterval(tick, 1000);
+window.setInterval(refreshJoinedPlayers, 1500);
 
 const phaseLabel = document.querySelector("#phaseLabel");
 const timerLabel = document.querySelector("#timerLabel");
 const setupPanel = document.querySelector("#setupPanel");
 const setupControls = document.querySelector("#setupControls");
+const joinPanel = document.querySelector("#joinPanel");
+const joinForm = document.querySelector("#joinForm");
+const joinPhotoInput = document.querySelector("#joinPhotoInput");
+const joinPhotoPreview = document.querySelector("#joinPhotoPreview");
+const joinNameInput = document.querySelector("#joinNameInput");
+const joinSkipPhoto = document.querySelector("#joinSkipPhoto");
+const joinStatus = document.querySelector("#joinStatus");
 const eyebrow = document.querySelector("#eyebrow");
 const questionPanel = document.querySelector("#questionPanel");
 const prompt = document.querySelector("#prompt");
@@ -190,39 +193,25 @@ setupControls.addEventListener("click", (event) => {
   updateSetting(button.dataset.settingAction);
 });
 
-setupControls.addEventListener("input", (event) => {
-  const input = event.target.closest("[data-player-name]");
-
-  if (!input) {
-    return;
-  }
-
-  updatePlayerName(input.dataset.playerName, input.value);
+joinPhotoInput.addEventListener("change", () => {
+  updateJoinPhoto(joinPhotoInput.files?.[0]);
 });
 
-setupControls.addEventListener("change", (event) => {
-  const input = event.target.closest("[data-player-photo]");
+joinForm.addEventListener("submit", (event) => {
+  event.preventDefault();
+  submitJoin(false);
+});
 
-  if (!input) {
-    return;
-  }
-
-  updatePlayerPhoto(input.dataset.playerPhoto, input.files?.[0]);
+joinSkipPhoto.addEventListener("click", () => {
+  submitJoin(true);
 });
 
 render();
+refreshJoinedPlayers();
 
 function updateSetting(action) {
   if (phase !== "setup") {
     return;
-  }
-
-  if (action === "players-down") {
-    playerCount = Math.max(MIN_PLAYERS, playerCount - 1);
-  }
-
-  if (action === "players-up") {
-    playerCount = Math.min(MAX_PLAYERS, playerCount + 1);
   }
 
   if (action === "rounds-down") {
@@ -237,32 +226,86 @@ function updateSetting(action) {
   render();
 }
 
-function updatePlayerName(playerId, value) {
-  const player = playerPool.find((item) => item.playerId === playerId);
-
-  if (!player) {
+function updateJoinPhoto(file) {
+  if (!file) {
+    joinPhotoDataUrl = "";
+    renderJoinPhotoPreview();
     return;
   }
 
-  player.nickname = value.trimStart().slice(0, 14);
+  const reader = new FileReader();
+
+  reader.addEventListener("load", () => {
+    joinPhotoDataUrl = typeof reader.result === "string" ? reader.result : "";
+    renderJoinPhotoPreview();
+  });
+
+  reader.readAsDataURL(file);
 }
 
-function updatePlayerPhoto(playerId, file) {
-  const player = playerPool.find((item) => item.playerId === playerId);
+async function submitJoin(skipPhoto) {
+  const nickname = joinNameInput.value.trim() || "Jogador";
 
-  if (!player || !file) {
+  if (skipPhoto) {
+    joinPhotoDataUrl = "";
+    renderJoinPhotoPreview();
+  }
+
+  const photoUrl = skipPhoto ? "" : joinPhotoDataUrl;
+  joinStatus.textContent = "A entrar...";
+
+  try {
+    const response = await fetch("/api/most-likely/join", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        clientId: getJoinClientId(),
+        nickname,
+        photoUrl,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Join failed");
+    }
+
+    const data = await response.json();
+    joinedPlayerName = data.player?.nickname ?? nickname;
+    joinStatus.textContent = `${joinedPlayerName}, estas na mesa.`;
+    document.body.dataset.joined = "true";
+    renderJoinPhotoPreview();
+  } catch (error) {
+    joinStatus.textContent = "Nao consegui entrar. Tenta outra vez.";
+  }
+}
+
+async function refreshJoinedPlayers() {
+  if (phase !== "setup") {
     return;
   }
 
-  if (player.photoUrl) {
-    URL.revokeObjectURL(player.photoUrl);
-  }
+  try {
+    const response = await fetch("/api/most-likely/players");
 
-  player.photoUrl = URL.createObjectURL(file);
-  render();
+    if (!response.ok) {
+      throw new Error("Players request failed");
+    }
+
+    const data = await response.json();
+    joinedPlayers = Array.isArray(data.players) ? data.players.slice(0, MAX_PLAYERS) : [];
+    roundVotes = createRoundVotes(roundIndex);
+    render();
+  } catch (error) {
+    joinedPlayers = [];
+    render();
+  }
 }
 
 function startGame() {
+  if (getActivePlayers().length < MIN_PLAYERS) {
+    return;
+  }
+
   roundIndex = 0;
   phase = "question";
   selectedPlayerId = null;
@@ -341,6 +384,7 @@ function goToNextRound() {
 function render() {
   document.body.dataset.phase = phase;
   renderHeader();
+  renderJoin();
   renderSetup();
   renderQuestion();
   renderPlayers();
@@ -349,10 +393,18 @@ function render() {
 }
 
 function renderHeader() {
+  if (phase === "join") {
+    phaseLabel.textContent = "Mesa";
+    timerLabel.hidden = false;
+    timerLabel.textContent = ROOM_CODE;
+    timerLabel.classList.add("is-idle");
+    return;
+  }
+
   if (phase === "setup") {
     phaseLabel.textContent = "Mesa";
     timerLabel.hidden = false;
-    timerLabel.textContent = `${playerCount}p`;
+    timerLabel.textContent = `${joinedPlayers.length}p`;
     timerLabel.classList.add("is-idle");
     return;
   }
@@ -366,10 +418,19 @@ function renderHeader() {
         ? `Resultado ${roundProgress}`
         : `Ronda ${roundProgress}`;
 
-  timerLabel.hidden = phase === "result";
-  timerLabel.textContent =
-    phase === "voting" ? `00:${String(seconds).padStart(2, "0")}` : "15s voto";
+  timerLabel.hidden = phase !== "voting";
+  timerLabel.textContent = phase === "voting" ? `00:${String(seconds).padStart(2, "0")}` : "";
   timerLabel.classList.toggle("is-idle", phase !== "voting");
+}
+
+function renderJoin() {
+  joinPanel.classList.toggle("hidden", phase !== "join");
+
+  if (phase !== "join") {
+    return;
+  }
+
+  renderJoinPhotoPreview();
 }
 
 function renderSetup() {
@@ -382,14 +443,22 @@ function renderSetup() {
   const players = getActivePlayers();
 
   setupControls.innerHTML = `
+    <section class="invite-card">
+      <img
+        class="invite-qr"
+        src="/api/most-likely/qr.svg?url=${encodeURIComponent(joinUrl)}"
+        alt="QR da mesa"
+      />
+      <div class="invite-copy">
+        <span>Codigo</span>
+        <strong>${ROOM_CODE}</strong>
+        <small>${escapeHtml(getShortJoinUrl())}</small>
+      </div>
+    </section>
     <div class="setup-counters">
       <article class="setup-counter">
-        <span>Jogadores</span>
-        <div class="setup-stepper">
-          <button type="button" data-setting-action="players-down" ${playerCount <= MIN_PLAYERS ? "disabled" : ""}>-</button>
-          <strong>${playerCount}</strong>
-          <button type="button" data-setting-action="players-up" ${playerCount >= MAX_PLAYERS ? "disabled" : ""}>+</button>
-        </div>
+        <span>Entraram</span>
+        <strong class="joined-count">${players.length}</strong>
       </article>
       <article class="setup-counter">
         <span>Rondas</span>
@@ -400,41 +469,31 @@ function renderSetup() {
         </div>
       </article>
     </div>
-    <section class="setup-players" aria-label="Jogadores escolhidos">
-        ${players
-          .map(
-            (player, index) => `
-              <article class="setup-player-card">
-                <input
-                  id="photo-${player.playerId}"
-                  class="photo-input"
-                  type="file"
-                  accept="image/*"
-                  data-player-photo="${player.playerId}"
-                  aria-label="Foto do jogador ${index + 1}"
-                />
-                <label class="photo-button" for="photo-${player.playerId}">
-                  ${getAvatarMarkup(player)}
-                  <span>+</span>
-                </label>
-                <input
-                  class="setup-name-input"
-                  data-player-name="${player.playerId}"
-                  maxlength="14"
-                  aria-label="Nome do jogador ${index + 1}"
-                  value="${escapeHtml(player.nickname)}"
-                />
-              </article>
-            `,
-          )
-          .join("")}
+    <section class="joined-players" aria-label="Jogadores na mesa">
+      ${
+        players.length === 0
+          ? '<div class="empty-table">A espera da mesa</div>'
+          : players
+              .map(
+                (player) => `
+                  <article class="joined-player-card">
+                    <span class="joined-avatar">${getAvatarMarkup(player)}</span>
+                    <strong>${escapeHtml(getPlayerName(player))}</strong>
+                  </article>
+                `,
+              )
+              .join("")
+      }
     </section>
   `;
 }
 
 function renderQuestion() {
-  questionPanel.classList.toggle("hidden", phase === "result" || phase === "setup");
-  if (phase === "result" || phase === "setup") {
+  questionPanel.classList.toggle(
+    "hidden",
+    phase === "result" || phase === "setup" || phase === "join",
+  );
+  if (phase === "result" || phase === "setup" || phase === "join") {
     return;
   }
 
@@ -448,10 +507,13 @@ function renderQuestion() {
 }
 
 function renderPlayers() {
-  playersGrid.classList.toggle("hidden", phase === "result" || phase === "setup");
+  playersGrid.classList.toggle(
+    "hidden",
+    phase === "result" || phase === "setup" || phase === "join",
+  );
   playersGrid.classList.toggle("ready-grid", phase === "question");
 
-  if (phase === "setup" || phase === "result") {
+  if (phase === "setup" || phase === "result" || phase === "join") {
     playersGrid.innerHTML = "";
     return;
   }
@@ -522,11 +584,18 @@ function renderResult() {
 }
 
 function renderFooter() {
+  if (phase === "join") {
+    primaryAction.hidden = true;
+    primaryAction.disabled = false;
+    return;
+  }
+
   if (phase === "setup") {
     primaryAction.hidden = false;
-    primaryAction.disabled = false;
+    primaryAction.disabled = getActivePlayers().length < MIN_PLAYERS;
     primaryAction.classList.remove("secondary");
-    primaryAction.textContent = "Comecar jogo";
+    primaryAction.textContent =
+      getActivePlayers().length < MIN_PLAYERS ? "A espera da mesa" : "Comecar jogo";
     return;
   }
 
@@ -614,7 +683,35 @@ function getSortedResults() {
 }
 
 function getActivePlayers() {
-  return playerPool.slice(0, playerCount);
+  return joinedPlayers.slice(0, MAX_PLAYERS);
+}
+
+function renderJoinPhotoPreview() {
+  if (joinPhotoDataUrl) {
+    joinPhotoPreview.innerHTML = `<img src="${escapeHtml(joinPhotoDataUrl)}" alt="" />`;
+    return;
+  }
+
+  joinPhotoPreview.textContent = "+";
+}
+
+function getJoinClientId() {
+  const existingId = window.localStorage.getItem(JOIN_CLIENT_ID_KEY);
+
+  if (existingId) {
+    return existingId;
+  }
+
+  const nextId = crypto.randomUUID
+    ? crypto.randomUUID()
+    : `client_${Date.now()}_${Math.random().toString(16).slice(2)}`;
+
+  window.localStorage.setItem(JOIN_CLIENT_ID_KEY, nextId);
+  return nextId;
+}
+
+function getShortJoinUrl() {
+  return joinUrl.replace(/^https?:\/\//, "");
 }
 
 function getPlayerInitial(player) {

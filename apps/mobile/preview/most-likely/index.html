@@ -31,6 +31,29 @@
           <div id="setupControls" class="setup-controls"></div>
         </section>
 
+        <section id="joinPanel" class="join-panel hidden">
+          <p class="eyebrow">Entrar na mesa</p>
+          <h1>O teu perfil</h1>
+          <form id="joinForm" class="join-form">
+            <input id="joinPhotoInput" class="photo-input" type="file" accept="image/*" />
+            <label id="joinPhotoButton" class="join-photo-button" for="joinPhotoInput">
+              <span id="joinPhotoPreview">+</span>
+            </label>
+            <input
+              id="joinNameInput"
+              class="join-name-input"
+              maxlength="14"
+              placeholder="O teu nome"
+              autocomplete="nickname"
+            />
+            <div class="join-actions">
+              <button id="joinSubmit" class="join-submit" type="submit">Entrar</button>
+              <button id="joinSkipPhoto" class="join-skip" type="button">Sem foto</button>
+            </div>
+          </form>
+          <p id="joinStatus" class="join-status"></p>
+        </section>
+
         <section id="questionPanel" class="question-panel">
           <p class="eyebrow" id="eyebrow">Quem e mais provavel?</p>
           <h1 id="prompt">Quem e mais provavel de mandar mensagem ao ex?</h1>
