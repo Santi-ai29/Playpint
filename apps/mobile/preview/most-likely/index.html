@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="pt">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Playpint - Es Tu?</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="app-shell" aria-live="polite">
+      <section class="phone-screen">
+        <div class="ambient ambient-glass"></div>
+        <div class="ambient ambient-candle"></div>
+        <div class="ambient ambient-card card-a"></div>
+        <div class="ambient ambient-card card-b"></div>
+
+        <header class="topbar">
+          <div class="brand-block">
+            <img class="brand-logo" src="./assets/playpint-logo.png" alt="Playpint" />
+            <p class="mode">Es Tu?</p>
+          </div>
+          <div class="round-pill">
+            <span id="phaseLabel">Ronda 1</span>
+            <strong id="timerLabel">00:30</strong>
+          </div>
+        </header>
+
+        <section id="setupPanel" class="setup-panel">
+          <p class="eyebrow">Configurar mesa</p>
+          <h1>Antes de jogar</h1>
+          <div id="setupControls" class="setup-controls"></div>
+        </section>
+
+        <section id="joinPanel" class="join-panel hidden">
+          <p class="eyebrow">Entrar na mesa</p>
+          <h1>O teu perfil</h1>
+          <form id="joinForm" class="join-form">
+            <input id="joinPhotoInput" class="photo-input" type="file" accept="image/*" />
+            <label id="joinPhotoButton" class="join-photo-button" for="joinPhotoInput">
+              <span id="joinPhotoPreview">Adicionar foto</span>
+            </label>
+            <input
+              id="joinNameInput"
+              class="join-name-input"
+              maxlength="14"
+              placeholder="O teu nome"
+              autocomplete="nickname"
+            />
+            <div class="join-actions">
+              <button id="joinSubmit" class="join-submit" type="submit">Entrar</button>
+            </div>
+          </form>
+          <div id="joinedPreview" class="joined-confirmation hidden">
+            <div id="joinedPreviewAvatar" class="joined-confirmation-avatar">P</div>
+            <div>
+              <strong id="joinedPreviewName">Jogador</strong>
+              <span>Estas na mesa</span>
+            </div>
+          </div>
+          <p id="joinStatus" class="join-status"></p>
+        </section>
+
+        <section id="questionPanel" class="question-panel">
+          <p class="eyebrow" id="eyebrow">Quem e mais provavel?</p>
+          <button id="shuffleQuestion" class="question-swap hidden" type="button">Trocar</button>
+          <h1 id="prompt">Quem e mais provavel de mandar mensagem ao ex?</h1>
+        </section>
+
+        <section id="playersGrid" class="players-grid" aria-label="Jogadores"></section>
+
+        <section id="resultPanel" class="result-panel hidden">
+          <p class="result-title">Resultado</p>
+          <div class="winner-card">
+            <div class="winner-avatar" id="winnerAvatar">B</div>
+            <div>
+              <h2 id="winnerName">Bruno</h2>
+              <p>mais votado</p>
+            </div>
+            <strong id="winnerPercentage">66.7%</strong>
+          </div>
+          <p class="result-message" id="resultMessage">A mesa falou.</p>
+          <div class="result-table" id="resultTable"></div>
+        </section>
+
+        <footer class="game-footer">
+          <button id="primaryAction" class="primary-action" type="button">Abrir votacao</button>
+        </footer>
+      </section>
+    </main>
+    <script src="./app.js"></script>
+  </body>
+</html>
