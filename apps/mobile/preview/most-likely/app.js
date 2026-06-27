@@ -5,11 +5,6 @@ const MIN_ROUNDS = 0;
 const MAX_ROUNDS = 12;
 const DEFAULT_ROOM_NAME = "Es Tu";
 const JOIN_CLIENT_ID_KEY = "playpint-most-likely-client-id";
-const INTENSITY_LEVELS = [
-  { id: "leve", label: "Leve" },
-  { id: "picante", label: "Picante" },
-  { id: "caos", label: "Caos" },
-];
 
 const spicyActions = [
   "mandar mensagem ao ex",
@@ -135,7 +130,6 @@ let joinedPlayers = [];
 let roundLimit = DEFAULT_ROUNDS;
 let roundIndex = 0;
 let questionCursor = 0;
-let questionLevel = "picante";
 let phase = isJoinView ? "join" : "setup";
 let selectedPlayerId = null;
 let seconds = 15;
@@ -206,13 +200,6 @@ setupControls.addEventListener("click", (event) => {
     return;
   }
 
-  const intensityButton = event.target.closest("[data-intensity]");
-
-  if (intensityButton) {
-    updateIntensity(intensityButton.dataset.intensity);
-    return;
-  }
-
   const button = event.target.closest("[data-setting-action]");
 
   if (!button) {
@@ -259,17 +246,6 @@ function updateSetting(action) {
     roundLimit = Math.min(MAX_ROUNDS, roundLimit + 1);
   }
 
-  roundVotes = createRoundVotes(questionCursor);
-  render();
-}
-
-function updateIntensity(level) {
-  if (phase !== "setup" || !INTENSITY_LEVELS.some((item) => item.id === level)) {
-    return;
-  }
-
-  questionLevel = level;
-  questionCursor = 0;
   roundVotes = createRoundVotes(questionCursor);
   render();
 }
@@ -600,22 +576,6 @@ function renderSetup() {
         <small>${escapeHtml(getShortJoinUrl())}</small>
       </div>
     </section>
-    <section class="tone-card" aria-label="Intensidade das perguntas">
-      <span>Intensidade</span>
-      <div class="tone-options">
-        ${INTENSITY_LEVELS.map(
-          (level) => `
-            <button
-              class="${questionLevel === level.id ? "active" : ""}"
-              type="button"
-              data-intensity="${level.id}"
-            >
-              ${level.label}
-            </button>
-          `,
-        ).join("")}
-      </div>
-    </section>
     <div class="setup-counters">
       <article class="setup-counter">
         <span>Entraram</span>
@@ -938,64 +898,7 @@ function getPlayerName(player) {
 }
 
 function getCurrentQuestion() {
-  const deck = getQuestionDeck();
-
-  return deck[questionCursor % deck.length] ?? questions[questionCursor % questions.length];
-}
-
-function getQuestionDeck() {
-  const deck = questions.filter((question) => getQuestionIntensity(question) === questionLevel);
-
-  return deck.length > 0 ? deck : questions;
-}
-
-function getQuestionIntensity(question) {
-  const promptValue = question.toLowerCase();
-  const chaosKeywords = [
-    "alcool",
-    "beber",
-    "shot",
-    "after",
-    "fechar o bar",
-    "arrependido",
-    "madrugada",
-    "plano b",
-    "perigoso",
-    "desconhecido",
-    "nome falso",
-    "telemovel para baixo",
-    "esconder notificacao",
-    "sumir",
-    "desaparecer",
-    "reaparecer",
-  ];
-  const lightKeywords = [
-    "chegar atrasado",
-    "pagar uma rodada",
-    "pedir comida",
-    "virar dj",
-    "cantar alto",
-    "fazer drama",
-    "exagerar uma historia",
-    "prometer juizo",
-    "rir na hora errada",
-    "tirar foto",
-    "grupo errado",
-    "pedir conselho",
-    "outfit",
-    "ferias",
-    "eu avisei",
-  ];
-
-  if (chaosKeywords.some((keyword) => promptValue.includes(keyword))) {
-    return "caos";
-  }
-
-  if (lightKeywords.some((keyword) => promptValue.includes(keyword))) {
-    return "leve";
-  }
-
-  return "picante";
+  return questions[questionCursor % questions.length];
 }
 
 function escapeHtml(value) {
