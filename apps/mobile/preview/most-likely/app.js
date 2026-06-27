@@ -5,6 +5,11 @@ const MIN_ROUNDS = 0;
 const MAX_ROUNDS = 12;
 const DEFAULT_ROOM_NAME = "Es Tu";
 const JOIN_CLIENT_ID_KEY = "playpint-most-likely-client-id";
+const INTENSITY_LEVELS = [
+  { id: "leve", label: "Leve" },
+  { id: "picante", label: "Picante" },
+  { id: "caos", label: "Caos" },
+];
 
 const spicyActions = [
   "mandar mensagem ao ex",
@@ -129,13 +134,17 @@ const joinUrl = `${window.location.origin}${window.location.pathname}?join=1`;
 let joinedPlayers = [];
 let roundLimit = DEFAULT_ROUNDS;
 let roundIndex = 0;
+let questionCursor = 0;
+let questionLevel = "picante";
 let phase = isJoinView ? "join" : "setup";
 let selectedPlayerId = null;
 let seconds = 15;
-let roundVotes = createRoundVotes(roundIndex);
+let roundVotes = createRoundVotes(questionCursor);
 let roomName = DEFAULT_ROOM_NAME;
 let joinPhotoDataUrl = "";
 let joinedPlayerName = "";
+let joinedPlayer = null;
+let resultRevealed = true;
 let roomNameSyncTimer;
 
 window.setInterval(tick, 1000);
@@ -150,13 +159,18 @@ const joinForm = document.querySelector("#joinForm");
 const joinPhotoInput = document.querySelector("#joinPhotoInput");
 const joinPhotoPreview = document.querySelector("#joinPhotoPreview");
 const joinNameInput = document.querySelector("#joinNameInput");
+const joinedPreview = document.querySelector("#joinedPreview");
+const joinedPreviewAvatar = document.querySelector("#joinedPreviewAvatar");
+const joinedPreviewName = document.querySelector("#joinedPreviewName");
 const joinStatus = document.querySelector("#joinStatus");
 const eyebrow = document.querySelector("#eyebrow");
 const questionPanel = document.querySelector("#questionPanel");
+const shuffleQuestion = document.querySelector("#shuffleQuestion");
 const prompt = document.querySelector("#prompt");
 const playersGrid = document.querySelector("#playersGrid");
 const resultPanel = document.querySelector("#resultPanel");
 const primaryAction = document.querySelector("#primaryAction");
+const resultTitle = document.querySelector("#resultPanel .result-title");
 const winnerName = document.querySelector("#winnerName");
 const winnerAvatar = document.querySelector("#winnerAvatar");
 const winnerPercentage = document.querySelector("#winnerPercentage");
@@ -185,6 +199,20 @@ primaryAction.addEventListener("click", () => {
 });
 
 setupControls.addEventListener("click", (event) => {
+  const removeButton = event.target.closest("[data-remove-player]");
+
+  if (removeButton) {
+    removeJoinedPlayer(removeButton.dataset.removePlayer);
+    return;
+  }
+
+  const intensityButton = event.target.closest("[data-intensity]");
+
+  if (intensityButton) {
+    updateIntensity(intensityButton.dataset.intensity);
+    return;
+  }
+
   const button = event.target.closest("[data-setting-action]");
 
   if (!button) {
@@ -210,8 +238,10 @@ joinPhotoInput.addEventListener("change", () => {
 
 joinForm.addEventListener("submit", (event) => {
   event.preventDefault();
-  submitJoin(false);
+  submitJoin();
 });
+
+shuffleQuestion.addEventListener("click", skipQuestion);
 
 render();
 refreshJoinedPlayers();
@@ -229,7 +259,18 @@ function updateSetting(action) {
     roundLimit = Math.min(MAX_ROUNDS, roundLimit + 1);
   }
 
-  roundVotes = createRoundVotes(roundIndex);
+  roundVotes = createRoundVotes(questionCursor);
+  render();
+}
+
+function updateIntensity(level) {
+  if (phase !== "setup" || !INTENSITY_LEVELS.some((item) => item.id === level)) {
+    return;
+  }
+
+  questionLevel = level;
+  questionCursor = 0;
+  roundVotes = createRoundVotes(questionCursor);
   render();
 }
 
@@ -297,12 +338,39 @@ async function submitJoin() {
     }
 
     const data = await response.json();
-    joinedPlayerName = data.player?.nickname ?? nickname;
-    joinStatus.textContent = `${joinedPlayerName}, estas na mesa.`;
+    joinedPlayer = data.player ?? { nickname, photoUrl };
+    joinedPlayerName = joinedPlayer.nickname ?? nickname;
+    joinStatus.textContent = "Apareces agora no ecra do host.";
     document.body.dataset.joined = "true";
-    renderJoinPhotoPreview();
+    renderJoin();
   } catch (error) {
     joinStatus.textContent = "Nao consegui entrar. Tenta outra vez.";
+  }
+}
+
+async function removeJoinedPlayer(playerId) {
+  if (phase !== "setup" || !playerId) {
+    return;
+  }
+
+  joinedPlayers = joinedPlayers.filter((player) => player.playerId !== playerId);
+  render();
+
+  try {
+    const response = await fetch(`/api/most-likely/players/${encodeURIComponent(playerId)}`, {
+      method: "DELETE",
+    });
+
+    if (!response.ok) {
+      throw new Error("Remove player request failed");
+    }
+
+    const data = await response.json();
+    joinedPlayers = Array.isArray(data.players) ? data.players.slice(0, MAX_PLAYERS) : [];
+    roundVotes = createRoundVotes(questionCursor);
+    render();
+  } catch (error) {
+    refreshJoinedPlayers();
   }
 }
 
@@ -322,7 +390,7 @@ async function refreshJoinedPlayers() {
     const isEditingRoomName = document.activeElement?.matches("[data-room-name]");
     joinedPlayers = Array.isArray(data.players) ? data.players.slice(0, MAX_PLAYERS) : [];
     roomName = isEditingRoomName ? roomName : (data.roomName ?? roomName);
-    roundVotes = createRoundVotes(roundIndex);
+    roundVotes = createRoundVotes(questionCursor);
     if (isEditingRoomName) {
       renderHeader();
       return;
@@ -343,10 +411,12 @@ function startGame() {
   }
 
   roundIndex = 0;
+  questionCursor = 0;
   phase = "question";
   selectedPlayerId = null;
   seconds = 15;
-  roundVotes = createRoundVotes(roundIndex);
+  resultRevealed = true;
+  roundVotes = createRoundVotes(questionCursor);
   render();
 }
 
@@ -374,7 +444,19 @@ function openVoting() {
   phase = "voting";
   seconds = 15;
   selectedPlayerId = null;
-  roundVotes = createRoundVotes(roundIndex);
+  resultRevealed = true;
+  roundVotes = createRoundVotes(questionCursor);
+  render();
+}
+
+function skipQuestion() {
+  if (phase !== "question") {
+    return;
+  }
+
+  questionCursor += 1;
+  selectedPlayerId = null;
+  roundVotes = createRoundVotes(questionCursor);
   render();
 }
 
@@ -393,27 +475,40 @@ function confirmVote() {
   }
 
   phase = "waiting";
-  roundVotes = createRoundVotes(roundIndex, selectedPlayerId);
+  roundVotes = createRoundVotes(questionCursor, selectedPlayerId);
   window.setTimeout(showResult, 560);
   render();
 }
 
 function showResult() {
   phase = "result";
+  resultRevealed = false;
   render();
+  window.setTimeout(() => {
+    if (phase !== "result") {
+      return;
+    }
+
+    resultRevealed = true;
+    renderResult();
+    renderFooter();
+  }, 650);
 }
 
 function goToNextRound() {
   if (isLastConfiguredRound()) {
     roundIndex = 0;
+    questionCursor = 0;
   } else {
     roundIndex += 1;
+    questionCursor += 1;
   }
 
   phase = "question";
   selectedPlayerId = null;
   seconds = 15;
-  roundVotes = createRoundVotes(roundIndex);
+  resultRevealed = true;
+  roundVotes = createRoundVotes(questionCursor);
   render();
 }
 
@@ -466,7 +561,15 @@ function renderJoin() {
     return;
   }
 
+  const hasJoined = Boolean(joinedPlayerName);
+  joinForm.hidden = hasJoined;
+  joinedPreview.classList.toggle("hidden", !hasJoined);
+
   renderJoinPhotoPreview();
+
+  if (hasJoined) {
+    renderJoinedPreview();
+  }
 }
 
 function renderSetup() {
@@ -497,6 +600,22 @@ function renderSetup() {
         <small>${escapeHtml(getShortJoinUrl())}</small>
       </div>
     </section>
+    <section class="tone-card" aria-label="Intensidade das perguntas">
+      <span>Intensidade</span>
+      <div class="tone-options">
+        ${INTENSITY_LEVELS.map(
+          (level) => `
+            <button
+              class="${questionLevel === level.id ? "active" : ""}"
+              type="button"
+              data-intensity="${level.id}"
+            >
+              ${level.label}
+            </button>
+          `,
+        ).join("")}
+      </div>
+    </section>
     <div class="setup-counters">
       <article class="setup-counter">
         <span>Entraram</span>
@@ -517,12 +636,24 @@ function renderSetup() {
           ? '<div class="empty-table">A espera da mesa</div>'
           : players
               .map(
-                (player) => `
+                (player) => {
+                  const name = escapeHtml(getPlayerName(player));
+
+                  return `
                   <article class="joined-player-card">
                     <span class="joined-avatar">${getAvatarMarkup(player)}</span>
-                    <strong>${escapeHtml(getPlayerName(player))}</strong>
+                    <strong>${name}</strong>
+                    <button
+                      class="remove-player"
+                      type="button"
+                      data-remove-player="${escapeHtml(player.playerId)}"
+                      aria-label="Remover ${name}"
+                    >
+                      x
+                    </button>
                   </article>
-                `,
+                `;
+                },
               )
               .join("")
       }
@@ -539,6 +670,7 @@ function renderQuestion() {
     return;
   }
 
+  shuffleQuestion.classList.toggle("hidden", phase !== "question");
   prompt.textContent = getCurrentQuestion();
   eyebrow.textContent =
     phase === "voting" || phase === "waiting"
@@ -594,6 +726,18 @@ function renderResult() {
   resultPanel.classList.toggle("hidden", phase !== "result");
 
   if (phase !== "result") {
+    return;
+  }
+
+  resultPanel.classList.toggle("is-revealing", !resultRevealed);
+  resultTitle.textContent = resultRevealed ? "Resultado" : "A mesa decidiu";
+
+  if (!resultRevealed) {
+    winnerName.textContent = "...";
+    winnerAvatar.textContent = "?";
+    winnerPercentage.textContent = "";
+    resultMessage.textContent = "";
+    resultTable.innerHTML = "";
     return;
   }
 
@@ -658,6 +802,12 @@ function renderFooter() {
   }
 
   if (phase === "waiting") {
+    primaryAction.hidden = true;
+    primaryAction.disabled = false;
+    return;
+  }
+
+  if (phase === "result" && !resultRevealed) {
     primaryAction.hidden = true;
     primaryAction.disabled = false;
     return;
@@ -737,6 +887,17 @@ function renderJoinPhotoPreview() {
   joinPhotoPreview.textContent = "Adicionar foto";
 }
 
+function renderJoinedPreview() {
+  const previewPlayer =
+    joinedPlayer ?? {
+      nickname: joinedPlayerName || "Jogador",
+      photoUrl: joinPhotoDataUrl,
+    };
+
+  joinedPreviewName.textContent = getPlayerName(previewPlayer);
+  joinedPreviewAvatar.innerHTML = getAvatarMarkup(previewPlayer);
+}
+
 function getRoomName() {
   return roomName.trim() || DEFAULT_ROOM_NAME;
 }
@@ -777,7 +938,64 @@ function getPlayerName(player) {
 }
 
 function getCurrentQuestion() {
-  return questions[roundIndex % questions.length];
+  const deck = getQuestionDeck();
+
+  return deck[questionCursor % deck.length] ?? questions[questionCursor % questions.length];
+}
+
+function getQuestionDeck() {
+  const deck = questions.filter((question) => getQuestionIntensity(question) === questionLevel);
+
+  return deck.length > 0 ? deck : questions;
+}
+
+function getQuestionIntensity(question) {
+  const promptValue = question.toLowerCase();
+  const chaosKeywords = [
+    "alcool",
+    "beber",
+    "shot",
+    "after",
+    "fechar o bar",
+    "arrependido",
+    "madrugada",
+    "plano b",
+    "perigoso",
+    "desconhecido",
+    "nome falso",
+    "telemovel para baixo",
+    "esconder notificacao",
+    "sumir",
+    "desaparecer",
+    "reaparecer",
+  ];
+  const lightKeywords = [
+    "chegar atrasado",
+    "pagar uma rodada",
+    "pedir comida",
+    "virar dj",
+    "cantar alto",
+    "fazer drama",
+    "exagerar uma historia",
+    "prometer juizo",
+    "rir na hora errada",
+    "tirar foto",
+    "grupo errado",
+    "pedir conselho",
+    "outfit",
+    "ferias",
+    "eu avisei",
+  ];
+
+  if (chaosKeywords.some((keyword) => promptValue.includes(keyword))) {
+    return "caos";
+  }
+
+  if (lightKeywords.some((keyword) => promptValue.includes(keyword))) {
+    return "leve";
+  }
+
+  return "picante";
 }
 
 function escapeHtml(value) {
@@ -804,30 +1022,63 @@ function isLastConfiguredRound() {
 
 function getSarcasticMessage(winner, votes, percentage) {
   const prompt = getCurrentQuestion().toLowerCase();
+  const name = getPlayerName(winner);
 
   if (prompt.includes("ex")) {
-    return `${getPlayerName(winner)}, sempre soubemos que o ex faz te falta.`;
+    const lines = [
+      `${name}, sempre soubemos que o ex faz te falta.`,
+      `${name}, esse bloqueio ja vinha tarde.`,
+      `${name}, saudade nao se disfarca assim.`,
+    ];
+
+    return lines[questionCursor % lines.length];
   }
 
   if (prompt.includes("ciume")) {
-    return `${getPlayerName(winner)}, esse ciume veio com recibo.`;
+    return `${name}, esse ciume veio com recibo.`;
   }
 
-  if (prompt.includes("crush")) {
-    return `${getPlayerName(winner)}, essa crush ja nem e segredo.`;
+  if (prompt.includes("crush") || prompt.includes("flertar") || prompt.includes("beijar")) {
+    const lines = [
+      `${name}, esse charme ja esta a dar nas vistas.`,
+      `${name}, a crush percebeu antes de ti.`,
+      `${name}, clima negado e clima confirmado.`,
+    ];
+
+    return lines[questionCursor % lines.length];
   }
 
   if (prompt.includes("alcool") || prompt.includes("beber") || prompt.includes("shot")) {
-    return `${getPlayerName(winner)}, a culpa hoje vai para o copo.`;
+    return `${name}, a culpa hoje vai para o copo.`;
+  }
+
+  if (prompt.includes("ghost") || prompt.includes("visto") || prompt.includes("responder seco")) {
+    return `${name}, visto dado e reputacao perdida.`;
+  }
+
+  if (
+    prompt.includes("notificacao") ||
+    prompt.includes("print") ||
+    prompt.includes("telemovel")
+  ) {
+    return `${name}, telemovel escondido e quase confissao.`;
+  }
+
+  if (prompt.includes("desaparecer") || prompt.includes("sumir") || prompt.includes("sair")) {
+    return `${name}, a desaparecer eras profissional.`;
+  }
+
+  if (prompt.includes("comida") || prompt.includes("rodada")) {
+    return `${name}, a mesa ja contou contigo para pagar.`;
   }
 
   const lines = [
-    `${getPlayerName(winner)}, nao adianta fazer cara de santo.`,
-    `${getPlayerName(winner)}, a mesa sabe coisas.`,
-    `${getPlayerName(winner)}, hoje foste apanhado.`,
-    `${getPlayerName(winner)}, ${percentage}% de suspeitas confirmadas.`,
-    `${getPlayerName(winner)}, ${votes} votos e zero surpresa.`,
+    `${name}, nao adianta fazer cara de santo.`,
+    `${name}, a mesa sabe coisas.`,
+    `${name}, foste exposto com carinho.`,
+    `${name}, ${percentage}% de suspeitas confirmadas.`,
+    `${name}, ${votes} votos e zero surpresa.`,
   ];
 
-  return lines[roundIndex % lines.length];
+  return lines[questionCursor % lines.length];
 }

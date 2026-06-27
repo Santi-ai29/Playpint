@@ -16,6 +16,7 @@ O backend escolhe uma pergunta do tipo "Quem e mais provavel...?" e todos os jog
 - Tempo de votacao: 15 segundos.
 - Rondas por defeito: 12.
 - Setup antes de jogar: admin mostra QR da mesa, jogadores entram pelo telemovel, escolhem nome/foto opcional e o admin define rondas de 0 a 12 (`0` = livre na UI).
+- O admin pode escolher intensidade (`Leve`, `Picante`, `Caos`), trocar a pergunta antes da votacao e remover jogadores antes de comecar.
 - Banco default: 1000 perguntas unicas, com tom de bar/adulto leve.
 
 ## Fluxo da ronda
@@ -119,8 +120,11 @@ Direcao visual aprovada:
 - frase do resultado deve ser curta e picante, tipo "Ana, sempre soubemos que o ex faz te falta.";
 - cartao selecionado/vencedor com brilho, entrada animada e reflexo premium;
 - antes de comecar, o host ve um painel compacto com QR, jogadores que entraram e rondas, sem bloco visual de tempo;
+- selector de intensidade deve ser compacto e nao roubar foco do QR/nome da sala;
 - cada jogador entra pelo link/QR, escolhe nome e pode tocar no avatar para adicionar foto; sem foto, fica com avatar generico;
+- depois de entrar pelo QR, o jogador ve um estado simples de confirmacao em vez de continuar no formulario;
 - antes do host abrir a votacao, os jogadores aparecem numa grelha compacta que preenche melhor o ecra;
+- o host pode trocar a pergunta antes de abrir a votacao;
 - botao de confirmar fica proximo da grelha de votacao.
 
 ## Registry

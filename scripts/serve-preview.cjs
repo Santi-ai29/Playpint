@@ -120,6 +120,19 @@ async function handleMostLikelyApi(request, response, url) {
     return;
   }
 
+  if (request.method === "DELETE" && url.pathname.startsWith("/api/most-likely/players/")) {
+    const playerId = decodeURIComponent(url.pathname.replace("/api/most-likely/players/", ""));
+    mostLikelySession.players = mostLikelySession.players.filter(
+      (player) => player.playerId !== playerId,
+    );
+    writeJson(response, {
+      players: mostLikelySession.players,
+      totalPlayers: mostLikelySession.players.length,
+      roomName: mostLikelySession.roomName,
+    });
+    return;
+  }
+
   if (request.method === "POST" && url.pathname === "/api/most-likely/reset") {
     mostLikelySession.players = [];
     writeJson(response, { players: [] });

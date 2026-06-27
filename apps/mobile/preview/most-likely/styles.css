@@ -41,6 +41,10 @@ button {
   font: inherit;
 }
 
+[hidden] {
+  display: none !important;
+}
+
 .app-shell {
   height: 100dvh;
   overflow: hidden;
@@ -240,6 +244,7 @@ button {
 }
 
 .question-panel {
+  position: relative;
   min-height: 0;
   padding: 16px;
   border: 1px solid var(--line);
@@ -264,6 +269,25 @@ button {
   line-height: 1.03;
   font-weight: 950;
   letter-spacing: 0;
+}
+
+.question-swap {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  min-height: 31px;
+  border: 1px solid rgba(255, 195, 66, 0.32);
+  border-radius: 999px;
+  background: rgba(255, 195, 66, 0.1);
+  color: var(--yellow);
+  font-size: 11px;
+  font-weight: 950;
+  padding: 0 12px;
+  text-transform: uppercase;
+}
+
+.question-swap:active {
+  transform: scale(0.96);
 }
 
 .setup-panel {
@@ -361,6 +385,52 @@ button {
   gap: 10px;
 }
 
+.tone-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  min-height: 54px;
+  padding: 8px 10px;
+  border: 1px solid rgba(255, 195, 66, 0.22);
+  border-radius: 20px;
+  background:
+    linear-gradient(135deg, rgba(255, 74, 10, 0.1), transparent 52%),
+    rgba(10, 7, 4, 0.72);
+  box-shadow: 0 14px 26px rgba(0, 0, 0, 0.22);
+}
+
+.tone-card > span {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 950;
+  text-transform: uppercase;
+}
+
+.tone-options {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.tone-options button {
+  min-height: 36px;
+  border: 1px solid rgba(255, 195, 66, 0.2);
+  border-radius: 14px;
+  background: rgba(255, 243, 213, 0.06);
+  color: var(--cream);
+  font-size: 12px;
+  font-weight: 950;
+  text-transform: uppercase;
+}
+
+.tone-options button.active {
+  border-color: rgba(255, 195, 66, 0.58);
+  background: var(--yellow);
+  color: var(--black);
+  box-shadow: 0 0 24px rgba(255, 195, 66, 0.22);
+}
+
 .setup-counter {
   position: relative;
   overflow: hidden;
@@ -451,8 +521,9 @@ button {
 }
 
 .joined-player-card {
+  position: relative;
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
   gap: 9px;
   min-width: 0;
@@ -498,6 +569,24 @@ button {
   font-weight: 950;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.remove-player {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: 1px solid rgba(255, 195, 66, 0.2);
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.2);
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 950;
+  text-transform: uppercase;
+}
+
+.remove-player:active {
+  transform: scale(0.94);
 }
 
 .empty-table {
@@ -639,6 +728,64 @@ button {
   border: 0;
   background: var(--orange);
   color: var(--black);
+}
+
+.joined-confirmation {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 14px;
+  padding: 16px;
+  border: 1px solid rgba(255, 195, 66, 0.34);
+  border-radius: 28px;
+  background:
+    linear-gradient(135deg, rgba(255, 195, 66, 0.14), transparent 52%),
+    rgba(10, 7, 4, 0.82);
+  box-shadow:
+    0 0 34px rgba(255, 195, 66, 0.16),
+    0 20px 40px rgba(0, 0, 0, 0.32);
+  animation: result-row-enter 320ms ease-out both;
+}
+
+.joined-confirmation-avatar {
+  display: grid;
+  place-items: center;
+  width: 76px;
+  height: 76px;
+  overflow: hidden;
+  border-radius: 24px;
+  background: var(--yellow);
+  color: var(--black);
+  font-size: 34px;
+  font-weight: 950;
+  box-shadow: 0 0 32px rgba(255, 195, 66, 0.28);
+}
+
+.joined-confirmation-avatar img {
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  object-fit: cover;
+}
+
+.joined-confirmation strong {
+  display: block;
+  overflow: hidden;
+  color: var(--cream);
+  font-size: 25px;
+  font-weight: 950;
+  line-height: 1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.joined-confirmation span {
+  display: block;
+  margin-top: 7px;
+  color: var(--yellow);
+  font-size: 13px;
+  font-weight: 950;
+  text-transform: uppercase;
 }
 
 .join-status {
@@ -819,6 +966,39 @@ button {
   animation:
     winner-pop 380ms cubic-bezier(0.2, 1.2, 0.3, 1),
     selected-glow 1.6s ease-in-out infinite alternate;
+}
+
+.result-panel.is-revealing {
+  align-self: center;
+  margin-top: 0;
+}
+
+.result-panel.is-revealing .winner-card {
+  grid-template-columns: auto minmax(0, 1fr);
+  min-height: 112px;
+  border: 1px solid rgba(255, 195, 66, 0.34);
+  background:
+    radial-gradient(circle at 18% 50%, rgba(255, 195, 66, 0.24), transparent 38%),
+    rgba(18, 12, 7, 0.9);
+  color: var(--cream);
+  animation:
+    reveal-pulse 680ms ease-in-out infinite alternate,
+    winner-pop 300ms ease-out;
+}
+
+.result-panel.is-revealing .winner-avatar {
+  background: rgba(255, 195, 66, 0.16);
+  color: var(--yellow);
+}
+
+.result-panel.is-revealing .winner-card p,
+.result-panel.is-revealing .winner-card strong {
+  display: none;
+}
+
+.result-panel.is-revealing .result-message,
+.result-panel.is-revealing .result-table {
+  display: none;
 }
 
 .result-message {
@@ -1003,8 +1183,23 @@ body[data-phase="setup"] .setup-panel {
   grid-row: 2;
 }
 
+body[data-phase="join"] .topbar,
+body[data-phase="setup"] .topbar {
+  grid-row: 1;
+}
+
+body[data-phase="join"] .topbar {
+  position: absolute;
+  top: max(18px, env(safe-area-inset-top));
+  left: 16px;
+  right: 16px;
+  z-index: 2;
+}
+
 body[data-phase="join"] .join-panel {
   grid-row: 2;
+  align-self: start;
+  margin-top: clamp(124px, 18vh, 154px);
 }
 
 body[data-phase="question"] .players-grid {
@@ -1091,6 +1286,22 @@ body[data-phase="result"] .result-panel {
   100% {
     transform: translateX(42%) rotate(8deg);
     opacity: 0;
+  }
+}
+
+@keyframes reveal-pulse {
+  from {
+    box-shadow:
+      0 0 0 1px rgba(255, 195, 66, 0.14),
+      0 0 24px rgba(255, 195, 66, 0.16);
+    transform: scale(0.99);
+  }
+
+  to {
+    box-shadow:
+      0 0 0 2px rgba(255, 195, 66, 0.28),
+      0 0 46px rgba(255, 195, 66, 0.28);
+    transform: scale(1);
   }
 }
 
