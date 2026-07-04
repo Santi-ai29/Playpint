@@ -37,9 +37,9 @@ Categorias disponiveis:
 4. Quando alguem carrega `STOP`, os inputs fecham imediatamente e a ronda
    passa para revisao.
 5. Se ninguem carregar `STOP`, os inputs fecham no prazo oficial.
-6. Na revisao, o host ve as respostas por categoria e jogador e pode anular
-   uma resposta especifica.
-7. Depois da revisao, o backend calcula a pontuacao oficial.
+6. Na revisao, o host ve uma categoria de cada vez, avanca em `Proximo` e
+   pode anular uma resposta especifica por jogador.
+7. So depois da ultima categoria e que o backend calcula a pontuacao oficial.
 8. Depois de fechada, novas respostas e edicoes sao rejeitadas.
 9. O resultado oficial inclui respostas por jogador, pontos por categoria,
    total da ronda e ranking geral.

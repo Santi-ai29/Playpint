@@ -131,7 +131,7 @@ export function createStopGameView(
         model.status === "result"
           ? stopTheme.copy.nextRoundButton
           : model.status === "review"
-            ? "Calcular pontos"
+            ? "Proxima categoria"
           : stopTheme.copy.stopButton,
       tone: model.canStop || model.status === "review" ? "orange" : "muted",
       disabled:

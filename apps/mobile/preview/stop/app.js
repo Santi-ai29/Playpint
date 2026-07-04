@@ -175,7 +175,7 @@ primaryAction.addEventListener("click", () => {
   }
 
   if (state.phase === "review") {
-    showScores();
+    advanceReview();
     return;
   }
 
@@ -331,6 +331,19 @@ function showScores() {
 
   state.phase = "score";
   render();
+}
+
+function advanceReview() {
+  const categories = getActiveCategories();
+  const currentIndex = getCurrentReviewCategoryIndex(categories);
+
+  if (currentIndex < categories.length - 1) {
+    state.reviewCategoryId = categories[currentIndex + 1].id;
+    render();
+    return;
+  }
+
+  showScores();
 }
 
 function nextRound() {
@@ -572,7 +585,7 @@ function renderFooter() {
   }
 
   if (state.phase === "review") {
-    primaryAction.textContent = "Calcular pontos";
+    primaryAction.textContent = getReviewPrimaryActionLabel();
     primaryAction.disabled = false;
     primaryAction.classList.remove("secondary");
     return;
@@ -746,6 +759,22 @@ function getOverallRanking() {
 
 function getStoppedBy() {
   return state.submissions.find((submission) => submission.stoppedRound)?.player;
+}
+
+function getReviewPrimaryActionLabel() {
+  const categories = getActiveCategories();
+  const currentIndex = getCurrentReviewCategoryIndex(categories);
+  const nextCategory = categories[currentIndex + 1];
+
+  return nextCategory ? `Proximo: ${nextCategory.label}` : "Calcular pontos";
+}
+
+function getCurrentReviewCategoryIndex(categories = getActiveCategories()) {
+  const index = categories.findIndex(
+    (category) => category.id === state.reviewCategoryId,
+  );
+
+  return index >= 0 ? index : 0;
 }
 
 function getActiveCategories() {
