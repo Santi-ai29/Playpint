@@ -34,16 +34,21 @@ Categorias disponiveis:
 1. O backend cria a ronda em `active`, escolhe a letra e abre o relogio.
 2. Jogadores preenchem respostas para as categorias ativas.
 3. Cada jogador so pode submeter uma vez.
-4. Quando alguem carrega `STOP`, a ronda fecha imediatamente no MVP.
-5. Se ninguem carregar `STOP`, a ronda fecha no prazo oficial.
-6. Depois de fechada, novas respostas e edicoes sao rejeitadas.
-7. O resultado oficial inclui respostas por jogador, pontos por categoria,
+4. Quando alguem carrega `STOP`, os inputs fecham imediatamente e a ronda
+   passa para revisao.
+5. Se ninguem carregar `STOP`, os inputs fecham no prazo oficial.
+6. Na revisao, o host ve as respostas por categoria e jogador e pode anular
+   uma resposta especifica.
+7. Depois da revisao, o backend calcula a pontuacao oficial.
+8. Depois de fechada, novas respostas e edicoes sao rejeitadas.
+9. O resultado oficial inclui respostas por jogador, pontos por categoria,
    total da ronda e ranking geral.
 
 ## Pontuacao
 
 - Resposta vazia: 0 pontos.
 - Resposta que nao comeca pela letra: 0 pontos.
+- Resposta anulada pelo host na revisao: 0 pontos.
 - Resposta repetida por outro jogador na mesma categoria: 5 pontos.
 - Resposta valida e unica na categoria: 10 pontos.
 
@@ -60,10 +65,12 @@ Contratos partilhados em `packages/contracts/src/stop.ts`:
 - `StopSubmitAnswersRequest`
 - `StopPublicState`
 - `StopPlayerState`
+- `StopRoundReview`
 - `StopRoundResult`
 - `StopOverallRankingEntry`
+- `StopAnswerReviewDecisionRequest`
 - eventos `stop.round_started`, `stop.answer_received`, `stop.round_stopped`,
-  `stop.round_finished` e `stop.game_finished`
+  `stop.review_started`, `stop.round_finished` e `stop.game_finished`
 
 ## Backend
 
@@ -75,7 +82,7 @@ Pecas principais:
 - `stopRuntime`: eventos oficiais da ronda.
 - `stopSession`: varias rondas, settings e ranking geral.
 - `stopController`: fachada para sala usar `tick`, `submitAnswers`,
-  `nextRound` e snapshots.
+  `setAnswerReviewDecision`, `finishReview`, `nextRound` e snapshots.
 
 O frontend nunca calcula o resultado oficial.
 
@@ -88,8 +95,9 @@ Responsabilidades:
 - transformar o snapshot oficial em screen model;
 - mostrar letra grande, timer e campos rapidos de categoria;
 - bloquear campos depois de submeter;
+- mostrar revisao por categoria, com respostas por jogador e acao de anular;
 - criar uma action compativel com o contrato;
-- mostrar resultado com tabela simples e ranking geral.
+- mostrar pontuacao final limpa e ranking geral acumulado.
 
 Direcao visual:
 

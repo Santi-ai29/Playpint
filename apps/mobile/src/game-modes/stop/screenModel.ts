@@ -11,7 +11,7 @@ import {
 import { createRoundTimerModel } from "../core";
 import { stopTheme } from "./theme";
 
-export type StopScreenStatus = "answering" | "submitted" | "result";
+export type StopScreenStatus = "answering" | "submitted" | "review" | "result";
 
 export interface StopAnswerFieldModel {
   categoryId: StopCategoryId;
@@ -88,6 +88,25 @@ export interface StopScreenModel {
       isLeader: boolean;
     }>;
   };
+  review?: {
+    title: string;
+    stoppedByLabel?: string;
+    categories: Array<{
+      categoryId: StopCategoryId;
+      label: string;
+    }>;
+    rows: Array<{
+      playerId: string;
+      nickname: string;
+      answers: Array<{
+        categoryId: StopCategoryId;
+        label: string;
+        value: string;
+        startsWithLetter: boolean;
+        invalidated: boolean;
+      }>;
+    }>;
+  };
   animation: {
     letterEntry: "pop";
     stopHighlight: boolean;
@@ -103,6 +122,7 @@ export function createStopScreenModel(
   const result = snapshot.publicState.result;
   const hasSubmitted = Boolean(snapshot.playerState?.hasSubmitted);
   const isActive = snapshot.lifecycleState === "active" && !timer.isExpired;
+  const isReview = snapshot.lifecycleState === "submitted";
   const canSubmit = isActive && !hasSubmitted;
   const answers = snapshot.playerState?.answers ?? {};
 
@@ -117,7 +137,7 @@ export function createStopScreenModel(
       timerLabel: formatTimerLabel(timer.remainingSeconds),
     },
     copy: stopTheme.copy,
-    status: getStatus(Boolean(result), hasSubmitted),
+    status: getStatus(Boolean(result), isReview, hasSubmitted),
     roomName: snapshot.publicState.roomName,
     roundId: snapshot.roundId,
     letter: snapshot.publicState.letter,
@@ -139,6 +159,29 @@ export function createStopScreenModel(
       placeholder: `${category.placeholder} com ${snapshot.publicState.letter}`,
       accent: index % 3 === 1 ? "cyan" : "yellow",
     })),
+    review: snapshot.publicState.review
+      ? {
+          title: "Rever respostas",
+          stoppedByLabel: snapshot.publicState.review.stoppedByNickname
+            ? `${snapshot.publicState.review.stoppedByNickname} carregou Stop`
+            : undefined,
+          categories: snapshot.publicState.review.categories.map((category) => ({
+            categoryId: category.id,
+            label: category.label,
+          })),
+          rows: snapshot.publicState.review.rows.map((row) => ({
+            playerId: row.playerId,
+            nickname: row.nickname,
+            answers: row.answers.map((answer) => ({
+              categoryId: answer.categoryId,
+              label: answer.categoryLabel,
+              value: answer.answer,
+              startsWithLetter: answer.startsWithLetter,
+              invalidated: answer.invalidated,
+            })),
+          })),
+        }
+      : undefined,
     result: result ? createResultModel(snapshot.publicState) : undefined,
     animation: {
       letterEntry: "pop",
@@ -164,10 +207,15 @@ export function createStopSubmitAnswersAction(input: {
 
 function getStatus(
   hasResult: boolean,
+  isReview: boolean,
   hasSubmitted: boolean,
 ): StopScreenStatus {
   if (hasResult) {
     return "result";
+  }
+
+  if (isReview) {
+    return "review";
   }
 
   return hasSubmitted ? "submitted" : "answering";
@@ -179,6 +227,10 @@ function getPhaseLabel(
 ): string {
   if (snapshot.lifecycleState === "result") {
     return stopTheme.copy.resultTitle;
+  }
+
+  if (snapshot.lifecycleState === "submitted") {
+    return "Revisao";
   }
 
   if (hasSubmitted) {

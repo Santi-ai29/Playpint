@@ -11,6 +11,7 @@ import {
   getStopSnapshot,
   isValidStopAnswer,
   scoreStopRound,
+  setStopAnswerReviewDecision,
   stopGameModule,
   submitStopAnswers,
 } from "./stopModule";
@@ -86,11 +87,12 @@ test("scores empty, wrong-letter, duplicate, and unique answers", () => {
     },
     "2026-06-25T20:00:14.000Z",
   );
+  const finished = finishStopRound(third.state, "2026-06-25T20:00:20.000Z");
 
-  assert.equal(third.state.lifecycleState, "result");
-  assert.equal(third.ack.lifecycleState, "result");
+  assert.equal(third.state.lifecycleState, "submitted");
+  assert.equal(third.ack.lifecycleState, "submitted");
   assert.deepEqual(
-    third.state.result?.playerScores.map((score) => ({
+    finished.state.result?.playerScores.map((score) => ({
       playerId: score.playerId,
       totalScore: score.totalScore,
     })),
@@ -101,7 +103,7 @@ test("scores empty, wrong-letter, duplicate, and unique answers", () => {
     ],
   );
   assert.deepEqual(
-    third.state.result?.categoryResults[0]?.answers.map((answer) => ({
+    finished.state.result?.categoryResults[0]?.answers.map((answer) => ({
       playerId: answer.playerId,
       points: answer.points,
       reason: answer.reason,
@@ -113,7 +115,7 @@ test("scores empty, wrong-letter, duplicate, and unique answers", () => {
     ],
   );
   assert.deepEqual(
-    third.state.result?.categoryResults[1]?.answers.map((answer) => ({
+    finished.state.result?.categoryResults[1]?.answers.map((answer) => ({
       playerId: answer.playerId,
       points: answer.points,
       reason: answer.reason,
@@ -124,10 +126,10 @@ test("scores empty, wrong-letter, duplicate, and unique answers", () => {
       { playerId: "p3", points: 10, reason: "unique" },
     ],
   );
-  assert.equal(third.state.result?.stoppedByNickname, "Carla");
+  assert.equal(finished.state.result?.stoppedByNickname, "Carla");
 });
 
-test("closes immediately when a player presses Stop and rejects later edits", () => {
+test("opens review immediately when a player presses Stop and rejects later edits", () => {
   const stopped = submitStopAnswers(
     createRound(),
     {
@@ -155,13 +157,22 @@ test("closes immediately when a player presses Stop and rejects later edits", ()
   );
 
   assert.equal(stopped.ack.accepted, true);
-  assert.equal(stopped.state.lifecycleState, "result");
-  assert.equal(stopped.state.result?.totalSubmissions, 1);
+  assert.equal(stopped.state.lifecycleState, "submitted");
+  assert.equal(stopped.state.result, undefined);
+  assert.equal(stopped.state.submissions.length, 1);
+  assert.equal(
+    getStopSnapshot(
+      stopped.state,
+      "p2",
+      "2026-06-25T20:00:10.000Z",
+    ).publicState.review?.rows.length,
+    3,
+  );
   assert.equal(late.ack.accepted, false);
   assert.equal(late.ack.errorCode, "round_already_finished");
 });
 
-test("deadline is authoritative and closes with current submissions", () => {
+test("deadline is authoritative and opens review with current submissions", () => {
   const late = submitStopAnswers(
     createRound(),
     {
@@ -180,9 +191,55 @@ test("deadline is authoritative and closes with current submissions", () => {
 
   assert.equal(late.ack.accepted, false);
   assert.equal(late.ack.errorCode, "deadline_passed");
-  assert.equal(late.state.lifecycleState, "result");
-  assert.equal(late.state.result?.totalSubmissions, 0);
+  assert.equal(late.state.lifecycleState, "submitted");
+  assert.equal(late.state.result, undefined);
   assert.equal(finished.event?.type, "stop.round_finished");
+});
+
+test("allows the host to invalidate an answer before scoring", () => {
+  const first = submitStopAnswers(
+    createRound(),
+    {
+      playerId: "p1",
+      roundId: "round_1",
+      answers: {
+        name: "Ana",
+        city: "Aveiro",
+        animal: "Anta",
+      },
+      stopRound: true,
+    },
+    "2026-06-25T20:00:10.000Z",
+  );
+  const reviewed = setStopAnswerReviewDecision(
+    first.state,
+    {
+      roundId: "round_1",
+      playerId: "p1",
+      categoryId: "city",
+      invalidated: true,
+    },
+    "2026-06-25T20:00:12.000Z",
+  );
+  const finished = finishStopRound(
+    reviewed.state,
+    "2026-06-25T20:00:14.000Z",
+  );
+
+  assert.equal(reviewed.ack.accepted, true);
+  assert.equal(
+    getStopSnapshot(
+      reviewed.state,
+      "p1",
+      "2026-06-25T20:00:13.000Z",
+    ).publicState.review?.rows[0]?.answers[1]?.invalidated,
+    true,
+  );
+  assert.equal(
+    finished.state.result?.categoryResults[1]?.answers[0]?.reason,
+    "invalid",
+  );
+  assert.equal(finished.state.result?.playerScores[0]?.totalScore, 20);
 });
 
 test("normalizes accents for first-letter validation", () => {

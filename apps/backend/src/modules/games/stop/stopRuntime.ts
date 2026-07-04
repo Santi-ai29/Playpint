@@ -1,6 +1,7 @@
 import type {
   StopAnswerReceivedEvent,
   StopGameEvent,
+  StopRoundReviewStartedEvent,
   StopRoundResultEvent,
   StopRoundStartedEvent,
   StopRoundStoppedEvent,
@@ -8,6 +9,8 @@ import type {
 } from "../../../../../../packages/contracts/src";
 import { isPastDeadline, type DateInput } from "../core";
 import {
+  closeStopRoundForReview,
+  createStopRoundReview,
   createStopRound,
   finishStopRound,
   submitStopAnswers,
@@ -48,11 +51,11 @@ export function progressStopRuntimeRound(
   now: DateInput,
 ): StopRuntimeTransition {
   if (state.lifecycleState === "active" && isPastDeadline(state.clock, now)) {
-    const finished = finishStopRound(state, now);
+    const reviewState = closeStopRoundForReview(state, now);
 
     return {
-      state: finished.state,
-      events: finished.event ? [finished.event] : [],
+      state: reviewState,
+      events: [createReviewStartedEvent(reviewState)],
     };
   }
 
@@ -79,17 +82,16 @@ export function submitStopRuntimeAnswers(
   if (
     !previousStoppedByPlayerId &&
     result.state.stoppedByPlayerId &&
-    result.state.result
+    result.state.lifecycleState === "submitted"
   ) {
     events.push(createRoundStoppedEvent(result.state));
   }
 
   if (
-    previousLifecycleState !== "result" &&
-    result.state.lifecycleState === "result" &&
-    result.state.result
+    previousLifecycleState === "active" &&
+    result.state.lifecycleState === "submitted"
   ) {
-    events.push(createRoundFinishedEvent(result.state));
+    events.push(createReviewStartedEvent(result.state));
   }
 
   return {
@@ -135,7 +137,11 @@ function createAnswerReceivedEvent(
 function createRoundStoppedEvent(
   state: StopRoundState,
 ): StopRoundStoppedEvent {
-  if (!state.result?.stoppedByPlayerId || !state.result.stoppedByNickname) {
+  const stoppedBy = state.stoppedByPlayerId
+    ? state.players.find((player) => player.playerId === state.stoppedByPlayerId)
+    : undefined;
+
+  if (!stoppedBy) {
     throw new Error("Cannot emit stop event without a stopper.");
   }
 
@@ -143,8 +149,19 @@ function createRoundStoppedEvent(
     type: "stop.round_stopped",
     roomId: state.roomId,
     roundId: state.roundId,
-    stoppedByPlayerId: state.result.stoppedByPlayerId,
-    stoppedByNickname: state.result.stoppedByNickname,
+    stoppedByPlayerId: stoppedBy.playerId,
+    stoppedByNickname: stoppedBy.nickname,
+  };
+}
+
+function createReviewStartedEvent(
+  state: StopRoundState,
+): StopRoundReviewStartedEvent {
+  return {
+    type: "stop.review_started",
+    roomId: state.roomId,
+    roundId: state.roundId,
+    review: createStopRoundReview(state),
   };
 }
 

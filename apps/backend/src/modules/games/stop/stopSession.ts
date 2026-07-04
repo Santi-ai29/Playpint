@@ -7,6 +7,7 @@ import {
   type PublicPlayer,
   type RoundSnapshot,
   type StopCategory,
+  type StopAnswerReviewDecisionRequest,
   type StopGameEvent,
   type StopGameFinishedEvent,
   type StopGameSettings,
@@ -18,10 +19,12 @@ import {
 } from "../../../../../../packages/contracts/src";
 import { createRejectedSubmissionAck, type DateInput } from "../core";
 import {
+  finishStopRound,
   getStopSnapshot,
   normalizeRoundLetter,
   normalizeStopCategories,
   pickStopLetter,
+  setStopAnswerReviewDecision,
   type StopRoundState,
 } from "./stopModule";
 import {
@@ -62,6 +65,10 @@ export interface StopSessionTransition {
 }
 
 export interface StopSessionSubmitResult extends StopSessionTransition {
+  ack: SubmissionAck;
+}
+
+export interface StopSessionReviewDecisionResult extends StopSessionTransition {
   ack: SubmissionAck;
 }
 
@@ -160,6 +167,66 @@ export function submitStopSessionAnswers(
     ...transition,
     ack: submitResult.ack,
   };
+}
+
+export function setStopSessionAnswerReviewDecision(
+  state: StopSessionState,
+  action: StopAnswerReviewDecisionRequest,
+  now: DateInput,
+): StopSessionReviewDecisionResult {
+  if (state.status === "finished" || !state.currentRound) {
+    return {
+      state,
+      events: [],
+      ack: createRejectedSubmissionAck({
+        gameMode: STOP_GAME_MODE_ID,
+        roomId: state.roomId,
+        roundId: state.currentRound?.roundId ?? "finished",
+        playerId: action.playerId,
+        code: "game_finished",
+        message: "This Stop game is already finished.",
+        lifecycleState: "finished",
+      }),
+    };
+  }
+
+  const result = setStopAnswerReviewDecision(state.currentRound, action, now);
+
+  return {
+    state: {
+      ...state,
+      currentRound: result.state,
+    },
+    events: [],
+    ack: result.ack,
+  };
+}
+
+export function finishStopSessionReview(
+  state: StopSessionState,
+  now: DateInput,
+): StopSessionTransition {
+  if (state.status === "finished" || !state.currentRound) {
+    return {
+      state,
+      events: [],
+    };
+  }
+
+  if (state.currentRound.lifecycleState !== "submitted") {
+    return {
+      state,
+      events: [],
+    };
+  }
+
+  const finished = finishStopRound(state.currentRound, now);
+
+  return applyRoundTransition(
+    state,
+    finished.state,
+    finished.event ? [finished.event] : [],
+  );
 }
 
 export function startNextStopRound(

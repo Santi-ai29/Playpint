@@ -50,6 +50,13 @@ export interface StopSubmitAnswersRequest {
   stopRound?: boolean;
 }
 
+export interface StopAnswerReviewDecisionRequest {
+  roundId: string;
+  playerId: string;
+  categoryId: StopCategoryId;
+  invalidated: boolean;
+}
+
 export type StopAnswerScoreReason =
   | "empty"
   | "wrong_letter"
@@ -67,6 +74,31 @@ export interface StopScoredAnswer {
   valid: boolean;
   points: number;
   reason: StopAnswerScoreReason;
+}
+
+export interface StopReviewAnswer {
+  playerId: string;
+  nickname: string;
+  categoryId: StopCategoryId;
+  categoryLabel: string;
+  answer: string;
+  normalizedAnswer: string;
+  startsWithLetter: boolean;
+  invalidated: boolean;
+}
+
+export interface StopReviewPlayerRow {
+  playerId: string;
+  nickname: string;
+  answers: StopReviewAnswer[];
+}
+
+export interface StopRoundReview {
+  letter: string;
+  stoppedByPlayerId?: string;
+  stoppedByNickname?: string;
+  categories: StopCategory[];
+  rows: StopReviewPlayerRow[];
 }
 
 export interface StopCategoryResult {
@@ -114,6 +146,7 @@ export interface StopPublicState {
   totalPlayers: number;
   stoppedByPlayerId?: string;
   stoppedByNickname?: string;
+  review?: StopRoundReview;
   result?: StopRoundResult;
 }
 
@@ -164,6 +197,13 @@ export interface StopRoundStoppedEvent {
   stoppedByNickname: string;
 }
 
+export interface StopRoundReviewStartedEvent {
+  type: "stop.review_started";
+  roomId: string;
+  roundId: string;
+  review: StopRoundReview;
+}
+
 export interface StopRoundResultEvent {
   type: "stop.round_finished";
   roomId: string;
@@ -181,6 +221,7 @@ export type StopGameEvent =
   | StopRoundStartedEvent
   | StopAnswerReceivedEvent
   | StopRoundStoppedEvent
+  | StopRoundReviewStartedEvent
   | StopRoundResultEvent
   | StopGameFinishedEvent;
 
@@ -331,6 +372,34 @@ export function requireStopSubmitAnswersRequest(
 ): StopSubmitAnswersRequest {
   if (!isStopSubmitAnswersRequest(value)) {
     throw new Error("Invalid stop submit answers request.");
+  }
+
+  return value;
+}
+
+export function isStopAnswerReviewDecisionRequest(
+  value: unknown,
+): value is StopAnswerReviewDecisionRequest {
+  if (!isRecord(value)) {
+    return false;
+  }
+
+  return (
+    typeof value.roundId === "string" &&
+    value.roundId.length > 0 &&
+    typeof value.playerId === "string" &&
+    value.playerId.length > 0 &&
+    typeof value.categoryId === "string" &&
+    isStopCategoryId(value.categoryId) &&
+    typeof value.invalidated === "boolean"
+  );
+}
+
+export function requireStopAnswerReviewDecisionRequest(
+  value: unknown,
+): StopAnswerReviewDecisionRequest {
+  if (!isStopAnswerReviewDecisionRequest(value)) {
+    throw new Error("Invalid stop review decision request.");
   }
 
   return value;

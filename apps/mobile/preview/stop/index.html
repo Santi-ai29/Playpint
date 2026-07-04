@@ -24,8 +24,13 @@
         </header>
 
         <section id="setupPanel" class="setup-panel">
-          <p class="eyebrow">Configurar mesa</p>
-          <h1>Stop</h1>
+          <div class="setup-title">
+            <div>
+              <p class="eyebrow">Configurar mesa</p>
+              <h1>Stop</h1>
+            </div>
+            <strong id="setupSummary">4 jogadores</strong>
+          </div>
           <div class="setup-grid">
             <label class="setting-field">
               <span>Sala</span>
@@ -52,8 +57,11 @@
           <section class="players-setup">
             <div class="section-head">
               <span>Jogadores</span>
-              <button id="addPlayer" type="button">+</button>
             </div>
+            <form id="addPlayerForm" class="add-player-form">
+              <input id="newPlayerInput" maxlength="14" placeholder="Nome do jogador" />
+              <button id="addPlayer" type="submit">Adicionar</button>
+            </form>
             <div id="playersList" class="players-list"></div>
           </section>
 
@@ -76,13 +84,23 @@
         </section>
 
         <section id="resultPanel" class="result-panel hidden">
-          <div class="result-hero">
-            <span id="resultLetterLabel">Letra A</span>
-            <strong id="resultWinner">Carla lidera</strong>
-            <em id="stoppedByLabel">Ana carregou Stop</em>
+          <div class="review-hero">
+            <span id="reviewLetterLabel">Letra A</span>
+            <strong id="reviewTitle">Rever respostas</strong>
+            <em id="reviewSubtitle">Ana carregou Stop</em>
           </div>
+          <div id="reviewTabs" class="review-tabs"></div>
+          <div id="reviewBoard" class="review-board"></div>
+        </section>
+
+        <section id="scorePanel" class="score-panel hidden">
+          <div class="score-hero">
+            <span id="scoreLetterLabel">Letra A</span>
+            <strong id="scoreWinner">Bruno venceu</strong>
+            <em id="scoreSubtitle">Pontos acumulados</em>
+          </div>
+          <div id="roundScores" class="round-scores"></div>
           <div id="rankingList" class="ranking-list"></div>
-          <div id="answersTable" class="answers-table"></div>
         </section>
 
         <footer class="game-footer">

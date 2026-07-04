@@ -65,6 +65,21 @@ export interface StopGameView {
       isLeader: boolean;
     }>;
   };
+  review?: {
+    title: string;
+    stoppedByLabel?: string;
+    categoryTabs: string[];
+    rows: Array<{
+      playerId: string;
+      nickname: string;
+      answers: Array<{
+        label: string;
+        value: string;
+        stateLabel: string;
+        invalidated: boolean;
+      }>;
+    }>;
+  };
 }
 
 export interface StopSubmitIntent {
@@ -115,10 +130,36 @@ export function createStopGameView(
       label:
         model.status === "result"
           ? stopTheme.copy.nextRoundButton
+          : model.status === "review"
+            ? "Calcular pontos"
           : stopTheme.copy.stopButton,
-      tone: model.canStop ? "orange" : "muted",
-      disabled: model.status !== "result" && !model.canStop,
+      tone: model.canStop || model.status === "review" ? "orange" : "muted",
+      disabled:
+        model.status !== "result" &&
+        model.status !== "review" &&
+        !model.canStop,
     },
+    review: model.review
+      ? {
+          title: model.review.title,
+          stoppedByLabel: model.review.stoppedByLabel,
+          categoryTabs: model.review.categories.map((category) => category.label),
+          rows: model.review.rows.map((row) => ({
+            playerId: row.playerId,
+            nickname: row.nickname,
+            answers: row.answers.map((answer) => ({
+              label: answer.label,
+              value: answer.value || "-",
+              stateLabel: answer.invalidated
+                ? "Anulada"
+                : answer.startsWithLetter
+                  ? "Valida"
+                  : "Ver",
+              invalidated: answer.invalidated,
+            })),
+          })),
+        }
+      : undefined,
     result: model.result
       ? {
           title: model.result.title,

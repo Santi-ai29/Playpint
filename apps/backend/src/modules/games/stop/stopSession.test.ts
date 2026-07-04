@@ -5,8 +5,10 @@ import {
   type PublicPlayer,
 } from "../../../../../../packages/contracts/src";
 import {
+  finishStopSessionReview,
   getStopSessionSnapshot,
   progressStopSession,
+  setStopSessionAnswerReviewDecision,
   startNextStopRound,
   startStopSession,
   submitStopSessionAnswers,
@@ -34,7 +36,7 @@ test("starts a configured Stop session with room name, timer, and categories", (
   );
 });
 
-test("adds round scores into the overall ranking when Stop closes the round", () => {
+test("opens review when Stop closes the round and adds scores after confirmation", () => {
   const submitted = submitStopSessionAnswers(
     startSession().state,
     {
@@ -52,10 +54,21 @@ test("adds round scores into the overall ranking when Stop closes the round", ()
   assert.equal(submitted.ack.accepted, true);
   assert.deepEqual(
     submitted.events.map((event) => event.type),
-    ["stop.answer_received", "stop.round_stopped", "stop.round_finished"],
+    ["stop.answer_received", "stop.round_stopped", "stop.review_started"],
   );
+  assert.equal(submitted.state.currentRound?.lifecycleState, "submitted");
   assert.deepEqual(
-    submitted.state.overallRanking.map((entry) => ({
+    submitted.state.overallRanking.map((entry) => entry.totalScore),
+    [0, 0],
+  );
+
+  const finished = finishStopSessionReview(
+    submitted.state,
+    "2026-06-25T20:00:14.000Z",
+  );
+
+  assert.deepEqual(
+    finished.state.overallRanking.map((entry) => ({
       playerId: entry.playerId,
       totalScore: entry.totalScore,
       roundsWon: entry.roundsWon,
@@ -67,26 +80,26 @@ test("adds round scores into the overall ranking when Stop closes the round", ()
     ],
   );
   assert.equal(
-    submitted.state.currentRound?.result?.overallRanking?.[0]?.playerId,
+    finished.state.currentRound?.result?.overallRanking?.[0]?.playerId,
     "p1",
   );
 });
 
-test("progress closes the round at the official deadline", () => {
+test("progress opens review at the official deadline", () => {
   const progressed = progressStopSession(
     startSession().state,
     "2026-06-25T20:00:46.000Z",
   );
 
-  assert.equal(progressed.state.currentRound?.lifecycleState, "result");
+  assert.equal(progressed.state.currentRound?.lifecycleState, "submitted");
   assert.deepEqual(
     progressed.events.map((event) => event.type),
-    ["stop.round_finished"],
+    ["stop.review_started"],
   );
 });
 
-test("starts the next round with a fresh letter and finishes after configured rounds", () => {
-  const finishedFirst = submitStopSessionAnswers(
+test("stores review invalidations before calculating the official result", () => {
+  const review = submitStopSessionAnswers(
     startSession().state,
     {
       playerId: "p1",
@@ -99,11 +112,52 @@ test("starts the next round with a fresh letter and finishes after configured ro
     },
     "2026-06-25T20:00:08.000Z",
   ).state;
+  const invalidated = setStopSessionAnswerReviewDecision(
+    review,
+    {
+      roundId: "room_1_stop_1",
+      playerId: "p1",
+      categoryId: "city",
+      invalidated: true,
+    },
+    "2026-06-25T20:00:10.000Z",
+  );
+  const finished = finishStopSessionReview(
+    invalidated.state,
+    "2026-06-25T20:00:12.000Z",
+  );
+
+  assert.equal(invalidated.ack.accepted, true);
+  assert.equal(
+    finished.state.currentRound?.result?.categoryResults[1]?.answers[0]?.reason,
+    "invalid",
+  );
+  assert.equal(finished.state.overallRanking[0]?.totalScore, 10);
+});
+
+test("starts the next round with a fresh letter and finishes after configured rounds", () => {
+  const reviewFirst = submitStopSessionAnswers(
+    startSession().state,
+    {
+      playerId: "p1",
+      roundId: "room_1_stop_1",
+      answers: {
+        name: "Ana",
+        city: "Aveiro",
+      },
+      stopRound: true,
+    },
+    "2026-06-25T20:00:08.000Z",
+  ).state;
+  const finishedFirst = finishStopSessionReview(
+    reviewFirst,
+    "2026-06-25T20:00:12.000Z",
+  ).state;
   const next = startNextStopRound(
     finishedFirst,
     "2026-06-25T20:01:00.000Z",
   );
-  const finishedSecond = submitStopSessionAnswers(
+  const reviewSecond = submitStopSessionAnswers(
     next.state,
     {
       playerId: "p2",
@@ -115,6 +169,10 @@ test("starts the next round with a fresh letter and finishes after configured ro
       stopRound: true,
     },
     "2026-06-25T20:01:08.000Z",
+  ).state;
+  const finishedSecond = finishStopSessionReview(
+    reviewSecond,
+    "2026-06-25T20:01:12.000Z",
   ).state;
   const finished = startNextStopRound(
     finishedSecond,

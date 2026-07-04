@@ -5,10 +5,12 @@ import {
   STOP_GAME_MODE_ID,
   STOP_ROUND_SECONDS,
   isStopCategoryId,
+  requireStopAnswerReviewDecisionRequest,
   requireStopSubmitAnswersRequest,
   type PublicPlayer,
   type RoundClock,
   type RoundSnapshot,
+  type StopAnswerReviewDecisionRequest,
   type StopAnswers,
   type StopCategory,
   type StopCategoryId,
@@ -16,6 +18,7 @@ import {
   type StopPlayerRoundScore,
   type StopPlayerState,
   type StopPublicState,
+  type StopRoundReview,
   type StopRoundResult,
   type StopRoundResultEvent,
   type StopScoredAnswer,
@@ -53,17 +56,24 @@ export interface StopSubmissionRecord {
   stoppedRound: boolean;
 }
 
+export interface StopAnswerReviewDecision {
+  playerId: string;
+  categoryId: StopCategoryId;
+  invalidated: boolean;
+}
+
 export interface StopRoundState {
   gameModeId: typeof STOP_GAME_MODE_ID;
   roomId: string;
   roomName?: string;
   roundId: string;
-  lifecycleState: "active" | "result";
+  lifecycleState: "active" | "submitted" | "result";
   clock: RoundClock;
   players: PublicPlayer[];
   letter: string;
   categories: StopCategory[];
   submissions: StopSubmissionRecord[];
+  reviewDecisions: StopAnswerReviewDecision[];
   stoppedByPlayerId?: string;
   result?: StopRoundResult;
   closedAt?: string;
@@ -103,6 +113,7 @@ export function createStopRound(input: CreateStopRoundInput): StopRoundState {
     letter: normalizeRoundLetter(input.letter ?? pickStopLetter(input.roundId)),
     categories,
     submissions: [],
+    reviewDecisions: [],
   };
 }
 
@@ -141,7 +152,7 @@ export function submitStopAnswers(
   }
 
   if (isPastDeadline(state.clock, now)) {
-    const closedState = closeStopRound(state, now);
+    const closedState = closeStopRoundForReview(state, now);
 
     return {
       state: closedState,
@@ -197,7 +208,9 @@ export function submitStopAnswers(
       ),
       totalPlayers: nextState.players.length,
     });
-  const resolvedState = shouldClose ? closeStopRound(nextState, now) : nextState;
+  const resolvedState = shouldClose
+    ? closeStopRoundForReview(nextState, now)
+    : nextState;
 
   return {
     state: resolvedState,
@@ -219,7 +232,7 @@ export function finishStopRound(
   state: StopRoundState;
   event?: StopRoundResultEvent;
 } {
-  const closedState = closeStopRound(state, now);
+  const closedState = finalizeStopRound(state, now);
 
   return {
     state: closedState,
@@ -231,6 +244,79 @@ export function finishStopRound(
           result: closedState.result,
         }
       : undefined,
+  };
+}
+
+export function setStopAnswerReviewDecision(
+  state: StopRoundState,
+  rawDecision: StopAnswerReviewDecisionRequest,
+  now: DateInput,
+): GameActionResult<StopRoundState> {
+  let decision: StopAnswerReviewDecisionRequest;
+
+  try {
+    decision = requireStopAnswerReviewDecisionRequest(rawDecision);
+  } catch {
+    return {
+      state,
+      ack: rejectStopAnswers(
+        state,
+        getRawPlayerId(rawDecision),
+        "invalid_review_decision",
+      ),
+    };
+  }
+
+  if (state.lifecycleState !== "submitted") {
+    return {
+      state,
+      ack: rejectStopAnswers(state, decision.playerId, "round_not_in_review"),
+    };
+  }
+
+  if (decision.roundId !== state.roundId) {
+    return {
+      state,
+      ack: rejectStopAnswers(state, decision.playerId, "round_mismatch"),
+    };
+  }
+
+  if (!findPlayer(state.players, decision.playerId)) {
+    return {
+      state,
+      ack: rejectStopAnswers(state, decision.playerId, "player_not_in_room"),
+    };
+  }
+
+  const nextDecisions = state.reviewDecisions.filter(
+    (item) =>
+      item.playerId !== decision.playerId ||
+      item.categoryId !== decision.categoryId,
+  );
+
+  if (decision.invalidated) {
+    nextDecisions.push({
+      playerId: decision.playerId,
+      categoryId: decision.categoryId,
+      invalidated: true,
+    });
+  }
+
+  const nextState: StopRoundState = {
+    ...state,
+    reviewDecisions: nextDecisions,
+  };
+
+  return {
+    state: nextState,
+    ack: createSubmissionAck({
+      gameMode: STOP_GAME_MODE_ID,
+      roomId: state.roomId,
+      roundId: state.roundId,
+      playerId: decision.playerId,
+      submittedAt: now,
+      lifecycleState: nextState.lifecycleState,
+    }),
   };
 }
 
@@ -315,7 +401,10 @@ export function scoreStopCategory(
     const answer = submission.answers[category.id] ?? "";
     const normalizedAnswer = normalizeStopAnswerForComparison(answer);
 
-    if (isValidStopAnswer(answer, state.letter)) {
+    if (
+      !isStopAnswerInvalidated(state, submission.playerId, category.id) &&
+      isValidStopAnswer(answer, state.letter)
+    ) {
       validAnswerCounts.set(
         normalizedAnswer,
         (validAnswerCounts.get(normalizedAnswer) ?? 0) + 1,
@@ -329,6 +418,15 @@ export function scoreStopCategory(
       const answer =
         submissionsByPlayerId.get(player.playerId)?.answers[category.id] ?? "";
       const normalizedAnswer = normalizeStopAnswerForComparison(answer);
+      const invalidated = isStopAnswerInvalidated(
+        state,
+        player.playerId,
+        category.id,
+      );
+
+      if (invalidated) {
+        return createScoredAnswer(player, category, answer, 0, "invalid");
+      }
 
       if (!answer.trim()) {
         return createScoredAnswer(player, category, answer, 0, "empty");
@@ -416,7 +514,62 @@ export function normalizeStopCategories(
   return normalized;
 }
 
-function closeStopRound(
+export function createStopRoundReview(state: StopRoundState): StopRoundReview {
+  const stoppedBy = state.stoppedByPlayerId
+    ? findPlayer(state.players, state.stoppedByPlayerId)
+    : undefined;
+  const submissionsByPlayerId = new Map(
+    state.submissions.map((submission) => [submission.playerId, submission]),
+  );
+
+  return {
+    letter: state.letter,
+    stoppedByPlayerId: stoppedBy?.playerId,
+    stoppedByNickname: stoppedBy?.nickname,
+    categories: state.categories.map((category) => ({ ...category })),
+    rows: state.players.map((player) => ({
+      playerId: player.playerId,
+      nickname: player.nickname,
+      answers: state.categories.map((category) => {
+        const answer =
+          submissionsByPlayerId.get(player.playerId)?.answers[category.id] ??
+          "";
+
+        return {
+          playerId: player.playerId,
+          nickname: player.nickname,
+          categoryId: category.id,
+          categoryLabel: category.label,
+          answer,
+          normalizedAnswer: normalizeStopAnswerForComparison(answer),
+          startsWithLetter: isValidStopAnswer(answer, state.letter),
+          invalidated: isStopAnswerInvalidated(
+            state,
+            player.playerId,
+            category.id,
+          ),
+        };
+      }),
+    })),
+  };
+}
+
+export function closeStopRoundForReview(
+  state: StopRoundState,
+  now: DateInput,
+): StopRoundState {
+  if (state.lifecycleState !== "active") {
+    return state;
+  }
+
+  return {
+    ...state,
+    lifecycleState: "submitted",
+    closedAt: toIso(now),
+  };
+}
+
+function finalizeStopRound(
   state: StopRoundState,
   now: DateInput,
 ): StopRoundState {
@@ -424,11 +577,14 @@ function closeStopRound(
     return state;
   }
 
+  const reviewState =
+    state.lifecycleState === "active" ? closeStopRoundForReview(state, now) : state;
+
   return {
-    ...state,
+    ...reviewState,
     lifecycleState: "result",
-    result: scoreStopRound(state),
-    closedAt: toIso(now),
+    result: scoreStopRound(reviewState),
+    closedAt: reviewState.closedAt ?? toIso(now),
   };
 }
 
@@ -446,6 +602,10 @@ function createStopPublicState(state: StopRoundState): StopPublicState {
     totalPlayers: state.players.length,
     stoppedByPlayerId: stoppedBy?.playerId,
     stoppedByNickname: stoppedBy?.nickname,
+    review:
+      state.lifecycleState === "submitted" || state.lifecycleState === "result"
+        ? createStopRoundReview(state)
+        : undefined,
     result: state.lifecycleState === "result" ? state.result : undefined,
   };
 }
@@ -511,6 +671,19 @@ function sortStopPlayerScores(
   );
 }
 
+function isStopAnswerInvalidated(
+  state: StopRoundState,
+  playerId: string,
+  categoryId: StopCategoryId,
+): boolean {
+  return state.reviewDecisions.some(
+    (decision) =>
+      decision.playerId === playerId &&
+      decision.categoryId === categoryId &&
+      decision.invalidated,
+  );
+}
+
 function rejectStopAnswers(
   state: StopRoundState,
   playerId: string,
@@ -529,7 +702,9 @@ function rejectStopAnswers(
 
 type StopActionRejectionCode =
   | "invalid_submission"
+  | "invalid_review_decision"
   | "round_already_finished"
+  | "round_not_in_review"
   | "round_mismatch"
   | "deadline_passed"
   | "player_not_in_room"
@@ -539,8 +714,12 @@ function getStopErrorMessage(code: StopActionRejectionCode): string {
   switch (code) {
     case "invalid_submission":
       return "Stop answers payload is not valid for this round.";
+    case "invalid_review_decision":
+      return "Stop review decision payload is not valid for this round.";
     case "round_already_finished":
       return "This Stop round is already finished.";
+    case "round_not_in_review":
+      return "This Stop round is not in review.";
     case "round_mismatch":
       return "Stop answers do not match the active round.";
     case "deadline_passed":

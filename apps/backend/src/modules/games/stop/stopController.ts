@@ -2,13 +2,16 @@ import type {
   PublicPlayer,
   StopCategory,
   StopGameEvent,
+  StopAnswerReviewDecisionRequest,
   StopSubmitAnswersRequest,
   SubmissionAck,
 } from "../../../../../../packages/contracts/src";
 import type { DateInput } from "../core";
 import {
+  finishStopSessionReview,
   getStopSessionSnapshot,
   progressStopSession,
+  setStopSessionAnswerReviewDecision,
   startNextStopRound,
   startStopSession,
   submitStopSessionAnswers,
@@ -35,6 +38,11 @@ export interface StopControllerTransition {
 }
 
 export interface StopControllerSubmitResult extends StopControllerTransition {
+  ack: SubmissionAck;
+}
+
+export interface StopControllerReviewDecisionResult
+  extends StopControllerTransition {
   ack: SubmissionAck;
 }
 
@@ -72,6 +80,28 @@ export class StopGameController {
     return {
       ack: result.ack,
       events: result.events,
+    };
+  }
+
+  setAnswerReviewDecision(
+    action: StopAnswerReviewDecisionRequest,
+    now: DateInput,
+  ): StopControllerReviewDecisionResult {
+    const result = setStopSessionAnswerReviewDecision(this.state, action, now);
+    this.state = result.state;
+
+    return {
+      ack: result.ack,
+      events: result.events,
+    };
+  }
+
+  finishReview(now: DateInput): StopControllerTransition {
+    const transition = finishStopSessionReview(this.state, now);
+    this.state = transition.state;
+
+    return {
+      events: transition.events,
     };
   }
 
@@ -115,6 +145,9 @@ function cloneStopSessionState(state: StopSessionState): StopSessionState {
             ...submission,
             answers: { ...submission.answers },
           })),
+          reviewDecisions: state.currentRound.reviewDecisions.map(
+            (decision) => ({ ...decision }),
+          ),
           result: state.currentRound.result
             ? {
                 ...state.currentRound.result,

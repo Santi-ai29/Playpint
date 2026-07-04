@@ -7,8 +7,10 @@ import {
   STOP_GAME_MODE_ID,
   STOP_RECOMMENDED_MIN_PLAYERS,
   STOP_ROUND_SECONDS,
+  isStopAnswerReviewDecisionRequest,
   isStopCategoryId,
   isStopSubmitAnswersRequest,
+  requireStopAnswerReviewDecisionRequest,
   requireStopSubmitAnswersRequest,
 } from "./stop";
 
@@ -62,4 +64,25 @@ test("validates Stop submit requests at the contract boundary", () => {
 test("recognizes the shared Stop category ids", () => {
   assert.equal(isStopCategoryId("movie_series"), true);
   assert.equal(isStopCategoryId("picante"), false);
+});
+
+test("validates Stop review decisions at the contract boundary", () => {
+  const request = {
+    roundId: "round_1",
+    playerId: "p1",
+    categoryId: "city",
+    invalidated: true,
+  };
+
+  assert.equal(isStopAnswerReviewDecisionRequest(request), true);
+  assert.equal(requireStopAnswerReviewDecisionRequest(request), request);
+  assert.equal(
+    isStopAnswerReviewDecisionRequest({ ...request, invalidated: "yes" }),
+    false,
+  );
+  assert.equal(
+    isStopAnswerReviewDecisionRequest({ ...request, categoryId: "unknown" }),
+    false,
+  );
+  assert.throws(() => requireStopAnswerReviewDecisionRequest({ playerId: "p1" }));
 });
