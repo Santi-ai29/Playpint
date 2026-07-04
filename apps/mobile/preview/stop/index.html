@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="pt">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Playpint - Stop</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="app-shell" aria-live="polite">
+      <section class="phone-screen">
+        <div class="ambient ambient-sheet"></div>
+        <div class="ambient ambient-pencil"></div>
+
+        <header class="topbar">
+          <div class="brand-block">
+            <img class="brand-logo" src="./assets/playpint-logo.png" alt="Playpint" />
+            <p class="mode">Stop</p>
+          </div>
+          <div class="round-pill">
+            <span id="phaseLabel">Mesa</span>
+            <strong id="timerLabel">90s</strong>
+          </div>
+        </header>
+
+        <section id="setupPanel" class="setup-panel">
+          <p class="eyebrow">Configurar mesa</p>
+          <h1>Stop</h1>
+          <div class="setup-grid">
+            <label class="setting-field">
+              <span>Sala</span>
+              <input id="roomNameInput" maxlength="22" value="Mesa Stop" />
+            </label>
+            <article class="setting-counter">
+              <span>Rondas</span>
+              <div class="stepper">
+                <button type="button" data-step="rounds-down">-</button>
+                <strong id="roundsValue">6</strong>
+                <button type="button" data-step="rounds-up">+</button>
+              </div>
+            </article>
+            <article class="setting-counter">
+              <span>Tempo</span>
+              <div class="stepper">
+                <button type="button" data-step="time-down">-</button>
+                <strong id="timeValue">90s</strong>
+                <button type="button" data-step="time-up">+</button>
+              </div>
+            </article>
+          </div>
+
+          <section class="players-setup">
+            <div class="section-head">
+              <span>Jogadores</span>
+              <button id="addPlayer" type="button">+</button>
+            </div>
+            <div id="playersList" class="players-list"></div>
+          </section>
+
+          <section class="categories-setup">
+            <div class="section-head">
+              <span>Categorias</span>
+              <small id="categoryCount">6 ativas</small>
+            </div>
+            <div id="categoryToggles" class="category-toggles"></div>
+          </section>
+        </section>
+
+        <section id="roundPanel" class="round-panel hidden">
+          <div class="letter-stage">
+            <span>Letra</span>
+            <strong id="roundLetter">A</strong>
+            <em id="submissionCount">0/4</em>
+          </div>
+          <form id="answersForm" class="answers-form"></form>
+        </section>
+
+        <section id="resultPanel" class="result-panel hidden">
+          <div class="result-hero">
+            <span id="resultLetterLabel">Letra A</span>
+            <strong id="resultWinner">Carla lidera</strong>
+            <em id="stoppedByLabel">Ana carregou Stop</em>
+          </div>
+          <div id="rankingList" class="ranking-list"></div>
+          <div id="answersTable" class="answers-table"></div>
+        </section>
+
+        <footer class="game-footer">
+          <button id="primaryAction" class="primary-action" type="button">Comecar jogo</button>
+        </footer>
+      </section>
+    </main>
+    <script src="./app.js"></script>
+  </body>
+</html>

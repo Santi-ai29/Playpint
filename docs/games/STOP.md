@@ -1,0 +1,108 @@
+# Stop
+
+`stop` e o modo de palavras competitivo do Playpint.
+
+## Objetivo
+
+O backend escolhe uma letra por ronda. Cada jogador preenche respostas para as
+categorias ativas e pode carregar `STOP` para fechar a ronda. O servidor e a
+autoridade da letra, relogio, submissao, bloqueio de edicoes e pontuacao.
+
+## Configuracao do host
+
+- Nome da sala.
+- Jogadores da mesa.
+- Numero de rondas.
+- Tempo por ronda.
+- Categorias ativas.
+
+Categorias disponiveis:
+
+- Nome
+- Cidade
+- Animal
+- Comida
+- Objeto
+- Marca
+- Filme/Serie
+- Profissao
+- Celebridade
+- Picante
+
+## Fluxo da ronda
+
+1. O backend cria a ronda em `active`, escolhe a letra e abre o relogio.
+2. Jogadores preenchem respostas para as categorias ativas.
+3. Cada jogador so pode submeter uma vez.
+4. Quando alguem carrega `STOP`, a ronda fecha imediatamente no MVP.
+5. Se ninguem carregar `STOP`, a ronda fecha no prazo oficial.
+6. Depois de fechada, novas respostas e edicoes sao rejeitadas.
+7. O resultado oficial inclui respostas por jogador, pontos por categoria,
+   total da ronda e ranking geral.
+
+## Pontuacao
+
+- Resposta vazia: 0 pontos.
+- Resposta que nao comeca pela letra: 0 pontos.
+- Resposta repetida por outro jogador na mesma categoria: 5 pontos.
+- Resposta valida e unica na categoria: 10 pontos.
+
+A validacao automatica atual garante a regra basica da primeira letra, com
+normalizacao simples para maiusculas e diacriticos. A estrutura de resultado
+mantem `reason` por resposta para evoluir depois para validacao manual.
+
+## Contratos
+
+Contratos partilhados em `packages/contracts/src/stop.ts`:
+
+- `StopGameSettings`
+- `StopCategory`
+- `StopSubmitAnswersRequest`
+- `StopPublicState`
+- `StopPlayerState`
+- `StopRoundResult`
+- `StopOverallRankingEntry`
+- eventos `stop.round_started`, `stop.answer_received`, `stop.round_stopped`,
+  `stop.round_finished` e `stop.game_finished`
+
+## Backend
+
+Modulo: `apps/backend/src/modules/games/stop`.
+
+Pecas principais:
+
+- `stopModule`: regras de uma ronda isolada, validacao e scoring.
+- `stopRuntime`: eventos oficiais da ronda.
+- `stopSession`: varias rondas, settings e ranking geral.
+- `stopController`: fachada para sala usar `tick`, `submitAnswers`,
+  `nextRound` e snapshots.
+
+O frontend nunca calcula o resultado oficial.
+
+## Mobile
+
+Modulo: `apps/mobile/src/game-modes/stop`.
+
+Responsabilidades:
+
+- transformar o snapshot oficial em screen model;
+- mostrar letra grande, timer e campos rapidos de categoria;
+- bloquear campos depois de submeter;
+- criar uma action compativel com o contrato;
+- mostrar resultado com tabela simples e ranking geral.
+
+Direcao visual:
+
+- fundo escuro premium;
+- amarelo Playpint como cor principal;
+- laranja para o `STOP`;
+- ciano apenas como acento secundario;
+- logo Playpint real;
+- animacoes subtis para entrada da letra, destaque do Stop e reveal do ranking.
+
+## Preview
+
+Preview local em `apps/mobile/preview/stop`.
+
+Ela permite experimentar configuracao de sala, jogadores, rondas, tempo,
+categorias, ronda ativa e resultado com ranking geral.

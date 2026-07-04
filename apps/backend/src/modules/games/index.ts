@@ -1,8 +1,8 @@
-import { MOST_LIKELY_GAME_MODE_ID } from "../../../../../packages/contracts/src";
 import { createGameModuleRegistry } from "./core";
 import { mostLikelyGameModule } from "./most-likely";
+import { stopGameModule } from "./stop";
 
-export const MVP_GAME_MODULES = [mostLikelyGameModule] as const;
+export const MVP_GAME_MODULES = [mostLikelyGameModule, stopGameModule] as const;
 
 export const gameModuleRegistry = createGameModuleRegistry([
   ...MVP_GAME_MODULES,
@@ -13,5 +13,5 @@ export function getMvpGameModeIds(): string[] {
 }
 
 export function isMvpGameMode(gameModeId: string): boolean {
-  return gameModeId === MOST_LIKELY_GAME_MODE_ID;
+  return getMvpGameModeIds().includes(gameModeId);
 }
