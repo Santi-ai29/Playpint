@@ -23,55 +23,39 @@
           </div>
         </header>
 
-        <section id="setupPanel" class="setup-panel">
-          <div class="setup-title">
-            <div>
-              <p class="eyebrow">Configurar mesa</p>
-              <h1>Stop</h1>
-            </div>
-            <strong id="setupSummary">4 jogadores</strong>
+        <section id="introPanel" class="intro-panel">
+          <div class="intro-copy">
+            <p class="eyebrow">Mesa pronta</p>
+            <h1>Agora vamos para o jogo do <strong>Stop</strong></h1>
           </div>
-          <div class="setup-grid">
-            <label class="setting-field">
-              <span>Sala</span>
-              <input id="roomNameInput" maxlength="22" value="Mesa Stop" />
-            </label>
-            <article class="setting-counter">
-              <span>Rondas</span>
-              <div class="stepper">
-                <button type="button" data-step="rounds-down">-</button>
-                <strong id="roundsValue">6</strong>
-                <button type="button" data-step="rounds-up">+</button>
-              </div>
-            </article>
-            <article class="setting-counter">
-              <span>Tempo</span>
-              <div class="stepper">
-                <button type="button" data-step="time-down">-</button>
-                <strong id="timeValue">90s</strong>
-                <button type="button" data-step="time-up">+</button>
-              </div>
-            </article>
+          <div class="intro-orbit" aria-hidden="true">
+            <span>Nome</span>
+            <span>Cidade</span>
+            <span>Animal</span>
+            <span>Comida</span>
+            <span>Objeto</span>
           </div>
-
-          <section class="players-setup">
-            <div class="section-head">
-              <span>Jogadores</span>
+          <div class="intro-table">
+            <div id="introPlayers" class="intro-players"></div>
+            <div class="intro-meta">
+              <span id="introRounds">6 rondas</span>
+              <span id="introTime">90s</span>
+              <span id="introCategories">6 categorias</span>
             </div>
-            <form id="addPlayerForm" class="add-player-form">
-              <input id="newPlayerInput" maxlength="14" placeholder="Nome do jogador" />
-              <button id="addPlayer" type="submit">Adicionar</button>
-            </form>
-            <div id="playersList" class="players-list"></div>
-          </section>
+          </div>
+        </section>
 
-          <section class="categories-setup">
-            <div class="section-head">
-              <span>Categorias</span>
-              <small id="categoryCount">6 ativas</small>
-            </div>
-            <div id="categoryToggles" class="category-toggles"></div>
-          </section>
+        <section id="roulettePanel" class="roulette-panel hidden">
+          <div class="roulette-copy">
+            <p class="eyebrow">Sorteio da letra</p>
+            <h2>Letra a sair</h2>
+          </div>
+          <div class="roulette-machine" aria-label="Roleta de letras">
+            <div id="rouletteSpotlight" class="roulette-spotlight">A</div>
+            <div id="rouletteTrack" class="roulette-track"></div>
+            <div class="roulette-needle" aria-hidden="true"></div>
+          </div>
+          <p id="rouletteStatus" class="roulette-status">A preparar roleta</p>
         </section>
 
         <section id="roundPanel" class="round-panel hidden">

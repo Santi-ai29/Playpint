@@ -10,6 +10,10 @@ autoridade da letra, relogio, submissao, bloqueio de edicoes e pontuacao.
 
 ## Configuracao do host
 
+O menu de personalizacao aparece quando o host escolhe `Stop` e cria a sala.
+Depois de o jogo comecar, a mesma sala/configuracao e reutilizada para rondas e
+recomecos, sem voltar automaticamente ao setup.
+
 - Nome da sala.
 - Jogadores da mesa.
 - Numero de rondas.
@@ -112,5 +116,6 @@ Direcao visual:
 
 Preview local em `apps/mobile/preview/stop`.
 
-Ela permite experimentar configuracao de sala, jogadores, rondas, tempo,
-categorias, ronda ativa e resultado com ranking geral.
+Ela assume que a mesa ja foi personalizada antes do modo, mostra uma intro
+animada do Stop, sorteia a letra numa roleta horizontal, abre a ronda ativa e
+mantem o resultado com review por categoria e ranking geral acumulado.

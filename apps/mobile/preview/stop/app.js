@@ -1,7 +1,7 @@
 const MIN_PLAYERS = 2;
-const MAX_PLAYERS = 10;
 const MAX_ROUND_CATEGORIES = 6;
 const LETTERS = ["A", "B", "C", "D", "E", "F", "G", "I", "J", "L", "M", "N", "O", "P", "R", "S", "T", "V"];
+const ROUND_LETTERS = ["B", "A", "P", "S", "M", "R"];
 const categoryCatalog = [
   { id: "name", label: "Nome", placeholder: "Nome proprio" },
   { id: "city", label: "Cidade", placeholder: "Cidade" },
@@ -39,10 +39,58 @@ const wordBank = {
     celebrity: ["Beyonce", "Brad Pitt", "Bad Bunny", "Billie"],
     spicy: ["Beijo", "Bloqueio", "Brinde", "Bora"],
   },
+  M: {
+    name: ["Marta", "Miguel", "Maria", "Mauro"],
+    city: ["Madrid", "Matosinhos", "Maia", "Monaco"],
+    animal: ["Macaco", "Morcego", "Mosca", "Melro"],
+    food: ["Massa", "Melancia", "Mousse", "Milho"],
+    object: ["Mesa", "Mala", "Martelo", "Mochila"],
+    profession: ["Medico", "Musico", "Motorista", "Modelo"],
+    brand: ["Mercedes", "Mango", "Microsoft", "McDonalds"],
+    movie_series: ["Matrix", "Mad Men", "Mulan", "Manifest"],
+    celebrity: ["Madonna", "Messi", "Miley", "Morgan Freeman"],
+    spicy: ["Match", "Mimo", "Mensagem", "Mistura"],
+  },
+  P: {
+    name: ["Pedro", "Paula", "Patricia", "Pilar"],
+    city: ["Porto", "Paris", "Portimao", "Praga"],
+    animal: ["Pato", "Panda", "Porco", "Pinguim"],
+    food: ["Pizza", "Pasta", "Pudim", "Pao"],
+    object: ["Prato", "Pente", "Pulseira", "Porta"],
+    profession: ["Professor", "Piloto", "Padeiro", "Policia"],
+    brand: ["Puma", "Pepsi", "PlayStation", "Pingo Doce"],
+    movie_series: ["Prison Break", "Pulp Fiction", "Parasitas", "Pokemon"],
+    celebrity: ["Post Malone", "Pedro Pascal", "Pink", "Pele"],
+    spicy: ["Paixao", "Pedido", "Plano", "Provocar"],
+  },
+  R: {
+    name: ["Rita", "Rafael", "Ricardo", "Ruben"],
+    city: ["Roma", "Rio", "Roterdam", "Rabat"],
+    animal: ["Rato", "Raposa", "Rena", "Rinoceronte"],
+    food: ["Risotto", "Rabanada", "Robalo", "Ravioli"],
+    object: ["Relogio", "Radio", "Regua", "Roupa"],
+    profession: ["Radialista", "Rececionista", "Rapper", "Realizador"],
+    brand: ["Rolex", "Renault", "Reebok", "Ryanair"],
+    movie_series: ["Rocky", "Ratatui", "Roma", "Riverdale"],
+    celebrity: ["Rihanna", "Ronaldo", "Rosalia", "Ryan Gosling"],
+    spicy: ["Risco", "Romance", "Resposta", "Ritmo"],
+  },
+  S: {
+    name: ["Sara", "Sofia", "Samuel", "Simone"],
+    city: ["Setubal", "Sevilha", "Sintra", "Sydney"],
+    animal: ["Sapo", "Serpente", "Salmao", "Suricata"],
+    food: ["Sushi", "Sopa", "Salada", "Salsicha"],
+    object: ["Sapato", "Sofa", "Saco", "Sabonete"],
+    profession: ["Soldado", "Sapateiro", "Surfista", "Socorrista"],
+    brand: ["Samsung", "Seat", "Sony", "Spotify"],
+    movie_series: ["Shrek", "Suits", "Saw", "Stranger Things"],
+    celebrity: ["Selena", "Shakira", "Snoop Dogg", "Sandra Bullock"],
+    spicy: ["Segredo", "Saudade", "Sinal", "Sussurro"],
+  },
 };
 
 let state = {
-  phase: "setup",
+  phase: "intro",
   roomName: "Mesa Stop",
   roundLimit: 6,
   roundSeconds: 90,
@@ -56,6 +104,9 @@ let state = {
   ],
   activeCategoryIds: ["name", "city", "animal", "food", "object", "profession"],
   letter: "A",
+  rouletteCursor: 0,
+  rouletteDone: false,
+  rouletteSequence: [],
   answers: {},
   submissions: [],
   reviewCategoryId: "name",
@@ -65,21 +116,22 @@ let state = {
   scoresAppliedForRound: false,
 };
 
+let rouletteTimer = null;
+
 const phaseLabel = document.querySelector("#phaseLabel");
 const timerLabel = document.querySelector("#timerLabel");
-const setupPanel = document.querySelector("#setupPanel");
+const introPanel = document.querySelector("#introPanel");
+const roulettePanel = document.querySelector("#roulettePanel");
 const roundPanel = document.querySelector("#roundPanel");
 const resultPanel = document.querySelector("#resultPanel");
 const scorePanel = document.querySelector("#scorePanel");
-const setupSummary = document.querySelector("#setupSummary");
-const roomNameInput = document.querySelector("#roomNameInput");
-const roundsValue = document.querySelector("#roundsValue");
-const timeValue = document.querySelector("#timeValue");
-const playersList = document.querySelector("#playersList");
-const addPlayerForm = document.querySelector("#addPlayerForm");
-const newPlayerInput = document.querySelector("#newPlayerInput");
-const categoryCount = document.querySelector("#categoryCount");
-const categoryToggles = document.querySelector("#categoryToggles");
+const introPlayers = document.querySelector("#introPlayers");
+const introRounds = document.querySelector("#introRounds");
+const introTime = document.querySelector("#introTime");
+const introCategories = document.querySelector("#introCategories");
+const rouletteSpotlight = document.querySelector("#rouletteSpotlight");
+const rouletteTrack = document.querySelector("#rouletteTrack");
+const rouletteStatus = document.querySelector("#rouletteStatus");
 const roundLetter = document.querySelector("#roundLetter");
 const submissionCount = document.querySelector("#submissionCount");
 const answersForm = document.querySelector("#answersForm");
@@ -97,39 +149,6 @@ const rankingList = document.querySelector("#rankingList");
 
 window.setInterval(tick, 1000);
 
-roomNameInput.addEventListener("input", () => {
-  state.roomName = roomNameInput.value.trimStart().slice(0, 22) || "Stop";
-  renderHeader();
-});
-
-addPlayerForm.addEventListener("submit", (event) => {
-  event.preventDefault();
-  addPlayerFromInput();
-});
-
-playersList.addEventListener("click", (event) => {
-  const button = event.target.closest("[data-remove-player]");
-
-  if (!button || state.players.length <= MIN_PLAYERS) {
-    return;
-  }
-
-  state.players = state.players.filter(
-    (player) => player.playerId !== button.dataset.removePlayer,
-  );
-  render();
-});
-
-categoryToggles.addEventListener("click", (event) => {
-  const button = event.target.closest("[data-category]");
-
-  if (!button) {
-    return;
-  }
-
-  toggleCategory(button.dataset.category);
-});
-
 reviewTabs.addEventListener("click", (event) => {
   const button = event.target.closest("[data-review-category]");
 
@@ -139,6 +158,7 @@ reviewTabs.addEventListener("click", (event) => {
 
   state.reviewCategoryId = button.dataset.reviewCategory;
   renderReview();
+  renderFooter();
 });
 
 reviewBoard.addEventListener("click", (event) => {
@@ -153,19 +173,16 @@ reviewBoard.addEventListener("click", (event) => {
   renderReview();
 });
 
-document.addEventListener("click", (event) => {
-  const button = event.target.closest("[data-step]");
-
-  if (!button) {
+primaryAction.addEventListener("click", () => {
+  if (state.phase === "intro") {
+    startGame();
     return;
   }
 
-  updateSetting(button.dataset.step);
-});
-
-primaryAction.addEventListener("click", () => {
-  if (state.phase === "setup") {
-    startGame();
+  if (state.phase === "roulette") {
+    if (state.rouletteDone) {
+      startRound();
+    }
     return;
   }
 
@@ -197,67 +214,6 @@ answersForm.addEventListener("input", (event) => {
 
 render();
 
-function addPlayerFromInput() {
-  if (state.phase !== "setup" || state.players.length >= MAX_PLAYERS) {
-    return;
-  }
-
-  const nickname = newPlayerInput.value.trim().slice(0, 14);
-
-  if (!nickname) {
-    return;
-  }
-
-  state.players.push({
-    playerId: `p${Date.now()}`,
-    nickname,
-  });
-  newPlayerInput.value = "";
-  render();
-}
-
-function updateSetting(action) {
-  if (state.phase !== "setup") {
-    return;
-  }
-
-  if (action === "rounds-down") {
-    state.roundLimit = Math.max(1, state.roundLimit - 1);
-  }
-
-  if (action === "rounds-up") {
-    state.roundLimit = Math.min(12, state.roundLimit + 1);
-  }
-
-  if (action === "time-down") {
-    state.roundSeconds = Math.max(30, state.roundSeconds - 15);
-  }
-
-  if (action === "time-up") {
-    state.roundSeconds = Math.min(180, state.roundSeconds + 15);
-  }
-
-  render();
-}
-
-function toggleCategory(categoryId) {
-  const active = state.activeCategoryIds.includes(categoryId);
-
-  if (active && state.activeCategoryIds.length <= 3) {
-    return;
-  }
-
-  if (!active && state.activeCategoryIds.length >= MAX_ROUND_CATEGORIES) {
-    return;
-  }
-
-  state.activeCategoryIds = active
-    ? state.activeCategoryIds.filter((id) => id !== categoryId)
-    : [...state.activeCategoryIds, categoryId];
-  state.reviewCategoryId = state.activeCategoryIds[0] ?? "name";
-  render();
-}
-
 function startGame() {
   if (state.players.length < MIN_PLAYERS) {
     return;
@@ -276,12 +232,29 @@ function startGame() {
     ]),
   );
   state.roundIndex = 0;
-  startRound();
+  beginLetterRoulette();
+}
+
+function beginLetterRoulette() {
+  clearRouletteTimer();
+  state.phase = "roulette";
+  state.letter = pickRoundLetter();
+  state.rouletteCursor = 0;
+  state.rouletteDone = false;
+  state.rouletteSequence = createRouletteSequence(state.letter);
+  state.answers = {};
+  state.submissions = [];
+  state.invalidatedAnswers = {};
+  state.roundResult = null;
+  state.reviewCategoryId = getActiveCategories()[0]?.id ?? "name";
+  state.scoresAppliedForRound = false;
+  render();
+  spinRouletteStep(0);
 }
 
 function startRound() {
+  clearRouletteTimer();
   state.phase = "round";
-  state.letter = LETTERS[state.roundIndex % LETTERS.length];
   state.seconds = state.roundSeconds;
   state.answers = {};
   state.submissions = [];
@@ -348,19 +321,56 @@ function advanceReview() {
 
 function nextRound() {
   if (state.roundIndex >= state.roundLimit - 1) {
-    state.phase = "setup";
-    render();
+    resetGameIntro();
     return;
   }
 
   state.roundIndex += 1;
-  startRound();
+  beginLetterRoulette();
+}
+
+function resetGameIntro() {
+  clearRouletteTimer();
+  state.phase = "intro";
+  state.roundIndex = 0;
+  state.seconds = state.roundSeconds;
+  state.answers = {};
+  state.submissions = [];
+  state.invalidatedAnswers = {};
+  state.roundResult = null;
+  state.reviewCategoryId = getActiveCategories()[0]?.id ?? "name";
+  state.overallScores = {};
+  state.scoresAppliedForRound = false;
+  render();
+}
+
+function spinRouletteStep(index) {
+  if (state.phase !== "roulette") {
+    return;
+  }
+
+  const sequenceLetter = state.rouletteSequence[index] ?? state.letter;
+  state.rouletteCursor = Math.max(0, LETTERS.indexOf(sequenceLetter));
+  renderRoulette();
+
+  if (index >= state.rouletteSequence.length - 1) {
+    state.rouletteDone = true;
+    state.rouletteCursor = LETTERS.indexOf(state.letter);
+    renderRoulette();
+    renderFooter();
+    return;
+  }
+
+  const progress = index / Math.max(1, state.rouletteSequence.length - 1);
+  const delay = 34 + Math.round(progress * progress * 155);
+  rouletteTimer = window.setTimeout(() => spinRouletteStep(index + 1), delay);
 }
 
 function render() {
   document.body.dataset.phase = state.phase;
   renderHeader();
-  renderSetup();
+  renderIntro();
+  renderRoulette();
   renderRound();
   renderReview();
   renderScores();
@@ -368,9 +378,15 @@ function render() {
 }
 
 function renderHeader() {
-  if (state.phase === "setup") {
-    phaseLabel.textContent = "Mesa";
+  if (state.phase === "intro") {
+    phaseLabel.textContent = "Entrada";
     timerLabel.textContent = `${state.players.length}p`;
+    return;
+  }
+
+  if (state.phase === "roulette") {
+    phaseLabel.textContent = `Ronda ${state.roundIndex + 1}/${state.roundLimit}`;
+    timerLabel.textContent = "Sorteio";
     return;
   }
 
@@ -385,49 +401,53 @@ function renderHeader() {
     state.phase === "round" ? formatTimer(state.seconds) : state.roomName;
 }
 
-function renderSetup() {
-  setupPanel.classList.toggle("hidden", state.phase !== "setup");
+function renderIntro() {
+  introPanel.classList.toggle("hidden", state.phase !== "intro");
 
-  if (state.phase !== "setup") {
+  if (state.phase !== "intro") {
     return;
   }
 
-  setupSummary.textContent =
-    state.players.length === 1
-      ? "1 jogador"
-      : `${state.players.length} jogadores`;
-  roomNameInput.value = state.roomName;
-  roundsValue.textContent = String(state.roundLimit);
-  timeValue.textContent = `${state.roundSeconds}s`;
-  playersList.innerHTML = state.players
+  introPlayers.innerHTML = state.players
     .map(
-      (player) => `
-        <article class="player-chip">
+      (player, index) => `
+        <article class="intro-player" style="--enter-index: ${index}">
           <span class="player-avatar">${escapeHtml(getInitial(player.nickname))}</span>
           <strong>${escapeHtml(player.nickname)}</strong>
-          <button class="remove-player" type="button" data-remove-player="${escapeHtml(player.playerId)}">x</button>
         </article>
       `,
     )
     .join("");
-  categoryCount.textContent = `${state.activeCategoryIds.length}/${MAX_ROUND_CATEGORIES}`;
-  categoryToggles.innerHTML = categoryCatalog
-    .map((category) => {
-      const active = state.activeCategoryIds.includes(category.id);
-      const locked = !active && state.activeCategoryIds.length >= MAX_ROUND_CATEGORIES;
+  introRounds.textContent =
+    state.roundLimit === 1 ? "1 ronda" : `${state.roundLimit} rondas`;
+  introTime.textContent = `${state.roundSeconds}s`;
+  introCategories.textContent = `${state.activeCategoryIds.length} categorias`;
+}
 
-      return `
-        <button
-          class="category-toggle ${active ? "active" : ""}"
-          type="button"
-          data-category="${category.id}"
-          ${locked ? "disabled" : ""}
-        >
-          ${escapeHtml(category.label)}
-        </button>
-      `;
-    })
-    .join("");
+function renderRoulette() {
+  roulettePanel.classList.toggle("hidden", state.phase !== "roulette");
+  roulettePanel.classList.toggle("settled", state.rouletteDone);
+
+  if (state.phase !== "roulette") {
+    return;
+  }
+
+  const activeLetter = LETTERS[state.rouletteCursor] ?? state.letter;
+  rouletteSpotlight.textContent = state.rouletteDone ? state.letter : activeLetter;
+  rouletteStatus.textContent = state.rouletteDone
+    ? `Letra ${state.letter}. Preparar respostas.`
+    : "A misturar letras";
+  rouletteTrack.innerHTML = LETTERS.map((letter, index) => {
+    const distance = Math.abs(index - state.rouletteCursor);
+    const near =
+      distance === 1 || distance === LETTERS.length - 1 || distance === LETTERS.length - 2;
+
+    return `
+      <span class="roulette-tile ${index === state.rouletteCursor ? "active" : ""} ${near ? "near" : ""}">
+        ${letter}
+      </span>
+    `;
+  }).join("");
 }
 
 function renderRound() {
@@ -494,7 +514,7 @@ function renderReview() {
     )
     .join("");
   reviewBoard.innerHTML = state.submissions
-    .map((submission) => {
+    .map((submission, index) => {
       const answer = submission.answers[selectedCategory.id] ?? "";
       const key = getReviewKey(submission.player.playerId, selectedCategory.id);
       const invalidated = Boolean(state.invalidatedAnswers[key]);
@@ -508,7 +528,7 @@ function renderReview() {
             : "Vazia";
 
       return `
-        <article class="review-row ${invalidated ? "invalidated" : ""}">
+        <article class="review-row ${invalidated ? "invalidated" : ""}" style="--enter-index: ${index}">
           <div class="review-player">
             <span class="player-avatar">${escapeHtml(getInitial(submission.player.nickname))}</span>
             <strong>${escapeHtml(submission.player.nickname)}</strong>
@@ -547,7 +567,7 @@ function renderScores() {
   roundScores.innerHTML = state.roundResult.playerScores
     .map(
       (score, index) => `
-        <article class="score-row ${index === 0 && score.totalScore > 0 ? "leader" : ""}">
+        <article class="score-row ${index === 0 && score.totalScore > 0 ? "leader" : ""}" style="--enter-index: ${index}">
           <span class="rank">#${index + 1}</span>
           <strong>${escapeHtml(score.nickname)}</strong>
           <em>+${score.totalScore}</em>
@@ -558,7 +578,7 @@ function renderScores() {
   rankingList.innerHTML = ranking
     .map(
       (entry, index) => `
-        <article class="ranking-row ${index === 0 && entry.totalScore > 0 ? "leader" : ""}">
+        <article class="ranking-row ${index === 0 && entry.totalScore > 0 ? "leader" : ""}" style="--enter-index: ${index}">
           <span class="rank">#${index + 1}</span>
           <strong>${escapeHtml(entry.nickname)}</strong>
           <span>${entry.totalScore} pts</span>
@@ -569,10 +589,20 @@ function renderScores() {
 }
 
 function renderFooter() {
-  if (state.phase === "setup") {
+  if (state.phase === "intro") {
     primaryAction.textContent =
-      state.players.length < MIN_PLAYERS ? "A espera da mesa" : "Comecar jogo";
+      state.players.length < MIN_PLAYERS ? "A espera da mesa" : "Sortear letra";
     primaryAction.disabled = state.players.length < MIN_PLAYERS;
+    primaryAction.classList.remove("secondary", "spinning");
+    return;
+  }
+
+  if (state.phase === "roulette") {
+    primaryAction.textContent = state.rouletteDone
+      ? "Comecar ronda"
+      : "A sortear letra";
+    primaryAction.disabled = !state.rouletteDone;
+    primaryAction.classList.toggle("spinning", !state.rouletteDone);
     primaryAction.classList.remove("secondary");
     return;
   }
@@ -580,21 +610,22 @@ function renderFooter() {
   if (state.phase === "round") {
     primaryAction.textContent = "STOP";
     primaryAction.disabled = !Object.values(state.answers).some((answer) => answer.trim());
-    primaryAction.classList.remove("secondary");
+    primaryAction.classList.remove("secondary", "spinning");
     return;
   }
 
   if (state.phase === "review") {
     primaryAction.textContent = getReviewPrimaryActionLabel();
     primaryAction.disabled = false;
-    primaryAction.classList.remove("secondary");
+    primaryAction.classList.remove("secondary", "spinning");
     return;
   }
 
   primaryAction.textContent =
-    state.roundIndex >= state.roundLimit - 1 ? "Voltar a mesa" : "Proxima ronda";
+    state.roundIndex >= state.roundLimit - 1 ? "Novo jogo" : "Sortear proxima letra";
   primaryAction.disabled = false;
   primaryAction.classList.add("secondary");
+  primaryAction.classList.remove("spinning");
 }
 
 function createPreviewSubmissions(stoppedBy) {
@@ -755,6 +786,27 @@ function getOverallRanking() {
       right.roundsWon - left.roundsWon ||
       left.nickname.localeCompare(right.nickname),
   );
+}
+
+function createRouletteSequence(finalLetter) {
+  const seed = state.roundIndex * 3 + 2;
+  const sequence = [];
+
+  for (let index = 0; index < 42; index += 1) {
+    sequence.push(LETTERS[(seed + index * 5) % LETTERS.length]);
+  }
+
+  sequence.push(finalLetter);
+  return sequence;
+}
+
+function pickRoundLetter() {
+  return ROUND_LETTERS[state.roundIndex % ROUND_LETTERS.length];
+}
+
+function clearRouletteTimer() {
+  window.clearTimeout(rouletteTimer);
+  rouletteTimer = null;
 }
 
 function getStoppedBy() {
