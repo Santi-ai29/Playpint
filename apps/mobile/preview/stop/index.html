@@ -24,36 +24,43 @@
         </header>
 
         <section id="introPanel" class="intro-panel">
-          <div class="intro-copy">
-            <p class="eyebrow">Mesa pronta</p>
-            <h1>Agora vamos para o jogo do <strong>Stop</strong></h1>
-          </div>
-          <div class="intro-orbit" aria-hidden="true">
-            <span>Nome</span>
-            <span>Cidade</span>
-            <span>Animal</span>
-            <span>Comida</span>
-            <span>Objeto</span>
-          </div>
-          <div class="intro-table">
-            <div id="introPlayers" class="intro-players"></div>
-            <div class="intro-meta">
-              <span id="introRounds">6 rondas</span>
-              <span id="introTime">90s</span>
-              <span id="introCategories">6 categorias</span>
+          <div class="intro-template" aria-hidden="true">
+            <div class="template-topline">
+              <span>STOP</span>
+              <i></i>
             </div>
+            <div class="template-letter">
+              <small>Letra</small>
+              <strong>?</strong>
+            </div>
+            <div class="template-lines">
+              <span>Nome</span>
+              <span>Cidade</span>
+              <span>Animal</span>
+              <span>Comida</span>
+              <span>Objeto</span>
+            </div>
+          </div>
+          <div class="intro-copy">
+            <p class="eyebrow">A seguir</p>
+            <h1>Stop</h1>
+            <p>Letra secreta. Respostas rapidas. Mesa em alerta.</p>
           </div>
         </section>
 
         <section id="roulettePanel" class="roulette-panel hidden">
           <div class="roulette-copy">
-            <p class="eyebrow">Sorteio da letra</p>
-            <h2>Letra a sair</h2>
+            <p class="eyebrow">Roleta Stop</p>
+            <h2>Sorteio da letra</h2>
           </div>
           <div class="roulette-machine" aria-label="Roleta de letras">
-            <div id="rouletteSpotlight" class="roulette-spotlight">A</div>
-            <div id="rouletteTrack" class="roulette-track"></div>
-            <div class="roulette-needle" aria-hidden="true"></div>
+            <div class="slot-shell">
+              <span class="slot-label">Letra</span>
+              <div id="roulettePrevious" class="roulette-ghost top">A</div>
+              <div id="rouletteSpotlight" class="roulette-spotlight">A</div>
+              <div id="rouletteNext" class="roulette-ghost bottom">B</div>
+            </div>
+            <div class="slot-rail" aria-hidden="true"></div>
           </div>
           <p id="rouletteStatus" class="roulette-status">A preparar roleta</p>
         </section>

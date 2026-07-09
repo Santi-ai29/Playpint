@@ -125,12 +125,9 @@ const roulettePanel = document.querySelector("#roulettePanel");
 const roundPanel = document.querySelector("#roundPanel");
 const resultPanel = document.querySelector("#resultPanel");
 const scorePanel = document.querySelector("#scorePanel");
-const introPlayers = document.querySelector("#introPlayers");
-const introRounds = document.querySelector("#introRounds");
-const introTime = document.querySelector("#introTime");
-const introCategories = document.querySelector("#introCategories");
 const rouletteSpotlight = document.querySelector("#rouletteSpotlight");
-const rouletteTrack = document.querySelector("#rouletteTrack");
+const roulettePrevious = document.querySelector("#roulettePrevious");
+const rouletteNext = document.querySelector("#rouletteNext");
 const rouletteStatus = document.querySelector("#rouletteStatus");
 const roundLetter = document.querySelector("#roundLetter");
 const submissionCount = document.querySelector("#submissionCount");
@@ -379,8 +376,8 @@ function render() {
 
 function renderHeader() {
   if (state.phase === "intro") {
-    phaseLabel.textContent = "Entrada";
-    timerLabel.textContent = `${state.players.length}p`;
+    phaseLabel.textContent = "A seguir";
+    timerLabel.textContent = "Stop";
     return;
   }
 
@@ -403,25 +400,6 @@ function renderHeader() {
 
 function renderIntro() {
   introPanel.classList.toggle("hidden", state.phase !== "intro");
-
-  if (state.phase !== "intro") {
-    return;
-  }
-
-  introPlayers.innerHTML = state.players
-    .map(
-      (player, index) => `
-        <article class="intro-player" style="--enter-index: ${index}">
-          <span class="player-avatar">${escapeHtml(getInitial(player.nickname))}</span>
-          <strong>${escapeHtml(player.nickname)}</strong>
-        </article>
-      `,
-    )
-    .join("");
-  introRounds.textContent =
-    state.roundLimit === 1 ? "1 ronda" : `${state.roundLimit} rondas`;
-  introTime.textContent = `${state.roundSeconds}s`;
-  introCategories.textContent = `${state.activeCategoryIds.length} categorias`;
 }
 
 function renderRoulette() {
@@ -432,22 +410,20 @@ function renderRoulette() {
     return;
   }
 
-  const activeLetter = LETTERS[state.rouletteCursor] ?? state.letter;
-  rouletteSpotlight.textContent = state.rouletteDone ? state.letter : activeLetter;
-  rouletteStatus.textContent = state.rouletteDone
-    ? `Letra ${state.letter}. Preparar respostas.`
-    : "A misturar letras";
-  rouletteTrack.innerHTML = LETTERS.map((letter, index) => {
-    const distance = Math.abs(index - state.rouletteCursor);
-    const near =
-      distance === 1 || distance === LETTERS.length - 1 || distance === LETTERS.length - 2;
+  const activeIndex = state.rouletteCursor;
+  const activeLetter = LETTERS[activeIndex] ?? state.letter;
+  const previousLetter = LETTERS[(activeIndex - 1 + LETTERS.length) % LETTERS.length];
+  const nextLetter = LETTERS[(activeIndex + 1) % LETTERS.length];
 
-    return `
-      <span class="roulette-tile ${index === state.rouletteCursor ? "active" : ""} ${near ? "near" : ""}">
-        ${letter}
-      </span>
-    `;
-  }).join("");
+  roulettePanel.dataset.spinTick = String(activeIndex % 2);
+  roulettePrevious.textContent = state.rouletteDone
+    ? previousLetterFor(state.letter)
+    : previousLetter;
+  rouletteSpotlight.textContent = state.rouletteDone ? state.letter : activeLetter;
+  rouletteNext.textContent = state.rouletteDone ? nextLetterFor(state.letter) : nextLetter;
+  rouletteStatus.textContent = state.rouletteDone
+    ? `Letra ${state.letter}. Tudo pronto.`
+    : "A escolher a letra";
 }
 
 function renderRound() {
@@ -807,6 +783,18 @@ function pickRoundLetter() {
 function clearRouletteTimer() {
   window.clearTimeout(rouletteTimer);
   rouletteTimer = null;
+}
+
+function previousLetterFor(letter) {
+  const index = Math.max(0, LETTERS.indexOf(letter));
+
+  return LETTERS[(index - 1 + LETTERS.length) % LETTERS.length];
+}
+
+function nextLetterFor(letter) {
+  const index = Math.max(0, LETTERS.indexOf(letter));
+
+  return LETTERS[(index + 1) % LETTERS.length];
 }
 
 function getStoppedBy() {
