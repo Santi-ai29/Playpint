@@ -107,6 +107,7 @@ let state = {
   rouletteCursor: 0,
   rouletteDone: false,
   rouletteSequence: [],
+  countdownValue: 3,
   answers: {},
   submissions: [],
   reviewCategoryId: "name",
@@ -117,18 +118,20 @@ let state = {
 };
 
 let rouletteTimer = null;
+let countdownTimer = null;
 
 const phaseLabel = document.querySelector("#phaseLabel");
 const timerLabel = document.querySelector("#timerLabel");
 const introPanel = document.querySelector("#introPanel");
 const roulettePanel = document.querySelector("#roulettePanel");
+const countdownPanel = document.querySelector("#countdownPanel");
 const roundPanel = document.querySelector("#roundPanel");
 const resultPanel = document.querySelector("#resultPanel");
 const scorePanel = document.querySelector("#scorePanel");
 const rouletteSpotlight = document.querySelector("#rouletteSpotlight");
 const roulettePrevious = document.querySelector("#roulettePrevious");
 const rouletteNext = document.querySelector("#rouletteNext");
-const rouletteStatus = document.querySelector("#rouletteStatus");
+const countdownNumber = document.querySelector("#countdownNumber");
 const roundLetter = document.querySelector("#roundLetter");
 const submissionCount = document.querySelector("#submissionCount");
 const answersForm = document.querySelector("#answersForm");
@@ -178,8 +181,12 @@ primaryAction.addEventListener("click", () => {
 
   if (state.phase === "roulette") {
     if (state.rouletteDone) {
-      startRound();
+      beginCountdown();
     }
+    return;
+  }
+
+  if (state.phase === "countdown") {
     return;
   }
 
@@ -234,10 +241,12 @@ function startGame() {
 
 function beginLetterRoulette() {
   clearRouletteTimer();
+  clearCountdownTimer();
   state.phase = "roulette";
   state.letter = pickRoundLetter();
   state.rouletteCursor = 0;
   state.rouletteDone = false;
+  state.countdownValue = 3;
   state.rouletteSequence = createRouletteSequence(state.letter);
   state.answers = {};
   state.submissions = [];
@@ -249,8 +258,35 @@ function beginLetterRoulette() {
   spinRouletteStep(0);
 }
 
+function beginCountdown() {
+  clearRouletteTimer();
+  clearCountdownTimer();
+  state.phase = "countdown";
+  state.countdownValue = 3;
+  render();
+  scheduleCountdownStep();
+}
+
+function scheduleCountdownStep() {
+  countdownTimer = window.setTimeout(() => {
+    if (state.phase !== "countdown") {
+      return;
+    }
+
+    if (state.countdownValue <= 1) {
+      startRound();
+      return;
+    }
+
+    state.countdownValue -= 1;
+    renderCountdown();
+    scheduleCountdownStep();
+  }, 760);
+}
+
 function startRound() {
   clearRouletteTimer();
+  clearCountdownTimer();
   state.phase = "round";
   state.seconds = state.roundSeconds;
   state.answers = {};
@@ -328,6 +364,7 @@ function nextRound() {
 
 function resetGameIntro() {
   clearRouletteTimer();
+  clearCountdownTimer();
   state.phase = "intro";
   state.roundIndex = 0;
   state.seconds = state.roundSeconds;
@@ -368,6 +405,7 @@ function render() {
   renderHeader();
   renderIntro();
   renderRoulette();
+  renderCountdown();
   renderRound();
   renderReview();
   renderScores();
@@ -384,6 +422,12 @@ function renderHeader() {
   if (state.phase === "roulette") {
     phaseLabel.textContent = `Ronda ${state.roundIndex + 1}/${state.roundLimit}`;
     timerLabel.textContent = "Sorteio";
+    return;
+  }
+
+  if (state.phase === "countdown") {
+    phaseLabel.textContent = `Ronda ${state.roundIndex + 1}/${state.roundLimit}`;
+    timerLabel.textContent = "3 2 1";
     return;
   }
 
@@ -421,9 +465,20 @@ function renderRoulette() {
     : previousLetter;
   rouletteSpotlight.textContent = state.rouletteDone ? state.letter : activeLetter;
   rouletteNext.textContent = state.rouletteDone ? nextLetterFor(state.letter) : nextLetter;
-  rouletteStatus.textContent = state.rouletteDone
-    ? `Letra ${state.letter}. Tudo pronto.`
-    : "A escolher a letra";
+}
+
+function renderCountdown() {
+  countdownPanel.classList.toggle("hidden", state.phase !== "countdown");
+
+  if (state.phase !== "countdown") {
+    return;
+  }
+
+  countdownNumber.textContent = String(state.countdownValue);
+  countdownNumber.style.animation = "none";
+  window.requestAnimationFrame(() => {
+    countdownNumber.style.animation = "";
+  });
 }
 
 function renderRound() {
@@ -580,6 +635,13 @@ function renderFooter() {
     primaryAction.disabled = !state.rouletteDone;
     primaryAction.classList.toggle("spinning", !state.rouletteDone);
     primaryAction.classList.remove("secondary");
+    return;
+  }
+
+  if (state.phase === "countdown") {
+    primaryAction.textContent = "";
+    primaryAction.disabled = true;
+    primaryAction.classList.remove("secondary", "spinning");
     return;
   }
 
@@ -783,6 +845,11 @@ function pickRoundLetter() {
 function clearRouletteTimer() {
   window.clearTimeout(rouletteTimer);
   rouletteTimer = null;
+}
+
+function clearCountdownTimer() {
+  window.clearTimeout(countdownTimer);
+  countdownTimer = null;
 }
 
 function previousLetterFor(letter) {

@@ -24,27 +24,10 @@
         </header>
 
         <section id="introPanel" class="intro-panel">
-          <div class="intro-template" aria-hidden="true">
-            <div class="template-topline">
-              <span>STOP</span>
-              <i></i>
-            </div>
-            <div class="template-letter">
-              <small>Letra</small>
-              <strong>?</strong>
-            </div>
-            <div class="template-lines">
-              <span>Nome</span>
-              <span>Cidade</span>
-              <span>Animal</span>
-              <span>Comida</span>
-              <span>Objeto</span>
-            </div>
-          </div>
-          <div class="intro-copy">
-            <p class="eyebrow">A seguir</p>
-            <h1>Stop</h1>
-            <p>Letra secreta. Respostas rapidas. Mesa em alerta.</p>
+          <div class="intro-mark" aria-hidden="true">
+            <span></span>
+            <strong>Stop</strong>
+            <i></i>
           </div>
         </section>
 
@@ -55,14 +38,18 @@
           </div>
           <div class="roulette-machine" aria-label="Roleta de letras">
             <div class="slot-shell">
-              <span class="slot-label">Letra</span>
               <div id="roulettePrevious" class="roulette-ghost top">A</div>
               <div id="rouletteSpotlight" class="roulette-spotlight">A</div>
               <div id="rouletteNext" class="roulette-ghost bottom">B</div>
             </div>
-            <div class="slot-rail" aria-hidden="true"></div>
           </div>
-          <p id="rouletteStatus" class="roulette-status">A preparar roleta</p>
+        </section>
+
+        <section id="countdownPanel" class="countdown-panel hidden" aria-label="Contagem">
+          <div class="countdown-core">
+            <span></span>
+            <strong id="countdownNumber">3</strong>
+          </div>
         </section>
 
         <section id="roundPanel" class="round-panel hidden">

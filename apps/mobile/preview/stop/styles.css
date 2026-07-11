@@ -185,6 +185,7 @@ input {
 
 .intro-panel,
 .roulette-panel,
+.countdown-panel,
 .setup-panel,
 .round-panel,
 .result-panel,
@@ -195,166 +196,69 @@ input {
 .intro-panel {
   position: relative;
   display: grid;
-  grid-template-rows: minmax(0, 1fr) auto;
-  align-items: end;
-  gap: 18px;
+  place-items: center;
   overflow: hidden;
-  padding: 10px 0 8px;
+  padding: 8px 0 6px;
 }
 
-.intro-panel::before {
-  content: "";
-  position: absolute;
-  inset: 24px -12px auto;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(255, 195, 66, 0.48), transparent);
-  animation: scan-line 2.4s ease-in-out infinite;
-}
-
-.intro-template {
+.intro-mark {
   position: relative;
-  z-index: 1;
-  display: grid;
-  align-self: center;
-  gap: 16px;
-  width: min(100%, 360px);
-  min-height: 350px;
-  margin: 0 auto;
-  padding: 20px;
-  border: 1px solid rgba(255, 195, 66, 0.28);
-  border-radius: 24px;
-  background:
-    linear-gradient(180deg, rgba(255, 195, 66, 0.12), transparent 44%),
-    repeating-linear-gradient(180deg, transparent 0 35px, rgba(255, 195, 66, 0.08) 36px 37px),
-    rgba(18, 12, 7, 0.74);
-  box-shadow:
-    0 26px 58px rgba(0, 0, 0, 0.34),
-    inset 0 0 0 1px rgba(255, 243, 213, 0.035);
-  transform: rotate(-1.5deg);
-  animation: intro-sheet-in 640ms cubic-bezier(0.16, 1, 0.2, 1) both;
-}
-
-.intro-template::after {
-  content: "";
-  position: absolute;
-  inset: -1px;
-  border-radius: inherit;
-  background: linear-gradient(115deg, transparent 0 42%, rgba(255, 243, 213, 0.15) 50%, transparent 58% 100%);
-  opacity: 0;
-  pointer-events: none;
-  animation: template-shine 3.2s ease-in-out infinite;
-}
-
-.template-topline {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 14px;
-}
-
-.template-topline span {
-  color: var(--yellow);
-  font-size: 24px;
-  font-weight: 950;
-  line-height: 1;
-  letter-spacing: 0;
-}
-
-.template-topline i {
-  display: block;
-  height: 1px;
-  flex: 1;
-  background: linear-gradient(90deg, rgba(255, 195, 66, 0.58), transparent);
-}
-
-.template-letter {
   display: grid;
   place-items: center;
-  gap: 6px;
-  min-height: 124px;
-  border: 1px solid rgba(255, 195, 66, 0.22);
-  border-radius: 20px;
+  width: min(82vw, 350px);
+  min-height: min(62vh, 430px);
+  isolation: isolate;
+  animation: intro-rise 580ms cubic-bezier(0.16, 1, 0.2, 1) both;
+}
+
+.intro-mark span {
+  position: absolute;
+  z-index: -1;
+  width: min(76vw, 308px);
+  height: 148px;
+  border: 1px solid rgba(255, 195, 66, 0.3);
+  border-radius: 30px;
   background:
-    linear-gradient(145deg, rgba(255, 195, 66, 0.16), rgba(255, 74, 10, 0.07)),
-    rgba(5, 4, 3, 0.32);
+    linear-gradient(145deg, rgba(255, 195, 66, 0.14), rgba(255, 74, 10, 0.05)),
+    rgba(18, 12, 7, 0.58);
+  box-shadow:
+    0 28px 68px rgba(0, 0, 0, 0.34),
+    inset 0 1px 0 rgba(255, 243, 213, 0.06);
+  transform: rotate(-5deg);
+  animation: soft-card-float 3.8s ease-in-out infinite;
 }
 
-.template-letter small {
-  color: var(--orange);
-  font-size: 12px;
-  font-weight: 950;
-  text-transform: uppercase;
-}
-
-.template-letter strong {
+.intro-mark strong {
   color: var(--yellow);
-  font-size: 82px;
+  font-size: clamp(78px, 26vw, 126px);
   font-weight: 950;
-  line-height: 0.78;
-  text-shadow: 0 0 34px rgba(255, 195, 66, 0.28);
-  animation: question-breathe 1.7s ease-in-out infinite;
-}
-
-.template-lines {
-  display: grid;
-  gap: 11px;
-}
-
-.template-lines span {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  color: var(--muted);
-  font-size: 12px;
-  font-weight: 950;
-  text-transform: uppercase;
-  animation: row-enter 320ms ease-out both;
-}
-
-.template-lines span::after {
-  content: "";
-  height: 1px;
-  flex: 1;
-  background: linear-gradient(90deg, rgba(255, 195, 66, 0.42), transparent);
-}
-
-.intro-copy {
-  position: relative;
-  z-index: 2;
-  display: grid;
-  gap: 6px;
-  animation: intro-rise 540ms cubic-bezier(0.2, 0.9, 0.2, 1) 120ms both;
-}
-
-.intro-copy h1 {
-  margin: 0;
-  color: var(--yellow);
-  font-size: clamp(72px, 24vw, 118px);
-  font-weight: 950;
-  line-height: 0.78;
+  line-height: 0.82;
   letter-spacing: 0;
   text-shadow:
-    0 0 34px rgba(255, 195, 66, 0.3),
-    0 22px 48px rgba(0, 0, 0, 0.42);
+    0 0 32px rgba(255, 195, 66, 0.28),
+    0 24px 54px rgba(0, 0, 0, 0.5);
 }
 
-.intro-copy p:last-child {
-  max-width: 280px;
-  margin: 0;
-  color: var(--cream);
-  font-size: 15px;
-  font-weight: 850;
-  line-height: 1.25;
+.intro-mark i {
+  position: absolute;
+  right: 20px;
+  bottom: 92px;
+  width: 18px;
+  height: 110px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, var(--yellow), var(--orange));
+  box-shadow: 0 0 26px rgba(255, 74, 10, 0.34);
+  transform: rotate(16deg);
 }
 
 .roulette-panel {
   position: relative;
   display: grid;
-  grid-template-rows: auto minmax(0, 1fr) auto;
+  grid-template-rows: auto minmax(0, 1fr);
   align-items: center;
-  gap: 18px;
+  gap: 14px;
   overflow: hidden;
-  padding: 10px 0 8px;
+  padding: 8px 0 6px;
   animation: intro-rise 420ms ease-out both;
 }
 
@@ -376,23 +280,8 @@ input {
   position: relative;
   display: grid;
   place-items: center;
-  min-height: 420px;
+  min-height: 390px;
   overflow: hidden;
-}
-
-.roulette-machine::before {
-  content: "";
-  position: absolute;
-  inset: 28px 22px;
-  border: 1px solid rgba(255, 195, 66, 0.2);
-  border-radius: 32px;
-  background:
-    linear-gradient(180deg, rgba(255, 195, 66, 0.12), transparent 44%),
-    repeating-linear-gradient(90deg, transparent 0 28px, rgba(255, 195, 66, 0.055) 29px 30px),
-    rgba(18, 12, 7, 0.72);
-  box-shadow:
-    inset 0 0 32px rgba(255, 195, 66, 0.05),
-    0 24px 54px rgba(0, 0, 0, 0.32);
 }
 
 .slot-shell {
@@ -400,20 +289,19 @@ input {
   z-index: 2;
   display: grid;
   place-items: center;
-  width: min(78vw, 300px);
-  height: min(66vh, 360px);
-  max-height: 370px;
-  min-height: 300px;
+  width: min(70vw, 276px);
+  height: min(56vh, 328px);
+  max-height: 338px;
+  min-height: 278px;
   overflow: hidden;
-  border: 1px solid rgba(255, 195, 66, 0.42);
-  border-radius: 30px;
+  border: 1px solid rgba(255, 195, 66, 0.3);
+  border-radius: 28px;
   background:
-    linear-gradient(180deg, rgba(255, 243, 213, 0.05), transparent 24% 76%, rgba(255, 243, 213, 0.04)),
-    linear-gradient(145deg, rgba(255, 195, 66, 0.13), rgba(255, 74, 10, 0.08)),
-    rgba(5, 4, 3, 0.72);
+    linear-gradient(180deg, rgba(255, 243, 213, 0.05), transparent 30% 70%, rgba(255, 243, 213, 0.035)),
+    rgba(18, 12, 7, 0.66);
   box-shadow:
-    0 0 0 8px rgba(255, 195, 66, 0.055),
-    0 28px 64px rgba(0, 0, 0, 0.42);
+    0 0 0 1px rgba(255, 243, 213, 0.03),
+    0 28px 64px rgba(0, 0, 0, 0.36);
 }
 
 .slot-shell::before,
@@ -424,7 +312,7 @@ input {
   right: 20px;
   z-index: 2;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(255, 195, 66, 0.72), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255, 195, 66, 0.34), transparent);
 }
 
 .slot-shell::before {
@@ -435,33 +323,23 @@ input {
   bottom: 36%;
 }
 
-.slot-label {
-  position: absolute;
-  left: 18px;
-  top: 16px;
-  color: var(--orange);
-  font-size: 12px;
-  font-weight: 950;
-  text-transform: uppercase;
-}
-
 .roulette-spotlight {
   display: grid;
   place-items: center;
-  width: 168px;
-  height: 168px;
-  border-radius: 26px;
+  width: 154px;
+  height: 154px;
+  border-radius: 28px;
   background:
-    radial-gradient(circle at 50% 26%, rgba(255, 243, 213, 0.3), transparent 30%),
-    linear-gradient(145deg, rgba(255, 195, 66, 1), rgba(255, 150, 34, 0.96));
+    radial-gradient(circle at 50% 24%, rgba(255, 243, 213, 0.36), transparent 28%),
+    linear-gradient(145deg, rgba(255, 195, 66, 1), rgba(255, 167, 48, 0.98));
   color: var(--black);
-  font-size: clamp(112px, 32vw, 158px);
+  font-size: clamp(104px, 30vw, 144px);
   font-weight: 950;
   line-height: 0.8;
   text-shadow: 0 2px 0 rgba(255, 255, 255, 0.18);
   box-shadow:
     0 0 0 1px rgba(5, 4, 3, 0.16),
-    0 22px 52px rgba(255, 74, 10, 0.18);
+    0 22px 52px rgba(255, 74, 10, 0.16);
 }
 
 .roulette-ghost {
@@ -470,13 +348,10 @@ input {
   place-items: center;
   width: 92px;
   height: 72px;
-  border: 1px solid rgba(255, 195, 66, 0.16);
-  border-radius: 18px;
-  background: rgba(255, 195, 66, 0.08);
-  color: rgba(255, 243, 213, 0.38);
+  color: rgba(255, 243, 213, 0.26);
   font-size: 44px;
   font-weight: 950;
-  filter: blur(0.2px);
+  filter: blur(0.5px);
   transform: scale(0.92);
 }
 
@@ -508,28 +383,50 @@ input {
   animation: roulette-settle 620ms cubic-bezier(0.17, 1.25, 0.2, 1) both;
 }
 
-.slot-rail {
-  position: absolute;
-  left: 42px;
-  right: 42px;
-  top: 50%;
-  z-index: 1;
-  height: 76px;
-  border-top: 1px solid rgba(255, 74, 10, 0.42);
-  border-bottom: 1px solid rgba(255, 74, 10, 0.42);
-  transform: translateY(-50%);
-  box-shadow:
-    0 0 26px rgba(255, 74, 10, 0.16),
-    inset 0 0 26px rgba(255, 74, 10, 0.06);
+.countdown-panel {
+  position: relative;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
 }
 
-.roulette-status {
-  margin: 0;
+.countdown-core {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: min(62vw, 242px);
+  aspect-ratio: 1;
+}
+
+.countdown-core span {
+  position: absolute;
+  inset: 0;
+  border: 1px solid rgba(255, 195, 66, 0.28);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, rgba(255, 195, 66, 0.14), transparent 58%),
+    rgba(18, 12, 7, 0.28);
+  box-shadow:
+    0 0 0 12px rgba(255, 195, 66, 0.035),
+    0 30px 70px rgba(0, 0, 0, 0.34);
+  animation: countdown-ring 760ms ease-out infinite;
+}
+
+.countdown-core strong {
   color: var(--yellow);
-  font-size: 13px;
+  font-size: clamp(112px, 32vw, 168px);
   font-weight: 950;
-  text-align: center;
-  text-transform: uppercase;
+  line-height: 0.8;
+  text-shadow:
+    0 0 38px rgba(255, 195, 66, 0.34),
+    0 20px 52px rgba(0, 0, 0, 0.45);
+  animation: countdown-pop 760ms cubic-bezier(0.16, 1, 0.2, 1) both;
+}
+
+body[data-phase="countdown"] .topbar,
+body[data-phase="countdown"] .game-footer {
+  opacity: 0;
+  pointer-events: none;
 }
 
 .setup-panel {
@@ -1178,58 +1075,14 @@ input {
   }
 }
 
-@keyframes scan-line {
+@keyframes soft-card-float {
   0%,
   100% {
-    opacity: 0.18;
-    transform: scaleX(0.68);
+    transform: translateY(0) rotate(-5deg);
   }
 
   50% {
-    opacity: 0.78;
-    transform: scaleX(1);
-  }
-}
-
-@keyframes intro-sheet-in {
-  from {
-    opacity: 0;
-    transform: translateY(22px) rotate(-4deg) scale(0.94);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0) rotate(-1.5deg) scale(1);
-  }
-}
-
-@keyframes template-shine {
-  0%,
-  52% {
-    opacity: 0;
-    transform: translateX(-44%);
-  }
-
-  68% {
-    opacity: 1;
-  }
-
-  100% {
-    opacity: 0;
-    transform: translateX(44%);
-  }
-}
-
-@keyframes question-breathe {
-  0%,
-  100% {
-    transform: scale(1);
-    opacity: 0.7;
-  }
-
-  50% {
-    transform: scale(1.08);
-    opacity: 1;
+    transform: translateY(-8px) rotate(-4deg);
   }
 }
 
@@ -1237,15 +1090,15 @@ input {
   0%,
   100% {
     box-shadow:
-      0 0 0 8px rgba(255, 195, 66, 0.055),
-      0 28px 64px rgba(0, 0, 0, 0.42);
+      0 0 0 1px rgba(255, 243, 213, 0.03),
+      0 28px 64px rgba(0, 0, 0, 0.36);
   }
 
   50% {
     box-shadow:
-      0 0 0 8px rgba(255, 195, 66, 0.09),
-      0 28px 64px rgba(0, 0, 0, 0.42),
-      0 0 42px rgba(255, 74, 10, 0.14);
+      0 0 0 1px rgba(255, 243, 213, 0.05),
+      0 28px 64px rgba(0, 0, 0, 0.36),
+      0 0 34px rgba(255, 74, 10, 0.1);
   }
 }
 
@@ -1295,6 +1148,40 @@ input {
   }
 
   100% {
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes countdown-ring {
+  0% {
+    opacity: 0.5;
+    transform: scale(0.82);
+  }
+
+  72% {
+    opacity: 0.16;
+    transform: scale(1.16);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(1.2);
+  }
+}
+
+@keyframes countdown-pop {
+  0% {
+    opacity: 0;
+    transform: translateY(16px) scale(0.78);
+  }
+
+  48% {
+    opacity: 1;
+    transform: translateY(-4px) scale(1.04);
+  }
+
+  100% {
+    opacity: 1;
     transform: translateY(0) scale(1);
   }
 }
@@ -1367,40 +1254,33 @@ input {
     gap: 9px;
   }
 
-  .intro-panel {
-    gap: 12px;
+  .intro-mark {
+    min-height: 300px;
   }
 
-  .intro-template {
-    min-height: 284px;
-    padding: 16px;
-    border-radius: 22px;
+  .intro-mark span {
+    height: 124px;
+    border-radius: 26px;
   }
 
-  .template-letter {
-    min-height: 98px;
+  .intro-mark strong {
+    font-size: clamp(68px, 23vw, 104px);
   }
 
-  .template-letter strong {
-    font-size: 66px;
-  }
-
-  .template-lines {
-    gap: 8px;
-  }
-
-  .intro-copy h1 {
-    font-size: clamp(60px, 20vw, 88px);
+  .intro-mark i {
+    right: 18px;
+    bottom: 70px;
+    height: 88px;
   }
 
   .roulette-machine {
-    min-height: 330px;
+    min-height: 310px;
   }
 
   .slot-shell {
-    width: min(76vw, 250px);
-    min-height: 260px;
-    height: 300px;
+    width: min(68vw, 240px);
+    min-height: 248px;
+    height: 278px;
     border-radius: 26px;
   }
 
@@ -1423,6 +1303,14 @@ input {
 
   .roulette-ghost.bottom {
     bottom: 40px;
+  }
+
+  .countdown-core {
+    width: min(56vw, 204px);
+  }
+
+  .countdown-core strong {
+    font-size: clamp(92px, 28vw, 136px);
   }
 
   .letter-stage {

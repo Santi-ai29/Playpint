@@ -117,5 +117,5 @@ Direcao visual:
 Preview local em `apps/mobile/preview/stop`.
 
 Ela assume que a mesa ja foi personalizada antes do modo, mostra uma intro
-animada do Stop, sorteia a letra num slot visual limpo, abre a ronda ativa e
-mantem o resultado com review por categoria e ranking geral acumulado.
+simples do Stop, sorteia a letra num slot visual limpo, faz uma contagem `3 2 1`
+e abre a ronda ativa com review por categoria e ranking geral acumulado.
