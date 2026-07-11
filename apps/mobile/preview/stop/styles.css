@@ -528,7 +528,7 @@ body[data-phase="countdown"] .game-footer {
 
 .stepper button,
 .remove-player,
-.review-toggle {
+.review-choice {
   display: grid;
   place-items: center;
   border: 1px solid rgba(255, 195, 66, 0.28);
@@ -794,7 +794,13 @@ body[data-phase="countdown"] .game-footer {
     0 0 24px rgba(255, 195, 66, 0.18);
 }
 
-.result-panel,
+.result-panel {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 10px;
+  overflow: hidden;
+}
+
 .score-panel {
   display: grid;
   grid-template-rows: auto auto minmax(0, 1fr);
@@ -852,35 +858,6 @@ body[data-phase="countdown"] .game-footer {
   white-space: nowrap;
 }
 
-.review-tabs {
-  display: flex;
-  gap: 8px;
-  overflow-x: auto;
-  padding-bottom: 2px;
-  scrollbar-width: none;
-}
-
-.review-tabs::-webkit-scrollbar {
-  display: none;
-}
-
-.review-tabs button {
-  flex: 0 0 auto;
-  min-height: 38px;
-  border: 1px solid rgba(255, 195, 66, 0.2);
-  border-radius: 999px;
-  background: rgba(18, 12, 7, 0.8);
-  color: var(--muted);
-  font-size: 13px;
-  font-weight: 950;
-  padding: 0 13px;
-}
-
-.review-tabs button.active {
-  background: var(--yellow);
-  color: var(--black);
-}
-
 .review-board,
 .round-scores,
 .ranking-list {
@@ -901,7 +878,7 @@ body[data-phase="countdown"] .game-footer {
 
 .review-row {
   display: grid;
-  grid-template-columns: minmax(0, 0.84fr) minmax(0, 1fr) 76px;
+  grid-template-columns: minmax(0, 0.76fr) minmax(0, 1fr) 112px;
   align-items: center;
   gap: 9px;
   min-height: 64px;
@@ -909,6 +886,11 @@ body[data-phase="countdown"] .game-footer {
   border-radius: 18px;
   animation: row-enter 300ms ease-out both;
   animation-delay: calc(var(--enter-index, 0) * 42ms);
+}
+
+.review-row.approved {
+  border-color: rgba(34, 224, 222, 0.42);
+  background: rgba(34, 224, 222, 0.07);
 }
 
 .review-row.invalidated {
@@ -947,16 +929,32 @@ body[data-phase="countdown"] .game-footer {
   text-transform: uppercase;
 }
 
-.review-toggle {
+.review-actions {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr);
+  gap: 6px;
+}
+
+.review-choice {
   min-height: 38px;
   border-radius: 14px;
-  color: var(--orange);
-  font-size: 12px;
+  color: var(--muted);
+  font-size: 11px;
   text-transform: uppercase;
 }
 
-.review-toggle.restore {
-  color: var(--yellow);
+.review-choice.approve.selected {
+  border-color: rgba(34, 224, 222, 0.72);
+  background: var(--cyan);
+  color: var(--black);
+  box-shadow: 0 0 24px rgba(34, 224, 222, 0.18);
+}
+
+.review-choice.reject.selected {
+  border-color: rgba(255, 74, 10, 0.74);
+  background: var(--orange);
+  color: var(--black);
+  box-shadow: 0 0 24px rgba(255, 74, 10, 0.18);
 }
 
 .round-scores {
