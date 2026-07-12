@@ -149,7 +149,6 @@ const introPanel = document.querySelector("#introPanel");
 const questionPanel = document.querySelector("#questionPanel");
 const eyebrow = document.querySelector("#eyebrow");
 const prompt = document.querySelector("#prompt");
-const shuffleQuestion = document.querySelector("#shuffleQuestion");
 const optionsPanel = document.querySelector("#optionsPanel");
 const statusPanel = document.querySelector("#statusPanel");
 const voteCountLabel = document.querySelector("#voteCountLabel");
@@ -182,17 +181,6 @@ primaryAction.addEventListener("click", () => {
   if (phase === "result") {
     nextQuestion();
   }
-});
-
-shuffleQuestion.addEventListener("click", () => {
-  if (phase !== "waiting") {
-    return;
-  }
-
-  advanceQuestion();
-  selectedOptionId = null;
-  votes = [];
-  render();
 });
 
 render();
@@ -362,7 +350,6 @@ function renderQuestion() {
   }
 
   questionPanel.classList.toggle("is-compact", phase === "result");
-  shuffleQuestion.classList.toggle("hidden", phase !== "waiting");
   prompt.textContent = question.prompt;
   eyebrow.textContent =
     phase === "voting"

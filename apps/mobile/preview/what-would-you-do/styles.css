@@ -69,8 +69,9 @@ button {
   padding: max(18px, env(safe-area-inset-top)) 16px max(14px, env(safe-area-inset-bottom));
   isolation: isolate;
   background:
-    linear-gradient(155deg, rgba(255, 195, 66, 0.08), transparent 42%),
-    linear-gradient(25deg, rgba(255, 74, 10, 0.07), transparent 46%),
+    linear-gradient(150deg, rgba(255, 195, 66, 0.075), transparent 38%),
+    linear-gradient(28deg, rgba(34, 224, 222, 0.065), transparent 44%),
+    linear-gradient(180deg, rgba(255, 74, 10, 0.08), transparent 52%),
     #050403;
 }
 
@@ -80,11 +81,11 @@ button {
   inset: 0;
   z-index: -3;
   background:
-    linear-gradient(120deg, transparent 0 18%, rgba(255, 195, 66, 0.12) 34%, transparent 52%),
-    linear-gradient(245deg, transparent 0 24%, rgba(34, 224, 222, 0.08) 44%, transparent 66%),
-    linear-gradient(180deg, rgba(255, 243, 213, 0.04), transparent 54%);
+    linear-gradient(116deg, transparent 0 18%, rgba(255, 195, 66, 0.11) 36%, transparent 55%),
+    linear-gradient(248deg, transparent 0 22%, rgba(34, 224, 222, 0.09) 47%, transparent 70%),
+    linear-gradient(180deg, rgba(255, 243, 213, 0.035), transparent 58%);
   background-size: 220% 220%;
-  opacity: 0.74;
+  opacity: 0.68;
   animation: background-flow 9s ease-in-out infinite alternate;
 }
 
@@ -104,14 +105,14 @@ button {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  min-height: 66px;
+  min-height: 58px;
 }
 
 .brand-block {
   display: grid;
   min-width: 0;
   row-gap: 0;
-  align-items: start;
+  align-items: center;
 }
 
 .brand-logo,
@@ -123,30 +124,18 @@ button {
 
 .brand-logo {
   display: block;
-  width: clamp(126px, 35vw, 164px);
+  width: clamp(118px, 33vw, 146px);
   height: auto;
-  margin: -14px 0 -11px -9px;
+  margin: -8px 0 -7px -6px;
   object-fit: contain;
   filter:
     drop-shadow(0 10px 18px rgba(0, 0, 0, 0.34))
     drop-shadow(0 0 12px rgba(255, 195, 66, 0.12));
 }
 
-.playpint-brand-logo {
-  max-height: 74px;
+.mode-logo-top {
+  max-height: 56px;
   object-fit: contain;
-}
-
-.mode-logo-small {
-  display: block;
-  width: clamp(86px, 24vw, 116px);
-  height: auto;
-  margin: -11px 0 0 20px;
-  object-fit: contain;
-  opacity: 0.96;
-  filter:
-    drop-shadow(0 7px 14px rgba(0, 0, 0, 0.34))
-    drop-shadow(0 0 10px rgba(255, 195, 66, 0.1));
 }
 
 .mode {
@@ -193,7 +182,7 @@ button {
   position: relative;
   display: grid;
   justify-items: center;
-  gap: 12px;
+  gap: 14px;
   min-height: 0;
   padding: 14px 0 8px;
   text-align: center;
@@ -215,12 +204,13 @@ button {
   height: 360px;
   border-radius: 0;
   background:
-    linear-gradient(145deg, transparent 9%, rgba(255, 195, 66, 0.13) 37%, transparent 63%),
-    linear-gradient(25deg, transparent 18%, rgba(34, 224, 222, 0.08) 48%, transparent 74%),
-    linear-gradient(180deg, transparent, rgba(255, 74, 10, 0.08), transparent);
+    linear-gradient(142deg, transparent 12%, rgba(255, 195, 66, 0.11) 38%, transparent 62%),
+    linear-gradient(28deg, transparent 18%, rgba(34, 224, 222, 0.085) 48%, transparent 76%),
+    linear-gradient(180deg, transparent, rgba(255, 74, 10, 0.065), transparent);
+  background-size: 185% 185%;
   filter: blur(18px);
-  opacity: 0.58;
-  animation: logo-aura 6s ease-in-out infinite;
+  opacity: 0.62;
+  animation: intro-light-flow 8s ease-in-out infinite alternate;
 }
 
 .intro-panel::after {
@@ -231,21 +221,21 @@ button {
   position: relative;
   display: grid;
   place-items: center;
-  width: min(62vw, 250px);
-  min-height: 136px;
+  width: min(54vw, 222px);
+  min-height: 118px;
 }
 
 .intro-brand-lockup {
   display: grid;
   justify-items: center;
-  gap: 8px;
+  gap: 6px;
   width: min(92vw, 390px);
 }
 
 .intro-playpint-logo {
   position: relative;
   z-index: 2;
-  width: min(82vw, 338px);
+  width: min(72vw, 294px);
   height: auto;
   object-fit: contain;
   filter:
@@ -263,7 +253,7 @@ button {
   position: absolute;
   left: 12%;
   right: 12%;
-  bottom: 14px;
+  bottom: 10px;
   height: 9px;
   border-radius: 999px;
   background: radial-gradient(ellipse, rgba(255, 74, 10, 0.4), transparent 70%);
@@ -274,7 +264,7 @@ button {
 .intro-logo {
   position: relative;
   z-index: 1;
-  width: min(58vw, 236px);
+  width: min(50vw, 204px);
   height: auto;
   object-fit: contain;
   filter:
@@ -286,11 +276,11 @@ button {
 .choice-duel {
   position: relative;
   display: grid;
-  grid-template-columns: 72px 84px 72px;
+  grid-template-columns: 64px 78px 64px;
   align-items: center;
   justify-items: center;
   gap: 0;
-  padding: 10px 12px;
+  padding: 9px 11px;
   border: 1px solid rgba(255, 195, 66, 0.18);
   border-radius: 38px;
   background:
@@ -316,12 +306,12 @@ button {
   z-index: 1;
   display: grid;
   place-items: center;
-  width: 68px;
-  height: 68px;
-  border: 1px solid rgba(255, 243, 213, 0.36);
-  border-radius: 24px;
+  width: 60px;
+  height: 60px;
+  border: 1px solid rgba(255, 243, 213, 0.34);
+  border-radius: 21px;
   color: var(--black);
-  font-size: 31px;
+  font-size: 28px;
   font-weight: 950;
   line-height: 1;
   box-shadow:
@@ -343,8 +333,8 @@ button {
   z-index: 1;
   display: grid;
   place-items: center;
-  width: 84px;
-  height: 28px;
+  width: 78px;
+  height: 24px;
 }
 
 .choice-duel i::before,
@@ -368,8 +358,8 @@ button {
 }
 
 .choice-duel i::after {
-  width: 13px;
-  height: 13px;
+  width: 12px;
+  height: 12px;
   border-radius: 5px;
   background: var(--cream);
   box-shadow:
@@ -417,25 +407,6 @@ button {
   line-height: 1.03;
   font-weight: 950;
   letter-spacing: 0;
-}
-
-.question-swap {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  min-height: 31px;
-  border: 1px solid rgba(255, 195, 66, 0.32);
-  border-radius: 999px;
-  background: rgba(255, 195, 66, 0.1);
-  color: var(--yellow);
-  font-size: 11px;
-  font-weight: 950;
-  padding: 0 12px;
-  text-transform: uppercase;
-}
-
-.question-swap:active {
-  transform: scale(0.96);
 }
 
 .options-panel {
@@ -853,6 +824,20 @@ body[data-phase="result"] .result-panel {
   }
 }
 
+@keyframes intro-light-flow {
+  from {
+    background-position: 0% 30%;
+    opacity: 0.46;
+    transform: translateY(8px);
+  }
+
+  to {
+    background-position: 100% 72%;
+    opacity: 0.68;
+    transform: translateY(-8px);
+  }
+}
+
 @keyframes intro-enter {
   from {
     opacity: 0;
@@ -862,19 +847,6 @@ body[data-phase="result"] .result-panel {
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
-  }
-}
-
-@keyframes logo-aura {
-  0%,
-  100% {
-    opacity: 0.58;
-    transform: scale(0.96) translateY(4px);
-  }
-
-  50% {
-    opacity: 0.86;
-    transform: scale(1.04) translateY(-2px);
   }
 }
 
