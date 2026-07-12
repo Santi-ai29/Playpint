@@ -46,7 +46,7 @@ const questions = [
   },
 ];
 
-let phase = "waiting";
+let phase = "intro";
 let questionIndex = 0;
 let selectedOptionId = null;
 let hasVoted = false;
@@ -56,6 +56,7 @@ let resultRevealed = true;
 
 const phaseLabel = document.querySelector("#phaseLabel");
 const timerLabel = document.querySelector("#timerLabel");
+const introPanel = document.querySelector("#introPanel");
 const questionPanel = document.querySelector("#questionPanel");
 const eyebrow = document.querySelector("#eyebrow");
 const prompt = document.querySelector("#prompt");
@@ -74,6 +75,11 @@ const primaryAction = document.querySelector("#primaryAction");
 window.setInterval(tick, 1000);
 
 primaryAction.addEventListener("click", () => {
+  if (phase === "intro") {
+    startIntroQuestion();
+    return;
+  }
+
   if (phase === "waiting") {
     openVoting();
     return;
@@ -125,6 +131,16 @@ function tick() {
   }
 
   renderHeader();
+}
+
+function startIntroQuestion() {
+  phase = "waiting";
+  selectedOptionId = null;
+  hasVoted = false;
+  votes = [];
+  seconds = QUESTION_SECONDS;
+  resultRevealed = true;
+  render();
 }
 
 function openVoting() {
@@ -211,6 +227,7 @@ function nextQuestion() {
 function render() {
   document.body.dataset.phase = phase;
   renderHeader();
+  renderIntro();
   renderQuestion();
   renderOptions();
   renderStatus();
@@ -222,22 +239,38 @@ function renderHeader() {
   const round = (questionIndex % questions.length) + 1;
 
   phaseLabel.textContent =
-    phase === "voting"
+    phase === "intro"
+      ? "Intro"
+      : phase === "voting"
       ? `Votacao ${round}`
       : phase === "submitted"
         ? "Voto enviado"
         : phase === "result"
-          ? `Resultado ${round}`
+          ? "Resultado"
           : `Pergunta ${round}`;
   timerLabel.textContent =
     phase === "voting" || phase === "waiting"
       ? `00:${String(seconds).padStart(2, "0")}`
-      : `${votes.length}/${players.length + 1}`;
+      : phase === "result" || phase === "submitted"
+        ? `${votes.length}/${players.length + 1}`
+        : "";
   timerLabel.classList.toggle("is-idle", phase !== "voting" && phase !== "waiting");
+}
+
+function renderIntro() {
+  introPanel.classList.toggle("hidden", phase !== "intro");
 }
 
 function renderQuestion() {
   const question = getCurrentQuestion();
+
+  questionPanel.classList.toggle(
+    "hidden",
+    phase === "intro" || phase === "result",
+  );
+  if (phase === "intro" || phase === "result") {
+    return;
+  }
 
   questionPanel.classList.toggle("is-compact", phase === "result");
   shuffleQuestion.classList.toggle("hidden", phase !== "waiting");
@@ -255,8 +288,11 @@ function renderQuestion() {
 function renderOptions() {
   const question = getCurrentQuestion();
 
-  optionsPanel.classList.toggle("hidden", phase === "result");
-  if (phase === "result") {
+  optionsPanel.classList.toggle(
+    "hidden",
+    phase === "intro" || phase === "result" || phase === "submitted",
+  );
+  if (phase === "intro" || phase === "result" || phase === "submitted") {
     optionsPanel.innerHTML = "";
     return;
   }
@@ -348,6 +384,14 @@ function renderResult() {
 }
 
 function renderFooter() {
+  if (phase === "intro") {
+    primaryAction.hidden = false;
+    primaryAction.disabled = false;
+    primaryAction.classList.remove("secondary");
+    primaryAction.textContent = "Comecar";
+    return;
+  }
+
   if (phase === "waiting") {
     primaryAction.hidden = false;
     primaryAction.disabled = false;

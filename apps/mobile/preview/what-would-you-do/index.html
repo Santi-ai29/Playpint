@@ -9,11 +9,6 @@
   <body>
     <main class="app-shell" aria-live="polite">
       <section class="phone-screen">
-        <div class="ambient ambient-glass"></div>
-        <div class="ambient ambient-candle"></div>
-        <div class="ambient ambient-card card-a"></div>
-        <div class="ambient ambient-card card-b"></div>
-
         <header class="topbar">
           <div class="brand-block">
             <img class="brand-logo" src="./assets/playpint-logo.png" alt="Playpint" />
@@ -25,6 +20,16 @@
           </div>
         </header>
 
+        <section id="introPanel" class="intro-panel">
+          <img class="intro-logo" src="./assets/playpint-logo.png" alt="Playpint" />
+          <div class="intro-mark" aria-hidden="true">
+            <span>O</span>
+            <span>?</span>
+          </div>
+          <h1>O Que Fazias?</h1>
+          <p>Uma situacao. Duas escolhas.</p>
+        </section>
+
         <section id="questionPanel" class="question-panel">
           <p class="eyebrow" id="eyebrow">Aguardando pergunta</p>
           <button id="shuffleQuestion" class="question-swap" type="button">Trocar</button>
@@ -34,7 +39,7 @@
         <section id="optionsPanel" class="options-panel" aria-label="Opcoes de voto"></section>
 
         <section id="statusPanel" class="status-panel hidden">
-          <div class="status-check">✓</div>
+          <div class="status-check">OK</div>
           <strong>Voto enviado</strong>
           <span id="voteCountLabel">A espera da mesa</span>
         </section>
