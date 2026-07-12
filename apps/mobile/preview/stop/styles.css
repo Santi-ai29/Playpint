@@ -105,17 +105,6 @@ input {
   opacity: 0.7;
 }
 
-.ambient-pencil {
-  right: -18px;
-  bottom: 108px;
-  width: 16px;
-  height: 180px;
-  border-radius: 12px;
-  background: linear-gradient(180deg, var(--yellow), var(--orange));
-  transform: rotate(18deg);
-  opacity: 0.58;
-}
-
 .topbar {
   display: flex;
   align-items: flex-start;
@@ -138,7 +127,6 @@ input {
   object-fit: contain;
 }
 
-.mode,
 .eyebrow,
 .section-head span,
 .setting-counter > span,
@@ -148,11 +136,6 @@ input {
   font-size: 12px;
   font-weight: 950;
   text-transform: uppercase;
-}
-
-.mode {
-  margin-left: 12px;
-  color: var(--cream);
 }
 
 .round-pill {
