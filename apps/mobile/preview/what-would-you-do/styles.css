@@ -211,50 +211,41 @@ button {
 }
 
 .intro-panel::before {
-  width: min(95vw, 390px);
-  height: 250px;
+  width: min(100vw, 430px);
+  height: 360px;
+  border-radius: 0;
   background:
-    radial-gradient(ellipse at 50% 48%, rgba(255, 195, 66, 0.22), transparent 58%),
-    radial-gradient(ellipse at 24% 62%, rgba(255, 74, 10, 0.16), transparent 56%),
-    radial-gradient(ellipse at 78% 40%, rgba(34, 224, 222, 0.08), transparent 58%);
-  filter: blur(9px);
-  opacity: 0.78;
+    linear-gradient(145deg, transparent 9%, rgba(255, 195, 66, 0.13) 37%, transparent 63%),
+    linear-gradient(25deg, transparent 18%, rgba(34, 224, 222, 0.08) 48%, transparent 74%),
+    linear-gradient(180deg, transparent, rgba(255, 74, 10, 0.08), transparent);
+  filter: blur(18px);
+  opacity: 0.58;
   animation: logo-aura 6s ease-in-out infinite;
 }
 
 .intro-panel::after {
-  width: min(78vw, 314px);
-  height: 132px;
-  background:
-    radial-gradient(ellipse at 50% 50%, transparent 54%, rgba(255, 195, 66, 0.12) 57%, transparent 65%),
-    radial-gradient(ellipse at 50% 70%, rgba(255, 74, 10, 0.12), transparent 60%);
-  box-shadow:
-    0 0 0 18px rgba(255, 195, 66, 0.016),
-    inset 0 0 34px rgba(255, 195, 66, 0.08);
-  opacity: 0.7;
-  transform: translateY(18px);
-  animation: logo-aura 7.4s ease-in-out infinite reverse;
+  display: none;
 }
 
 .intro-logo-wrap {
   position: relative;
   display: grid;
   place-items: center;
-  width: min(76vw, 322px);
-  min-height: 178px;
+  width: min(62vw, 250px);
+  min-height: 136px;
 }
 
 .intro-brand-lockup {
   display: grid;
   justify-items: center;
-  gap: 4px;
+  gap: 8px;
   width: min(92vw, 390px);
 }
 
 .intro-playpint-logo {
   position: relative;
   z-index: 2;
-  width: min(70vw, 274px);
+  width: min(82vw, 338px);
   height: auto;
   object-fit: contain;
   filter:
@@ -264,37 +255,15 @@ button {
 }
 
 .intro-logo-wrap::before {
-  content: "";
-  position: absolute;
-  z-index: 0;
-  width: min(68vw, 282px);
-  height: 124px;
-  border: 1px solid transparent;
-  border-radius: 50%;
-  background:
-    linear-gradient(rgba(5, 4, 3, 0), rgba(5, 4, 3, 0)) padding-box,
-    conic-gradient(
-      from 0deg,
-      rgba(255, 195, 66, 0),
-      rgba(255, 195, 66, 0.75),
-      rgba(255, 74, 10, 0.48),
-      rgba(34, 224, 222, 0.45),
-      rgba(255, 195, 66, 0)
-    ) border-box;
-  opacity: 0.78;
-  filter:
-    drop-shadow(0 0 16px rgba(255, 195, 66, 0.18))
-    drop-shadow(0 0 22px rgba(255, 74, 10, 0.1));
-  transform: rotate(-8deg);
-  animation: logo-orbit 6.2s linear infinite;
+  display: none;
 }
 
 .intro-logo-wrap::after {
   content: "";
   position: absolute;
-  left: 11%;
-  right: 11%;
-  bottom: 21px;
+  left: 12%;
+  right: 12%;
+  bottom: 14px;
   height: 9px;
   border-radius: 999px;
   background: radial-gradient(ellipse, rgba(255, 74, 10, 0.4), transparent 70%);
@@ -305,38 +274,60 @@ button {
 .intro-logo {
   position: relative;
   z-index: 1;
-  width: min(73vw, 308px);
+  width: min(58vw, 236px);
   height: auto;
   object-fit: contain;
   filter:
-    drop-shadow(0 18px 30px rgba(0, 0, 0, 0.42))
-    drop-shadow(0 0 26px rgba(255, 195, 66, 0.2));
+    drop-shadow(0 15px 24px rgba(0, 0, 0, 0.42))
+    drop-shadow(0 0 18px rgba(255, 195, 66, 0.16));
   animation: logo-settle 720ms cubic-bezier(0.16, 1, 0.2, 1) 80ms both;
 }
 
 .choice-duel {
   position: relative;
   display: grid;
-  grid-template-columns: 66px 70px 66px;
+  grid-template-columns: 72px 84px 72px;
   align-items: center;
-  gap: 10px;
+  justify-items: center;
+  gap: 0;
+  padding: 10px 12px;
+  border: 1px solid rgba(255, 195, 66, 0.18);
+  border-radius: 38px;
+  background:
+    linear-gradient(180deg, rgba(255, 243, 213, 0.06), rgba(5, 4, 3, 0.2)),
+    rgba(14, 9, 6, 0.34);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.035),
+    0 18px 36px rgba(0, 0, 0, 0.24);
   animation: duel-enter 520ms ease-out 260ms both;
+}
+
+.choice-duel::before {
+  content: "";
+  position: absolute;
+  inset: 10px 14px;
+  border-radius: 30px;
+  background: linear-gradient(90deg, rgba(255, 195, 66, 0.08), rgba(34, 224, 222, 0.08));
+  opacity: 0.85;
 }
 
 .choice-duel span {
   position: relative;
+  z-index: 1;
   display: grid;
   place-items: center;
-  width: 66px;
-  height: 66px;
-  border-radius: 22px;
+  width: 68px;
+  height: 68px;
+  border: 1px solid rgba(255, 243, 213, 0.36);
+  border-radius: 24px;
   color: var(--black);
-  font-size: 30px;
+  font-size: 31px;
   font-weight: 950;
   line-height: 1;
   box-shadow:
-    inset 0 -8px 16px rgba(255, 74, 10, 0.14),
-    0 14px 28px rgba(0, 0, 0, 0.28);
+    inset 0 -10px 18px rgba(255, 74, 10, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.28),
+    0 14px 28px rgba(0, 0, 0, 0.3);
 }
 
 .choice-duel span:first-child {
@@ -348,12 +339,43 @@ button {
 }
 
 .choice-duel i {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 84px;
+  height: 28px;
+}
+
+.choice-duel i::before,
+.choice-duel i::after {
+  content: "";
+  position: absolute;
   display: block;
-  width: 70px;
-  height: 2px;
+}
+
+.choice-duel i::before {
+  left: 3px;
+  right: 3px;
+  top: 50%;
+  height: 4px;
   border-radius: 999px;
   background: linear-gradient(90deg, var(--yellow), var(--orange), var(--cyan));
-  box-shadow: 0 0 18px rgba(255, 195, 66, 0.22);
+  box-shadow:
+    0 0 18px rgba(255, 195, 66, 0.24),
+    0 0 16px rgba(34, 224, 222, 0.12);
+  transform: translateY(-50%);
+}
+
+.choice-duel i::after {
+  width: 13px;
+  height: 13px;
+  border-radius: 5px;
+  background: var(--cream);
+  box-shadow:
+    0 0 16px rgba(255, 195, 66, 0.55),
+    0 0 18px rgba(34, 224, 222, 0.28);
+  transform: rotate(45deg);
 }
 
 .intro-panel p {
@@ -868,16 +890,6 @@ body[data-phase="result"] .result-panel {
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
-  }
-}
-
-@keyframes logo-orbit {
-  from {
-    transform: rotate(-8deg);
-  }
-
-  to {
-    transform: rotate(352deg);
   }
 }
 
