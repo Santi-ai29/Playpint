@@ -146,7 +146,6 @@ const scoreLetterLabel = document.querySelector("#scoreLetterLabel");
 const scoreWinner = document.querySelector("#scoreWinner");
 const scoreSubtitle = document.querySelector("#scoreSubtitle");
 const roundScores = document.querySelector("#roundScores");
-const rankingList = document.querySelector("#rankingList");
 
 window.setInterval(tick, 1000);
 
@@ -593,34 +592,31 @@ function renderScores() {
     return;
   }
 
-  const winner = state.roundResult.playerScores[0];
+  const roundScoresByPlayer = new Map(
+    state.roundResult.playerScores.map((score) => [score.playerId, score.totalScore]),
+  );
   const ranking = getOverallRanking();
+  const winner = ranking[0];
   scoreLetterLabel.textContent = `Letra ${state.roundResult.letter}`;
   scoreWinner.textContent = winner
-    ? `${winner.nickname} venceu`
+    ? `${winner.nickname} lidera`
     : "Ronda fechada";
-  scoreSubtitle.textContent = "Pontuacao acumulada";
-  roundScores.innerHTML = state.roundResult.playerScores
-    .map(
-      (score, index) => `
+  scoreSubtitle.textContent = "Ronda + total";
+  roundScores.innerHTML = ranking
+    .map((score, index) => {
+      const roundScore = roundScoresByPlayer.get(score.playerId) ?? score.lastRoundScore ?? 0;
+
+      return `
         <article class="score-row ${index === 0 && score.totalScore > 0 ? "leader" : ""}" style="--enter-index: ${index}">
           <span class="rank">#${index + 1}</span>
           <strong>${escapeHtml(score.nickname)}</strong>
-          <em>+${score.totalScore}</em>
+          <em>
+            <span>+${roundScore}</span>
+            <small>${score.totalScore} pts</small>
+          </em>
         </article>
-      `,
-    )
-    .join("");
-  rankingList.innerHTML = ranking
-    .map(
-      (entry, index) => `
-        <article class="ranking-row ${index === 0 && entry.totalScore > 0 ? "leader" : ""}" style="--enter-index: ${index}">
-          <span class="rank">#${index + 1}</span>
-          <strong>${escapeHtml(entry.nickname)}</strong>
-          <span>${entry.totalScore} pts</span>
-        </article>
-      `,
-    )
+      `;
+    })
     .join("");
 }
 

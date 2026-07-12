@@ -77,12 +77,53 @@ input {
 .phone-screen::before {
   content: "";
   position: absolute;
-  inset: 0;
+  inset: -18% -28%;
   z-index: -3;
+  background:
+    radial-gradient(ellipse at 22% 42%, rgba(255, 195, 66, 0.16), transparent 38%),
+    radial-gradient(ellipse at 78% 62%, rgba(255, 74, 10, 0.14), transparent 40%),
+    linear-gradient(114deg, transparent 0 26%, rgba(255, 195, 66, 0.13) 38%, transparent 52%),
+    linear-gradient(28deg, transparent 0 34%, rgba(34, 224, 222, 0.07) 46%, transparent 62%);
+  background-size: 140% 140%, 150% 150%, 210% 100%, 190% 100%;
+  opacity: 0.72;
+  animation: premium-flow 16s linear infinite;
+}
+
+.phone-screen::after {
+  content: "";
+  position: absolute;
+  inset: -8% -40%;
+  z-index: -2;
+  background-image:
+    url("./assets/playpint-logo.png"),
+    url("./assets/playpint-logo.png");
+  background-repeat: repeat-x;
+  background-size:
+    164px auto,
+    118px auto;
+  background-position:
+    -220px 22%,
+    80px 78%;
+  opacity: 0.075;
+  transform: rotate(-7deg);
+  animation: brand-stream 22s linear infinite;
+  pointer-events: none;
+}
+
+body[data-phase="round"] .phone-screen::before {
+  inset: 0;
   background:
     linear-gradient(120deg, rgba(255, 195, 66, 0.09), transparent 36% 100%),
     linear-gradient(245deg, rgba(255, 74, 10, 0.08), transparent 42% 100%),
     linear-gradient(180deg, rgba(255, 243, 213, 0.025), transparent 26% 72%, rgba(255, 74, 10, 0.04));
+  background-size: auto;
+  opacity: 1;
+  animation: none;
+}
+
+body[data-phase="round"] .phone-screen::after {
+  opacity: 0;
+  animation: none;
 }
 
 .topbar {
@@ -163,44 +204,6 @@ input {
   overflow: hidden;
   padding: 8px 0 6px;
   isolation: isolate;
-}
-
-.intro-panel::before,
-.countdown-panel::before {
-  content: "";
-  position: absolute;
-  inset: -18% -28%;
-  z-index: -2;
-  background:
-    radial-gradient(ellipse at 22% 42%, rgba(255, 195, 66, 0.16), transparent 38%),
-    radial-gradient(ellipse at 78% 62%, rgba(255, 74, 10, 0.14), transparent 40%),
-    linear-gradient(114deg, transparent 0 26%, rgba(255, 195, 66, 0.13) 38%, transparent 52%),
-    linear-gradient(28deg, transparent 0 34%, rgba(34, 224, 222, 0.07) 46%, transparent 62%);
-  background-size: 140% 140%, 150% 150%, 210% 100%, 190% 100%;
-  opacity: 0.72;
-  animation: premium-flow 16s linear infinite;
-}
-
-.intro-panel::after,
-.countdown-panel::after {
-  content: "";
-  position: absolute;
-  inset: -8% -40%;
-  z-index: -1;
-  background-image:
-    url("./assets/playpint-logo.png"),
-    url("./assets/playpint-logo.png");
-  background-repeat: repeat-x;
-  background-size:
-    164px auto,
-    118px auto;
-  background-position:
-    -220px 22%,
-    80px 78%;
-  opacity: 0.075;
-  transform: rotate(-7deg);
-  animation: brand-stream 22s linear infinite;
-  pointer-events: none;
 }
 
 .intro-stop-logo {
@@ -879,7 +882,7 @@ body[data-phase="countdown"] .game-footer {
 
 .score-panel {
   display: grid;
-  grid-template-rows: auto auto minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr);
   gap: 10px;
   overflow: hidden;
 }
@@ -935,8 +938,7 @@ body[data-phase="countdown"] .game-footer {
 }
 
 .review-board,
-.round-scores,
-.ranking-list {
+.round-scores {
   display: grid;
   align-content: start;
   gap: 8px;
@@ -947,8 +949,7 @@ body[data-phase="countdown"] .game-footer {
 }
 
 .review-board::-webkit-scrollbar,
-.round-scores::-webkit-scrollbar,
-.ranking-list::-webkit-scrollbar {
+.round-scores::-webkit-scrollbar {
   display: none;
 }
 
@@ -1023,8 +1024,7 @@ body[data-phase="countdown"] .game-footer {
   overflow: hidden;
 }
 
-.score-row,
-.ranking-row {
+.score-row {
   display: grid;
   grid-template-columns: 32px minmax(0, 1fr) auto;
   align-items: center;
@@ -1036,8 +1036,7 @@ body[data-phase="countdown"] .game-footer {
   animation-delay: calc(var(--enter-index, 0) * 48ms);
 }
 
-.score-row.leader,
-.ranking-row.leader {
+.score-row.leader {
   border-color: rgba(255, 195, 66, 0.58);
   background: rgba(255, 195, 66, 0.12);
 }
@@ -1048,12 +1047,22 @@ body[data-phase="countdown"] .game-footer {
   font-size: 12px;
 }
 
-.score-row em,
-.ranking-row span:last-child {
+.score-row em {
+  display: grid;
+  justify-items: end;
+  gap: 2px;
   color: var(--yellow);
   font-size: 14px;
   font-style: normal;
   font-weight: 950;
+  line-height: 1;
+}
+
+.score-row em small {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 950;
+  text-transform: uppercase;
 }
 
 .game-footer {
