@@ -117,6 +117,6 @@ Direcao visual:
 Preview local em `apps/mobile/preview/stop`.
 
 Ela assume que a mesa ja foi personalizada antes do modo, mostra uma intro com
-logo `STOP`, Playpint por baixo e logos em movimento continuo no fundo, sorteia
-a letra num slot visual limpo, faz uma contagem `3 2 1` animada e abre a ronda
-ativa com review por categoria e ranking geral acumulado.
+logo `STOP`, Playpint por baixo e um fundo fluido sem linhas ou blocos
+decorativos, sorteia a letra num slot visual limpo, faz uma contagem `3 2 1`
+animada e abre a ronda ativa com review por categoria e ranking geral acumulado.

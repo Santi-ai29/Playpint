@@ -69,8 +69,8 @@ input {
   padding: max(18px, env(safe-area-inset-top)) 16px max(14px, env(safe-area-inset-bottom));
   isolation: isolate;
   background:
-    linear-gradient(155deg, rgba(255, 195, 66, 0.08), transparent 38%),
-    linear-gradient(25deg, rgba(255, 74, 10, 0.08), transparent 42%),
+    linear-gradient(150deg, rgba(255, 195, 66, 0.06), transparent 44%),
+    linear-gradient(28deg, rgba(255, 74, 10, 0.06), transparent 48%),
     #050403;
 }
 
@@ -80,29 +80,9 @@ input {
   inset: 0;
   z-index: -3;
   background:
-    linear-gradient(165deg, transparent 0 38%, rgba(255, 195, 66, 0.08) 39% 39.5%, transparent 40%),
-    linear-gradient(14deg, transparent 0 48%, rgba(34, 224, 222, 0.08) 49% 49.4%, transparent 50%),
-    repeating-linear-gradient(178deg, rgba(255, 255, 255, 0.025) 0 1px, transparent 1px 13px);
-}
-
-.ambient {
-  position: absolute;
-  pointer-events: none;
-  z-index: -1;
-}
-
-.ambient-sheet {
-  left: -34px;
-  top: 126px;
-  width: 122px;
-  height: 168px;
-  border: 1px solid rgba(255, 195, 66, 0.18);
-  border-radius: 18px;
-  background:
-    repeating-linear-gradient(180deg, transparent 0 22px, rgba(255, 195, 66, 0.14) 23px 24px),
-    rgba(255, 255, 255, 0.018);
-  transform: rotate(-10deg);
-  opacity: 0.7;
+    linear-gradient(120deg, rgba(255, 195, 66, 0.09), transparent 36% 100%),
+    linear-gradient(245deg, rgba(255, 74, 10, 0.08), transparent 42% 100%),
+    linear-gradient(180deg, rgba(255, 243, 213, 0.025), transparent 26% 72%, rgba(255, 74, 10, 0.04));
 }
 
 .topbar {
@@ -184,68 +164,20 @@ input {
   padding: 8px 0 6px;
 }
 
-.intro-logo-stream {
-  position: absolute;
-  inset: -42px -92px;
-  overflow: hidden;
-  pointer-events: none;
-}
-
-.intro-logo-stream::before,
-.intro-logo-stream::after {
+.intro-panel::before,
+.countdown-panel::before {
   content: "";
   position: absolute;
-  inset: 0;
+  inset: -22% -34%;
+  z-index: -2;
   background:
-    linear-gradient(105deg, transparent 0 36%, rgba(255, 195, 66, 0.08) 39%, transparent 43%),
-    linear-gradient(18deg, transparent 0 56%, rgba(34, 224, 222, 0.06) 59%, transparent 62%);
-  opacity: 0.8;
-  animation: intro-light-pass 5.6s ease-in-out infinite;
-}
-
-.intro-logo-stream::after {
-  opacity: 0.42;
-  animation-delay: 1.8s;
-  transform: scaleX(-1);
-}
-
-.intro-logo-stream img {
-  position: absolute;
-  width: 154px;
-  opacity: 0.08;
-  filter: saturate(0.85) drop-shadow(0 18px 26px rgba(0, 0, 0, 0.32));
-  left: -240px;
-  transform: translate3d(0, 0, 0) rotate(-9deg);
-  animation: logo-drift 12s linear infinite;
-}
-
-.intro-logo-stream img:nth-child(1) {
-  top: 28px;
-  animation-duration: 13s;
-}
-
-.intro-logo-stream img:nth-child(2) {
-  top: 136px;
-  width: 182px;
-  opacity: 0.07;
-  animation-delay: -3.2s;
-  animation-duration: 15s;
-}
-
-.intro-logo-stream img:nth-child(3) {
-  top: 286px;
-  width: 132px;
-  opacity: 0.065;
-  animation-delay: -6.4s;
-  animation-duration: 12.2s;
-}
-
-.intro-logo-stream img:nth-child(4) {
-  top: 392px;
-  width: 142px;
-  opacity: 0.06;
-  animation-delay: -9.6s;
-  animation-duration: 16s;
+    linear-gradient(115deg, transparent 0 22%, rgba(255, 195, 66, 0.16) 31%, transparent 46%),
+    linear-gradient(25deg, transparent 0 34%, rgba(34, 224, 222, 0.08) 45%, transparent 60%),
+    linear-gradient(155deg, transparent 0 48%, rgba(255, 74, 10, 0.13) 59%, transparent 72%);
+  filter: blur(16px);
+  opacity: 0.82;
+  transform: translate3d(-8%, 0, 0) rotate(-4deg);
+  animation: premium-flow 12s linear infinite;
 }
 
 .intro-stop-logo {
@@ -264,69 +196,44 @@ input {
   content: "";
   position: absolute;
   z-index: -1;
-  width: min(80vw, 328px);
-  height: 184px;
+  width: min(78vw, 326px);
+  height: 178px;
   border-radius: 50%;
   background:
-    radial-gradient(circle, rgba(255, 195, 66, 0.22), transparent 64%),
-    radial-gradient(circle at 68% 36%, rgba(255, 74, 10, 0.18), transparent 42%);
-  filter: blur(2px);
-  opacity: 0.92;
-  animation: logo-aura 3.8s ease-in-out infinite;
+    radial-gradient(ellipse at center, rgba(255, 195, 66, 0.2), transparent 64%),
+    linear-gradient(90deg, transparent, rgba(255, 74, 10, 0.12), transparent);
+  filter: blur(8px);
+  opacity: 0.82;
+  animation: logo-aura 6s ease-in-out infinite;
 }
 
 .stop-symbol {
   position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: clamp(1px, 1.2vw, 6px);
-  padding: 6px 0 0;
+  display: block;
+  color: var(--yellow);
+  font-size: clamp(76px, 23vw, 118px);
+  font-weight: 950;
+  line-height: 0.78;
+  letter-spacing: 0;
+  text-shadow:
+    0 2px 0 rgba(5, 4, 3, 0.82),
+    0 0 30px rgba(255, 195, 66, 0.24),
+    0 28px 58px rgba(0, 0, 0, 0.46);
+  animation: stop-logo-settle 760ms cubic-bezier(0.16, 1, 0.2, 1) both;
 }
 
 .stop-symbol::after {
   content: "";
   position: absolute;
-  left: 5%;
-  right: 5%;
-  bottom: -8px;
-  height: 7px;
+  left: 8%;
+  right: 8%;
+  bottom: -12px;
+  height: 5px;
   border-radius: 999px;
   background: linear-gradient(90deg, transparent, var(--orange), var(--yellow), transparent);
-  box-shadow: 0 0 24px rgba(255, 74, 10, 0.26);
+  box-shadow: 0 0 22px rgba(255, 74, 10, 0.22);
   transform: skewX(-18deg);
-  animation: stop-underline 2.6s ease-in-out infinite;
-}
-
-.stop-symbol span {
-  display: block;
-  color: var(--yellow);
-  font-size: clamp(58px, 17vw, 92px);
-  font-weight: 950;
-  line-height: 0.8;
-  letter-spacing: 0;
-  text-shadow:
-    0 2px 0 rgba(5, 4, 3, 0.85),
-    0 0 28px rgba(255, 195, 66, 0.24),
-    0 22px 46px rgba(0, 0, 0, 0.44);
-  transform: translateY(18px) scale(0.82) rotate(-3deg);
-  animation:
-    stop-letter-in 620ms cubic-bezier(0.16, 1.18, 0.2, 1) both,
-    stop-letter-float 3.2s ease-in-out infinite;
-}
-
-.stop-symbol span:nth-child(2) {
-  color: var(--cream);
-  animation-delay: 80ms, 420ms;
-}
-
-.stop-symbol span:nth-child(3) {
-  animation-delay: 150ms, 560ms;
-}
-
-.stop-symbol span:nth-child(4) {
-  color: #ffd46a;
-  animation-delay: 220ms, 700ms;
+  animation: stop-underline 5.4s ease-in-out infinite;
 }
 
 .intro-playpint-logo {
@@ -338,19 +245,6 @@ input {
     drop-shadow(0 0 16px rgba(255, 195, 66, 0.12));
   opacity: 0;
   animation: playpint-lockup-in 580ms ease-out 360ms both;
-}
-
-.intro-stop-logo i {
-  position: absolute;
-  right: 34px;
-  bottom: 126px;
-  width: 14px;
-  height: 92px;
-  border-radius: 999px;
-  background: linear-gradient(180deg, var(--yellow), var(--orange));
-  box-shadow: 0 0 26px rgba(255, 74, 10, 0.34);
-  transform: rotate(16deg);
-  animation: logo-slash-sweep 2.8s ease-in-out infinite;
 }
 
 .roulette-panel {
@@ -1217,26 +1111,19 @@ body[data-phase="countdown"] .game-footer {
   }
 }
 
-@keyframes intro-light-pass {
-  0%,
-  100% {
-    opacity: 0.34;
-    transform: translateX(-8%) skewX(-12deg);
+@keyframes premium-flow {
+  0% {
+    opacity: 0.62;
+    transform: translate3d(-12%, -2%, 0) rotate(-4deg);
   }
 
   50% {
-    opacity: 0.86;
-    transform: translateX(8%) skewX(-12deg);
-  }
-}
-
-@keyframes logo-drift {
-  0% {
-    transform: translate3d(-240px, 18px, 0) rotate(-10deg) scale(0.96);
+    opacity: 0.9;
   }
 
   100% {
-    transform: translate3d(760px, -22px, 0) rotate(-6deg) scale(1.04);
+    opacity: 0.62;
+    transform: translate3d(12%, 2%, 0) rotate(-4deg);
   }
 }
 
@@ -1253,28 +1140,17 @@ body[data-phase="countdown"] .game-footer {
   }
 }
 
-@keyframes stop-letter-in {
+@keyframes stop-logo-settle {
   from {
     opacity: 0;
-    transform: translateY(24px) scale(0.74) rotate(-8deg);
-    filter: blur(3px);
+    transform: translateY(18px) scale(0.94);
+    filter: blur(2px);
   }
 
   to {
     opacity: 1;
-    transform: translateY(0) scale(1) rotate(0deg);
-    filter: blur(0);
-  }
-}
-
-@keyframes stop-letter-float {
-  0%,
-  100% {
     transform: translateY(0) scale(1);
-  }
-
-  50% {
-    transform: translateY(-5px) scale(1.015);
+    filter: blur(0);
   }
 }
 
@@ -1300,19 +1176,6 @@ body[data-phase="countdown"] .game-footer {
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
-  }
-}
-
-@keyframes logo-slash-sweep {
-  0%,
-  100% {
-    opacity: 0.66;
-    transform: translateY(4px) rotate(16deg) scaleY(0.92);
-  }
-
-  50% {
-    opacity: 1;
-    transform: translateY(-4px) rotate(16deg) scaleY(1.04);
   }
 }
 
@@ -1532,23 +1395,13 @@ body[data-phase="countdown"] .game-footer {
     min-height: 300px;
   }
 
-  .stop-symbol span {
-    font-size: clamp(50px, 15.5vw, 76px);
+  .stop-symbol {
+    font-size: clamp(64px, 20vw, 94px);
   }
 
   .intro-playpint-logo {
     width: min(50vw, 178px);
     margin-top: 14px;
-  }
-
-  .intro-stop-logo i {
-    right: 28px;
-    bottom: 106px;
-    height: 74px;
-  }
-
-  .intro-logo-stream img {
-    width: 126px;
   }
 
   .roulette-machine {
