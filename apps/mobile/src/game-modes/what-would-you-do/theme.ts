@@ -1,6 +1,6 @@
 export const whatWouldYouDoTheme = {
-  brandLogoText: "Playpint",
-  brandLogoAsset: "./assets/playpint-logo.png",
+  brandLogoText: "O Que Fazias?",
+  brandLogoAsset: "./assets/what-fazias-logo.png",
   modeLabel: "O Que Fazias?",
   colors: {
     background: "#050403",
