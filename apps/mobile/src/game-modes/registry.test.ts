@@ -36,7 +36,7 @@ test("builds a registry from independent game manifests", () => {
   assert.equal(registry.requireById(MOST_LIKELY_GAME_MODE_ID).title, "Es Tu?");
   assert.equal(
     registry.requireById(WHAT_WOULD_YOU_DO_GAME_MODE_ID).title,
-    "O Que Fazias?",
+    "O Que Tu Fazias?",
   );
   assert.equal(registry.getEnabled().length, 2);
 });

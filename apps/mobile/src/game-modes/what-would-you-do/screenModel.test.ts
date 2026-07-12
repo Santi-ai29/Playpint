@@ -20,12 +20,12 @@ test("shows the waiting question phase before voting opens", () => {
   );
 
   assert.equal(model.status, "waiting_question");
-  assert.equal(model.header.brandLogoText, "O Que Fazias?");
+  assert.equal(model.header.brandLogoText, "O Que Tu Fazias?");
   assert.equal(model.header.brandLogoAsset, "./assets/what-fazias-logo.png");
-  assert.equal(model.header.modeLabel, "O Que Fazias?");
+  assert.equal(model.header.modeLabel, "O Que Tu Fazias?");
   assert.equal(model.header.phaseLabel, "Pergunta");
   assert.equal(model.header.timerLabel, "00:15");
-  assert.equal(model.copy.waitingTitle, "A preparar a situacao");
+  assert.equal(model.copy.waitingTitle, "A preparar o dilema");
   assert.equal(model.canVote, false);
   assert.equal(model.options.every((option) => option.disabled), true);
 });
@@ -45,7 +45,7 @@ test("enables option selection during voting", () => {
 
   assert.equal(model.status, "voting");
   assert.equal(model.header.phaseLabel, "Votacao");
-  assert.equal(model.copy.votingTitle, "Escolhe o que fazias");
+  assert.equal(model.copy.votingTitle, "Escolhe o que preferias");
   assert.equal(model.canVote, true);
   assert.equal(model.remainingSeconds, 10);
   assert.equal(model.options.every((option) => option.disabled === false), true);
@@ -88,33 +88,33 @@ test("maps official option results, percentages, and vote trail", () => {
 
   assert.equal(model.status, "result");
   assert.deepEqual(model.resultSummary, {
-    title: "A mesa decidiu",
-    leadingOptionLabel: "Fugia",
+    title: "A mesa escolheu",
+    leadingOptionLabel: "Um mes sem telemovel",
     winnerLabel: "opcao mais escolhida",
     leadingPercentage: 66.7,
     isTie: false,
-    socialLine: "Instinto de sobrevivencia ganhou sem grande debate.",
+    socialLine: "A mesa escolheu o caos digital menos doloroso.",
   });
   assert.deepEqual(model.resultRows, [
     {
       optionId: "a",
-      label: "Fugia",
+      label: "Um mes sem telemovel",
       votes: 2,
       percentage: 66.7,
       isWinner: true,
     },
     {
       optionId: "b",
-      label: "Ficava paralisado",
+      label: "Um ano sem redes sociais",
       votes: 1,
       percentage: 33.3,
       isWinner: false,
     },
   ]);
   assert.deepEqual(model.voteTrail, [
-    { voterNickname: "Ana", optionLabel: "Fugia" },
-    { voterNickname: "Bruno", optionLabel: "Ficava paralisado" },
-    { voterNickname: "Carla", optionLabel: "Fugia" },
+    { voterNickname: "Ana", optionLabel: "Um mes sem telemovel" },
+    { voterNickname: "Bruno", optionLabel: "Um ano sem redes sociais" },
+    { voterNickname: "Carla", optionLabel: "Um mes sem telemovel" },
   ]);
 });
 
@@ -155,32 +155,32 @@ function snapshot(input: {
     publicState: {
       question: {
         id: "q1",
-        prompt: "Se um tubarao aparecesse a tua frente, o que fazias?",
+        prompt: "O que preferias: ficar um mes sem telemovel ou um ano sem redes sociais?",
         options: [
-          { id: "a", label: "Fugia" },
-          { id: "b", label: "Ficava paralisado" },
+          { id: "a", label: "Um mes sem telemovel" },
+          { id: "b", label: "Um ano sem redes sociais" },
         ],
         contentLevel: "friends",
       },
       submittedCount: input.playerState?.hasVoted ? 1 : 0,
       totalPlayers: 3,
       result: input.result
-        ? {
+          ? {
             questionId: "q1",
-            prompt: "Se um tubarao aparecesse a tua frente, o que fazias?",
+            prompt: "O que preferias: ficar um mes sem telemovel ou um ano sem redes sociais?",
             totalVotes: 3,
             winnerOptionIds: ["a"],
             optionResults: [
               {
                 optionId: "a",
-                label: "Fugia",
+                label: "Um mes sem telemovel",
                 votes: 2,
                 percentage: 66.7,
                 isWinner: true,
               },
               {
                 optionId: "b",
-                label: "Ficava paralisado",
+                label: "Um ano sem redes sociais",
                 votes: 1,
                 percentage: 33.3,
                 isWinner: false,
@@ -191,21 +191,21 @@ function snapshot(input: {
                 voterPlayerId: "p1",
                 voterNickname: "Ana",
                 optionId: "a",
-                optionLabel: "Fugia",
+                optionLabel: "Um mes sem telemovel",
                 submittedAt: "2026-06-25T20:00:21.000Z",
               },
               {
                 voterPlayerId: "p2",
                 voterNickname: "Bruno",
                 optionId: "b",
-                optionLabel: "Ficava paralisado",
+                optionLabel: "Um ano sem redes sociais",
                 submittedAt: "2026-06-25T20:00:22.000Z",
               },
               {
                 voterPlayerId: "p3",
                 voterNickname: "Carla",
                 optionId: "a",
-                optionLabel: "Fugia",
+                optionLabel: "Um mes sem telemovel",
                 submittedAt: "2026-06-25T20:00:23.000Z",
               },
             ],

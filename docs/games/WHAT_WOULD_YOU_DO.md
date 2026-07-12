@@ -1,16 +1,16 @@
-# O Que Fazias?
+# O Que Tu Fazias?
 
-`what_would_you_do` e um modo social da sequencia "Es Tu?" onde a mesa escolhe entre duas reacoes possiveis a uma situacao.
+`what_would_you_do` e um modo social da sequencia "Es Tu?" onde a mesa escolhe entre dois lados de um dilema "O que preferias...?".
 
 ## Objetivo
 
-O backend escolhe uma pergunta/situacao e mostra duas opcoes. Cada jogador vota uma vez numa das opcoes. No fim, o backend publica o resultado oficial com votos e percentagens por opcao.
+O backend escolhe uma pergunta hipotetica e mostra duas opcoes. Cada jogador vota uma vez numa das opcoes. No fim, o backend publica o resultado oficial com votos e percentagens por opcao.
 
 Exemplo:
 
-- Pergunta: "Se um tubarao aparecesse a tua frente, o que fazias?"
-- Opcao A: "Fugia"
-- Opcao B: "Ficava paralisado"
+- Pergunta: "O que preferias: ficar um mes sem telemovel ou um ano sem redes sociais?"
+- Opcao A: "Um mes sem telemovel"
+- Opcao B: "Um ano sem redes sociais"
 
 ## Estado MVP
 
@@ -20,12 +20,12 @@ Exemplo:
 - Tempo de pergunta/ronda: 20 segundos.
 - Tempo de votacao: 18 segundos.
 - Rondas por defeito: 10.
-- Banco inicial: mais de 100 perguntas unicas, picantes, simples e feitas para dividir a mesa.
+- Banco inicial: mais de 100 dilemas unicos, simples e feitos para dividir a mesa.
 - O modo entra no registry backend e mobile como MVP.
 
 ## Fluxo da ronda
 
-1. O backend cria a ronda em `active` e escolhe uma situacao.
+1. O backend cria a ronda em `active` e escolhe um dilema.
 2. A UI mostra o estado de pergunta/aguardando votacao.
 3. A ronda passa para `voting`.
 4. Cada jogador escolhe uma das duas opcoes.
@@ -68,7 +68,7 @@ Modulo: `apps/backend/src/modules/games/what-would-you-do`.
 
 Responsabilidades:
 
-- escolher uma situacao do deck;
+- escolher um dilema do deck;
 - abrir e fechar janelas oficiais de ronda/votacao;
 - validar voto unico por jogador;
 - validar jogador votante;
@@ -91,7 +91,7 @@ Modulo: `apps/mobile/src/game-modes/what-would-you-do`.
 
 Estados visuais:
 
-- `waiting_question`: pergunta no ecra antes da votacao.
+- `waiting_question`: dilema no ecra antes da votacao.
 - `voting`: duas opcoes ativas.
 - `submitted`: voto enviado e bloqueado.
 - `result`: barras, votos e percentagens oficiais.

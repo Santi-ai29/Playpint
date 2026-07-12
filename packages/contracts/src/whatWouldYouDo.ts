@@ -12,11 +12,11 @@ export const WHAT_WOULD_YOU_DO_DEFAULT_TOTAL_ROUNDS = 10;
 
 export const WHAT_WOULD_YOU_DO_GAME_MANIFEST: GameModeManifest = {
   id: WHAT_WOULD_YOU_DO_GAME_MODE_ID,
-  title: "O Que Fazias?",
-  shortTitle: "O Que Fazias?",
+  title: "O Que Tu Fazias?",
+  shortTitle: "O Que Tu Fazias?",
   category: "party_choice",
   description:
-    "Escolhe uma de duas reacoes a uma situacao absurda e revela o consenso da mesa.",
+    "Escolhe uma de duas opcoes num dilema hipotetico e revela o consenso da mesa.",
   rules: {
     minPlayers: WHAT_WOULD_YOU_DO_MIN_PLAYERS,
     recommendedMinPlayers: WHAT_WOULD_YOU_DO_RECOMMENDED_MIN_PLAYERS,

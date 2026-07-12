@@ -19,12 +19,12 @@ test("creates the what_would_you_do branded waiting question view", () => {
   );
 
   assert.equal(view.backgroundStyle, "premium_illustrated_bar");
-  assert.equal(view.brand.logoText, "O Que Fazias?");
+  assert.equal(view.brand.logoText, "O Que Tu Fazias?");
   assert.equal(view.brand.logoAsset, "./assets/what-fazias-logo.png");
-  assert.equal(view.brand.modeLabel, "O Que Fazias?");
+  assert.equal(view.brand.modeLabel, "O Que Tu Fazias?");
   assert.equal(view.optionLayout, "duel_buttons");
   assert.equal(view.options.every((option) => option.visualState === "disabled"), true);
-  assert.equal(view.footer?.text, "A preparar a situacao");
+  assert.equal(view.footer?.text, "A preparar o dilema");
 });
 
 test("creates a voting view and a contract-compatible vote intent", () => {
@@ -141,13 +141,13 @@ test("creates a simple result view with bars and percentages", () => {
 
   assert.equal(view.status, "result");
   assert.equal(view.optionLayout, "result_bars");
-  assert.equal(view.result?.leadingOptionLabel, "Fugia");
+  assert.equal(view.result?.leadingOptionLabel, "Um mes sem telemovel");
   assert.equal(view.result?.winnerLabel, "opcao mais escolhida");
   assert.equal(view.result?.leadingPercentage, "66.7%");
   assert.deepEqual(view.result?.bars, [
     {
       optionId: "a",
-      label: "Fugia",
+      label: "Um mes sem telemovel",
       votesLabel: "2 votos",
       percentageLabel: "66.7%",
       percentage: 66.7,
@@ -155,7 +155,7 @@ test("creates a simple result view with bars and percentages", () => {
     },
     {
       optionId: "b",
-      label: "Ficava paralisado",
+      label: "Um ano sem redes sociais",
       votesLabel: "1 voto",
       percentageLabel: "33.3%",
       percentage: 33.3,
@@ -186,32 +186,32 @@ function snapshot(input: {
     publicState: {
       question: {
         id: "q1",
-        prompt: "Se um tubarao aparecesse a tua frente, o que fazias?",
+        prompt: "O que preferias: ficar um mes sem telemovel ou um ano sem redes sociais?",
         options: [
-          { id: "a", label: "Fugia" },
-          { id: "b", label: "Ficava paralisado" },
+          { id: "a", label: "Um mes sem telemovel" },
+          { id: "b", label: "Um ano sem redes sociais" },
         ],
         contentLevel: "friends",
       },
       submittedCount: 0,
       totalPlayers: 3,
       result: input.result
-        ? {
+          ? {
             questionId: "q1",
-            prompt: "Se um tubarao aparecesse a tua frente, o que fazias?",
+            prompt: "O que preferias: ficar um mes sem telemovel ou um ano sem redes sociais?",
             totalVotes: 3,
             winnerOptionIds: ["a"],
             optionResults: [
               {
                 optionId: "a",
-                label: "Fugia",
+                label: "Um mes sem telemovel",
                 votes: 2,
                 percentage: 66.7,
                 isWinner: true,
               },
               {
                 optionId: "b",
-                label: "Ficava paralisado",
+                label: "Um ano sem redes sociais",
                 votes: 1,
                 percentage: 33.3,
                 isWinner: false,

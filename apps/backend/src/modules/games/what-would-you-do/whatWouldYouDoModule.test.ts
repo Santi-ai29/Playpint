@@ -22,10 +22,10 @@ const players: PublicPlayer[] = [
 const deck: WhatWouldYouDoQuestion[] = [
   {
     id: "q1",
-    prompt: "Se um tubarao aparecesse a tua frente, o que fazias?",
+    prompt: "O que preferias: ficar um mes sem telemovel ou um ano sem redes sociais?",
     options: [
-      { id: "a", label: "Fugia" },
-      { id: "b", label: "Ficava paralisado" },
+      { id: "a", label: "Um mes sem telemovel" },
+      { id: "b", label: "Um ano sem redes sociais" },
     ],
     contentLevel: "friends",
   },
@@ -151,14 +151,14 @@ test("finishes when all players vote and calculates option percentages", () => {
   assert.deepEqual(third.state.result?.optionResults, [
     {
       optionId: "a",
-      label: "Fugia",
+      label: "Um mes sem telemovel",
       votes: 2,
       percentage: 66.7,
       isWinner: true,
     },
     {
       optionId: "b",
-      label: "Ficava paralisado",
+      label: "Um ano sem redes sociais",
       votes: 1,
       percentage: 33.3,
       isWinner: false,

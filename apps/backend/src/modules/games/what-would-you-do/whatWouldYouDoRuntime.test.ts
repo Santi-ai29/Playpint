@@ -19,10 +19,10 @@ const players: PublicPlayer[] = [
 const deck: WhatWouldYouDoQuestion[] = [
   {
     id: "q1",
-    prompt: "Se um tubarao aparecesse a tua frente, o que fazias?",
+    prompt: "O que preferias: ficar um mes sem telemovel ou um ano sem redes sociais?",
     options: [
-      { id: "a", label: "Fugia" },
-      { id: "b", label: "Ficava paralisado" },
+      { id: "a", label: "Um mes sem telemovel" },
+      { id: "b", label: "Um ano sem redes sociais" },
     ],
     contentLevel: "friends",
   },

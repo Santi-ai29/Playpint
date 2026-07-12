@@ -21,19 +21,19 @@ const players: PublicPlayer[] = [
 const deck: WhatWouldYouDoQuestion[] = [
   {
     id: "q1",
-    prompt: "Se um tubarao aparecesse a tua frente, o que fazias?",
+    prompt: "O que preferias: ficar um mes sem telemovel ou um ano sem redes sociais?",
     options: [
-      { id: "a", label: "Fugia" },
-      { id: "b", label: "Ficava paralisado" },
+      { id: "a", label: "Um mes sem telemovel" },
+      { id: "b", label: "Um ano sem redes sociais" },
     ],
     contentLevel: "friends",
   },
   {
     id: "q2",
-    prompt: "Se a mesa pedisse uma ultima rodada, o que fazias?",
+    prompt: "O que preferias: viajar dez anos para o futuro ou dez anos para o passado?",
     options: [
-      { id: "a", label: "Alinhava" },
-      { id: "b", label: "Chamava juizo" },
+      { id: "a", label: "Ir ao futuro" },
+      { id: "b", label: "Voltar ao passado" },
     ],
     contentLevel: "bar",
   },
@@ -71,19 +71,19 @@ test("varies the opening question between fresh session starts", () => {
           ...deck,
           {
             id: "q3",
-            prompt: "Se alguem pedisse para ver a tua ultima conversa, o que fazias?",
+            prompt: "O que preferias: os teus amigos verem o teu historico ou a tua galeria?",
             options: [
-              { id: "a", label: "Mostrava sem medo" },
-              { id: "b", label: "Bloqueava o telemovel" },
+              { id: "a", label: "Historico aberto" },
+              { id: "b", label: "Galeria aberta" },
             ],
             contentLevel: "bar",
           },
           {
             id: "q4",
-            prompt: "Se a tua crush elogiasse o teu amigo, o que fazias?",
+            prompt: "O que preferias: jantar com o teu ex ou sair com a crush de um amigo?",
             options: [
-              { id: "a", label: "Ficava tranquilo" },
-              { id: "b", label: "Mudava de assunto" },
+              { id: "a", label: "Jantar com ex" },
+              { id: "b", label: "Crush do amigo" },
             ],
             contentLevel: "bar",
           },

@@ -213,7 +213,7 @@ function createSocialLine(
   isTie: boolean,
 ): string {
   if (!leadingOption) {
-    return "A mesa ficou em silencio. Ainda mais suspeito.";
+    return "A mesa ficou em silencio. Isso tambem diz muito.";
   }
 
   if (isTie) {
@@ -223,17 +223,17 @@ function createSocialLine(
   const prompt = result.prompt.toLowerCase();
   const label = leadingOption.label.toLowerCase();
 
-  if (prompt.includes("tubarao") || label.includes("fugia")) {
-    return "Instinto de sobrevivencia ganhou sem grande debate.";
+  if (prompt.includes("telemovel") || prompt.includes("internet") || label.includes("bateria")) {
+    return "A mesa escolheu o caos digital menos doloroso.";
   }
 
-  if (prompt.includes("crush") || prompt.includes("ex")) {
+  if (prompt.includes("ex") || prompt.includes("crush") || prompt.includes("segredo")) {
     return "A mesa escolheu drama com alguma dignidade.";
   }
 
-  if (prompt.includes("rodada") || prompt.includes("bar")) {
-    return "A decisao tem cheiro a noite longa.";
+  if (prompt.includes("amigos") || prompt.includes("mesa")) {
+    return "A decisao vai render conversa daqui a nada.";
   }
 
-  return "A mesa falou. Agora e fingir que era obvio.";
+  return "A mesa escolheu um lado. Agora e defender a escolha.";
 }

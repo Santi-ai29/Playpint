@@ -6,130 +6,130 @@ const currentPlayerId = "preview_me";
 const questions = [
   {
     id: "wwyd_0001",
-    prompt: "Se um tubarao aparecesse a tua frente, o que fazias?",
+    prompt: "O que preferias: ficar um mes sem telemovel ou um ano sem redes sociais?",
     options: [
-      { id: "a", label: "Fugia" },
-      { id: "b", label: "Ficava paralisado" },
+      { id: "a", label: "Um mes sem telemovel" },
+      { id: "b", label: "Um ano sem redes sociais" },
     ],
   },
   {
     id: "wwyd_0002",
-    prompt: "Se o teu crush visse uma mensagem constrangedora tua, o que fazias?",
+    prompt: "O que preferias: ler pensamentos durante um dia ou ficar invisivel durante uma hora?",
     options: [
-      { id: "a", label: "Assumia com charme" },
-      { id: "b", label: "Inventava uma desculpa" },
+      { id: "a", label: "Ler pensamentos" },
+      { id: "b", label: "Ficar invisivel" },
     ],
   },
   {
     id: "wwyd_0003",
-    prompt: "Se tivesses de cantar karaoke sem saber a letra, o que fazias?",
+    prompt: "O que preferias: ter bateria infinita sem Internet ou Internet rapida com 1% de bateria?",
     options: [
-      { id: "a", label: "Inventava com confianca" },
-      { id: "b", label: "Passava o microfone" },
+      { id: "a", label: "Bateria infinita" },
+      { id: "b", label: "Internet rapida" },
     ],
   },
   {
     id: "wwyd_0004",
-    prompt: "Se a mesa pedisse uma ultima rodada, o que fazias?",
+    prompt: "O que preferias: viajar dez anos para o futuro ou dez anos para o passado?",
     options: [
-      { id: "a", label: "Alinhava" },
-      { id: "b", label: "Chamava juizo" },
+      { id: "a", label: "Ir ao futuro" },
+      { id: "b", label: "Voltar ao passado" },
     ],
   },
   {
     id: "wwyd_0005",
-    prompt: "Se o teu telemovel fosse projetado no ecra, o que fazias?",
+    prompt: "O que preferias: dizer sempre o que pensas ou nunca poder dar opiniao?",
     options: [
-      { id: "a", label: "Bloqueava tudo" },
-      { id: "b", label: "Dizia que era arte" },
+      { id: "a", label: "Dizer tudo" },
+      { id: "b", label: "Guardar opiniao" },
     ],
   },
   {
     id: "wwyd_0006",
-    prompt: "Se o teu ex entrasse no mesmo bar, o que fazias?",
+    prompt: "O que preferias: saber todos os segredos da mesa ou apagar um segredo teu?",
     options: [
-      { id: "a", label: "Ignorava com classe" },
-      { id: "b", label: "Fazia questao de ser visto" },
+      { id: "a", label: "Saber segredos" },
+      { id: "b", label: "Apagar um segredo" },
     ],
   },
   {
     id: "wwyd_0007",
-    prompt: "Se a tua crush elogiasse o teu amigo, o que fazias?",
+    prompt: "O que preferias: transportes gratis para sempre ou comida gratis todos os fins de semana?",
     options: [
-      { id: "a", label: "Ficava tranquilo" },
-      { id: "b", label: "Mudava de assunto" },
+      { id: "a", label: "Transportes gratis" },
+      { id: "b", label: "Comida gratis" },
     ],
   },
   {
     id: "wwyd_0008",
-    prompt: "Se alguem pedisse para ver a tua ultima conversa, o que fazias?",
+    prompt: "O que preferias: viver junto ao mar sem dinheiro ou no centro com pouco tempo livre?",
     options: [
-      { id: "a", label: "Mostrava sem medo" },
-      { id: "b", label: "Bloqueava o telemovel" },
+      { id: "a", label: "Junto ao mar" },
+      { id: "b", label: "No centro" },
     ],
   },
   {
     id: "wwyd_0009",
-    prompt: "Se a mesa te acusasse de estar com ciumes, o que fazias?",
+    prompt: "O que preferias: trabalhar quatro dias por semana ou ter ferias mais longas?",
     options: [
-      { id: "a", label: "Negava ate ao fim" },
-      { id: "b", label: "Assumia um bocadinho" },
+      { id: "a", label: "Quatro dias" },
+      { id: "b", label: "Ferias longas" },
     ],
   },
   {
     id: "wwyd_0010",
-    prompt: "Se recebesses uma mensagem de 'saudades', o que fazias?",
+    prompt: "O que preferias: estudar sem exames ou trabalhar sem reunioes?",
     options: [
-      { id: "a", label: "Respondia" },
-      { id: "b", label: "Mandava para o grupo" },
+      { id: "a", label: "Sem exames" },
+      { id: "b", label: "Sem reunioes" },
     ],
   },
   {
     id: "wwyd_0011",
-    prompt: "Se o teu amigo mandasse mensagem ao teu ex, o que fazias?",
+    prompt: "O que preferias: os teus amigos verem o teu historico ou a tua galeria?",
     options: [
-      { id: "a", label: "Perguntava por que" },
-      { id: "b", label: "Cortava a confianca" },
+      { id: "a", label: "Historico aberto" },
+      { id: "b", label: "Galeria aberta" },
     ],
   },
   {
     id: "wwyd_0012",
-    prompt: "Se tivesses de entregar o telemovel desbloqueado por 1 minuto, o que fazias?",
+    prompt: "O que preferias: chegar sempre atrasado ou sempre cedo demais?",
     options: [
-      { id: "a", label: "Entregava" },
-      { id: "b", label: "Preferia pagar castigo" },
+      { id: "a", label: "Sempre atrasado" },
+      { id: "b", label: "Sempre cedo" },
     ],
   },
   {
     id: "wwyd_0013",
-    prompt: "Se a mesa votasse em quem e mais falso, o que fazias?",
+    prompt: "O que preferias: jantar com o teu ex ou sair com a crush de um amigo?",
     options: [
-      { id: "a", label: "Votava sincero" },
-      { id: "b", label: "Votava seguro" },
+      { id: "a", label: "Jantar com ex" },
+      { id: "b", label: "Crush do amigo" },
     ],
   },
   {
     id: "wwyd_0014",
-    prompt: "Se tivesses de escolher quem nunca superou o ex, o que fazias?",
+    prompt: "O que preferias: nunca conseguir mentir ou nunca perceber quando mentem?",
     options: [
-      { id: "a", label: "Dizia a verdade" },
-      { id: "b", label: "Protegia a pessoa" },
+      { id: "a", label: "Nunca mentir" },
+      { id: "b", label: "Nunca perceber" },
     ],
   },
   {
     id: "wwyd_0015",
-    prompt: "Se a tua crush perguntasse se estas solteiro, o que fazias?",
+    prompt: "O que preferias: ser famoso sem dinheiro ou rico sem ninguem saber?",
     options: [
-      { id: "a", label: "Respondia direto" },
-      { id: "b", label: "Respondia com charme" },
+      { id: "a", label: "Famoso sem dinheiro" },
+      { id: "b", label: "Rico anonimo" },
     ],
   },
   {
     id: "wwyd_0016",
-    prompt: "Se descobrisses que foste assunto numa conversa, o que fazias?",
+    prompt: "O que preferias: falar todos os idiomas ou tocar todos os instrumentos?",
     options: [
-      { id: "a", label: "Pedia prints" },
-      { id: "b", label: "Ia perguntar direto" },
+      { id: "a", label: "Todos os idiomas" },
+      { id: "b", label: "Todos os instrumentos" },
     ],
   },
 ];
@@ -523,18 +523,25 @@ function getResults() {
 
 function getResultMessage(winner, isTie) {
   if (!winner) {
-    return "Ninguem quis comprometer-se. Corajoso, de certa forma.";
+    return "Ninguem quis comprometer-se. Isso tambem diz muito.";
   }
 
   if (isTie) {
     return "A mesa dividiu-se. Isto merece defesa oral.";
   }
 
-  if (winner.label.toLowerCase().includes("fugia")) {
-    return "Instinto de sobrevivencia ganhou sem grande debate.";
+  const question = getCurrentQuestion().prompt.toLowerCase();
+  const label = winner.label.toLowerCase();
+
+  if (question.includes("telemovel") || question.includes("internet") || label.includes("bateria")) {
+    return "A mesa escolheu o caos digital menos doloroso.";
   }
 
-  return "A mesa falou. Agora e fingir que era obvio.";
+  if (question.includes("ex") || question.includes("crush") || question.includes("segredo")) {
+    return "A mesa escolheu drama com alguma dignidade.";
+  }
+
+  return "A mesa escolheu um lado. Agora e defender a escolha.";
 }
 
 function getCurrentQuestion() {

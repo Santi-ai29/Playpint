@@ -1,7 +1,7 @@
 export const whatWouldYouDoTheme = {
-  brandLogoText: "O Que Fazias?",
+  brandLogoText: "O Que Tu Fazias?",
   brandLogoAsset: "./assets/what-fazias-logo.png",
-  modeLabel: "O Que Fazias?",
+  modeLabel: "O Que Tu Fazias?",
   colors: {
     background: "#050403",
     surface: "#17110B",
@@ -13,10 +13,10 @@ export const whatWouldYouDoTheme = {
     textDark: "#050403",
   },
   copy: {
-    waitingTitle: "A preparar a situacao",
-    votingTitle: "Escolhe o que fazias",
+    waitingTitle: "A preparar o dilema",
+    votingTitle: "Escolhe o que preferias",
     voteSent: "Voto enviado",
-    resultTitle: "A mesa decidiu",
+    resultTitle: "A mesa escolheu",
     winnerLabel: "opcao mais escolhida",
     tieLabel: "empate tecnico",
   },

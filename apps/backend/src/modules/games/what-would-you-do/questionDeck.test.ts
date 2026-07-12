@@ -30,37 +30,38 @@ test("ships an initial what_would_you_do question deck with two options each", (
   );
 });
 
-test("keeps the default questions spicy, social, and easy to understand", () => {
+test("keeps the default questions as would-you-rather dilemmas in Portuguese", () => {
   const prompts = defaultWhatWouldYouDoQuestionDeck
     .map((question) => question.prompt.toLowerCase())
     .join(" ");
 
   assert.match(
     prompts,
-    /crush|ex|ciumes|segredo|mensagem|prints|telemovel|drama/,
+    /telemovel|internet|amigos|trabalho|viagem|crush|segredo|dinheiro/,
   );
   assert.equal(
     defaultWhatWouldYouDoQuestionDeck.every(
       (question) =>
-        question.prompt.startsWith("Se ") &&
+        question.prompt.startsWith("O que preferias") &&
         question.prompt.endsWith("?") &&
-        question.options.every((option) => option.label.split(" ").length <= 6),
+        question.options.length === 2 &&
+        question.options[0].label !== question.options[1].label,
     ),
     true,
   );
 });
 
-test("starts with the requested shark example and keeps option ids stable", () => {
+test("starts with a dilemma and keeps option ids stable", () => {
   const deck = createWhatWouldYouDoQuestionDeck(3);
 
   assert.equal(deck[0]?.id, "wwyd_0001");
   assert.equal(
     deck[0]?.prompt,
-    "Se um tubarao aparecesse a tua frente, o que fazias?",
+    "O que preferias: ficar um mes sem telemovel ou um ano sem redes sociais?",
   );
   assert.deepEqual(deck[0]?.options, [
-    { id: "a", label: "Fugia" },
-    { id: "b", label: "Ficava paralisado" },
+    { id: "a", label: "Um mes sem telemovel" },
+    { id: "b", label: "Um ano sem redes sociais" },
   ]);
   assert.equal(deck[1]?.options[0].id, "a");
   assert.equal(deck[1]?.options[1].id, "b");
