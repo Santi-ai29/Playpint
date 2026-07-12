@@ -117,9 +117,9 @@ let state = {
   activeCategoryIds: [...DEFAULT_ACTIVE_CATEGORY_IDS],
   activeLetters: [...DEFAULT_ACTIVE_LETTERS],
   letter: "A",
-  rouletteCursor: 0,
   rouletteDone: false,
-  rouletteSequence: [],
+  rouletteRotation: 0,
+  rouletteSpinDuration: 0,
   customCategoryCount: 0,
   countdownValue: COUNTDOWN_SEQUENCE[0].value,
   countdownStepIndex: 0,
@@ -159,8 +159,9 @@ const addCategoryForm = document.querySelector("#addCategoryForm");
 const categoryInput = document.querySelector("#categoryInput");
 const letterToggles = document.querySelector("#letterToggles");
 const lettersSummary = document.querySelector("#lettersSummary");
-const rouletteReel = document.querySelector("#rouletteReel");
+const rouletteWheel = document.querySelector("#rouletteWheel");
 const rouletteSpotlight = document.querySelector("#rouletteSpotlight");
+const rouletteLive = document.querySelector("#rouletteLive");
 const countdownNumber = document.querySelector("#countdownNumber");
 const countdownProgress = document.querySelector("#countdownProgress");
 const roundLetter = document.querySelector("#roundLetter");
@@ -352,12 +353,12 @@ function beginLetterRoulette() {
   clearReviewWaitTimer();
   state.phase = "roulette";
   state.letter = pickRoundLetter();
-  state.rouletteCursor = 0;
   state.rouletteDone = false;
+  state.rouletteRotation = normalizeWheelRotation(state.rouletteRotation);
+  state.rouletteSpinDuration = 0;
   state.countdownValue = COUNTDOWN_SEQUENCE[0].value;
   state.countdownStepIndex = 0;
   state.countdownStartedAt = 0;
-  state.rouletteSequence = createRouletteSequence(state.letter);
   state.answers = {};
   state.submissions = [];
   state.invalidatedAnswers = {};
@@ -366,7 +367,7 @@ function beginLetterRoulette() {
   state.reviewCategoryId = getActiveCategories()[0]?.id ?? "name";
   state.scoresAppliedForRound = false;
   render();
-  spinRouletteStep(0);
+  window.requestAnimationFrame(spinRouletteStep);
 }
 
 function beginCountdown() {
@@ -515,27 +516,39 @@ function resetGameIntro() {
   render();
 }
 
-function spinRouletteStep(index) {
+function spinRouletteStep() {
   if (state.phase !== "roulette") {
     return;
   }
 
   const activeLetters = getActiveLetters();
-  const sequenceLetter = state.rouletteSequence[index] ?? state.letter;
-  state.rouletteCursor = Math.max(0, activeLetters.indexOf(sequenceLetter));
+  const selectedIndex = Math.max(0, activeLetters.indexOf(state.letter));
+  const reducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
+  const spin = calculateWheelSpin({
+    currentRotation: state.rouletteRotation,
+    selectedIndex,
+    totalLetters: activeLetters.length,
+    roundIndex: state.roundIndex,
+    reducedMotion,
+  });
+
+  state.rouletteDone = false;
+  state.rouletteRotation = spin.targetRotation;
+  state.rouletteSpinDuration = spin.duration;
   renderRoulette();
 
-  if (index >= state.rouletteSequence.length - 1) {
+  rouletteTimer = window.setTimeout(() => {
+    if (state.phase !== "roulette") {
+      return;
+    }
+
     state.rouletteDone = true;
-    state.rouletteCursor = Math.max(0, activeLetters.indexOf(state.letter));
+    state.rouletteRotation = spin.targetRotation;
+    state.rouletteSpinDuration = 0;
+    safeVibrate(24);
     renderRoulette();
     renderFooter();
-    return;
-  }
-
-  const progress = index / Math.max(1, state.rouletteSequence.length - 1);
-  const delay = 34 + Math.round(progress * progress * 155);
-  rouletteTimer = window.setTimeout(() => spinRouletteStep(index + 1), delay);
+  }, spin.duration);
 }
 
 function render() {
@@ -661,30 +674,38 @@ function renderSettings() {
 function renderRoulette() {
   roulettePanel.classList.toggle("hidden", state.phase !== "roulette");
   roulettePanel.classList.toggle("settled", state.rouletteDone);
+  roulettePanel.classList.toggle("spinning", state.phase === "roulette" && !state.rouletteDone);
+  roulettePanel.setAttribute(
+    "aria-busy",
+    state.phase === "roulette" && !state.rouletteDone ? "true" : "false",
+  );
 
   if (state.phase !== "roulette") {
     return;
   }
 
   const activeLetters = getActiveLetters();
-  const activeIndex = state.rouletteCursor;
-  const activeLetter = activeLetters[activeIndex] ?? state.letter;
-  const reelOffsets = [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6];
+  const selectedIndex = Math.max(0, activeLetters.indexOf(state.letter));
+  const segmentAngle = 360 / activeLetters.length;
 
-  roulettePanel.dataset.spinTick = String(activeIndex % 2);
-  rouletteSpotlight.textContent = state.rouletteDone ? state.letter : activeLetter;
-  rouletteReel.innerHTML = reelOffsets
-    .map((offset) => {
-      const letter = activeLetters[
-        (activeIndex + offset + activeLetters.length) % activeLetters.length
-      ];
-
+  roulettePanel.dataset.winner = state.letter;
+  rouletteSpotlight.textContent = state.rouletteDone ? state.letter : "";
+  rouletteLive.textContent = state.rouletteDone
+    ? `Letra sorteada: ${state.letter}`
+    : "Roleta a rodar";
+  rouletteWheel.style.setProperty("--segment-count", String(activeLetters.length));
+  rouletteWheel.style.setProperty("--segment-angle", `${segmentAngle}deg`);
+  rouletteWheel.style.setProperty("--half-segment-angle", `${segmentAngle / 2}deg`);
+  rouletteWheel.style.setProperty("--wheel-rotation", `${state.rouletteRotation}deg`);
+  rouletteWheel.style.setProperty("--spin-duration", `${state.rouletteSpinDuration}ms`);
+  rouletteWheel.innerHTML = activeLetters
+    .map((letter, index) => {
       return `
         <span
-          class="reel-letter ${offset === 0 ? "active" : ""}"
-          style="--distance: ${Math.abs(offset)}; --offset: ${offset}"
+          class="roulette-wheel-letter ${state.rouletteDone && index === selectedIndex ? "winner" : ""}"
+          style="--letter-angle: ${index * segmentAngle}deg"
         >
-          ${letter}
+          <span>${letter}</span>
         </span>
       `;
     })
@@ -880,7 +901,7 @@ function renderFooter() {
   if (state.phase === "roulette") {
     primaryAction.textContent = state.rouletteDone
       ? "Comecar ronda"
-      : "A sortear letra";
+      : "A rodar";
     primaryAction.disabled = !state.rouletteDone;
     primaryAction.classList.toggle("spinning", !state.rouletteDone);
     primaryAction.classList.remove("secondary");
@@ -1157,24 +1178,44 @@ function toggleLetter(letter) {
   );
 }
 
-function createRouletteSequence(finalLetter) {
-  const seed = state.roundIndex * 3 + 2;
-  const sequence = [];
-  const activeLetters = getActiveLetters();
-
-  for (let index = 0; index < 44; index += 1) {
-    sequence.push(activeLetters[(seed + index * 5) % activeLetters.length]);
-  }
-
-  sequence.push(finalLetter);
-  return sequence;
-}
-
 function pickRoundLetter() {
   const activeLetters = getActiveLetters();
   const seed = state.roundIndex * 7 + 1;
 
   return activeLetters[seed % activeLetters.length] ?? "A";
+}
+
+function calculateWheelSpin({
+  currentRotation,
+  selectedIndex,
+  totalLetters,
+  roundIndex,
+  reducedMotion,
+}) {
+  const segmentAngle = 360 / totalLetters;
+  const desiredRotation = normalizeWheelRotation(-selectedIndex * segmentAngle);
+  const normalizedCurrent = normalizeWheelRotation(currentRotation);
+  const alignmentDelta = normalizeAngleDelta(desiredRotation - normalizedCurrent);
+  const fullTurns = reducedMotion ? 1 : 4 + (roundIndex % 4);
+
+  return {
+    duration: reducedMotion ? 850 : 3100 + (roundIndex % 3) * 240,
+    targetRotation: currentRotation + fullTurns * 360 + alignmentDelta,
+  };
+}
+
+function normalizeWheelRotation(rotation) {
+  return ((rotation % 360) + 360) % 360;
+}
+
+function normalizeAngleDelta(delta) {
+  return ((delta % 360) + 360) % 360;
+}
+
+function safeVibrate(duration) {
+  if (typeof navigator !== "undefined" && typeof navigator.vibrate === "function") {
+    navigator.vibrate(duration);
+  }
 }
 
 function getCountdownStepIndex(elapsed) {
@@ -1212,18 +1253,6 @@ function clearCountdownTimer() {
 function clearReviewWaitTimer() {
   window.clearTimeout(reviewWaitTimer);
   reviewWaitTimer = null;
-}
-
-function previousLetterFor(letter) {
-  const index = Math.max(0, LETTERS.indexOf(letter));
-
-  return LETTERS[(index - 1 + LETTERS.length) % LETTERS.length];
-}
-
-function nextLetterFor(letter) {
-  const index = Math.max(0, LETTERS.indexOf(letter));
-
-  return LETTERS[(index + 1) % LETTERS.length];
 }
 
 function getStoppedBy() {

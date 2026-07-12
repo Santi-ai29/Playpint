@@ -64,9 +64,14 @@
 
         <section id="roulettePanel" class="roulette-panel hidden" aria-label="Sorteio da letra">
           <div class="roulette-machine" aria-label="Roleta de letras">
-            <div id="rouletteReel" class="roulette-reel"></div>
-            <div id="rouletteSpotlight" class="roulette-spotlight">A</div>
+            <span class="roulette-pointer" aria-hidden="true"></span>
+            <div id="rouletteWheel" class="roulette-wheel" aria-hidden="true"></div>
+            <div class="roulette-center">
+              <img class="roulette-center-logo" src="./assets/playpint-logo.png" alt="" />
+              <strong id="rouletteSpotlight" class="roulette-spotlight" aria-hidden="true">A</strong>
+            </div>
           </div>
+          <p id="rouletteLive" class="sr-only" aria-live="polite"></p>
         </section>
 
         <section id="countdownPanel" class="countdown-panel hidden" aria-label="Contagem">
