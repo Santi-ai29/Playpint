@@ -25,6 +25,7 @@ export interface WhatWouldYouDoGameView {
   status: WhatWouldYouDoScreenModel["status"];
   prompt: {
     text: string;
+    category: WhatWouldYouDoScreenModel["category"];
   };
   optionLayout: "duel_buttons" | "result_bars";
   options: Array<
@@ -86,6 +87,7 @@ export function createWhatWouldYouDoGameView(
     status: model.status,
     prompt: {
       text: model.prompt,
+      category: model.category,
     },
     optionLayout: model.status === "result" ? "result_bars" : "duel_buttons",
     options: model.options.map((option) => ({

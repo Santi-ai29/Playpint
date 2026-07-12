@@ -35,11 +35,29 @@ export interface WhatWouldYouDoOption {
   label: string;
 }
 
+export type WhatWouldYouDoCategoryId =
+  | "dinheiro"
+  | "tecnologia"
+  | "social"
+  | "picantes"
+  | "escola"
+  | "trabalho"
+  | "viagens"
+  | "comida"
+  | "absurdas"
+  | "dia_a_dia";
+
+export interface WhatWouldYouDoQuestionCategory {
+  id: WhatWouldYouDoCategoryId;
+  label: string;
+}
+
 export interface WhatWouldYouDoQuestion {
   id: string;
   prompt: string;
   options: [WhatWouldYouDoOption, WhatWouldYouDoOption];
   contentLevel: "friends" | "bar";
+  category?: WhatWouldYouDoQuestionCategory;
 }
 
 export interface WhatWouldYouDoVoteRequest {

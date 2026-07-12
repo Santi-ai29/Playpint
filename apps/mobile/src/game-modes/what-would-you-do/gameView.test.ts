@@ -23,6 +23,10 @@ test("creates the what_would_you_do branded waiting question view", () => {
   assert.equal(view.brand.logoAsset, "./assets/what-fazias-logo.png");
   assert.equal(view.brand.modeLabel, "O Que Tu Fazias?");
   assert.equal(view.optionLayout, "duel_buttons");
+  assert.deepEqual(view.prompt.category, {
+    id: "tecnologia",
+    label: "Tecnologia",
+  });
   assert.equal(view.options.every((option) => option.visualState === "disabled"), true);
   assert.equal(view.footer?.text, "A preparar o dilema");
 });
@@ -192,6 +196,10 @@ function snapshot(input: {
           { id: "b", label: "Um ano sem redes sociais" },
         ],
         contentLevel: "friends",
+        category: {
+          id: "tecnologia",
+          label: "Tecnologia",
+        },
       },
       submittedCount: 0,
       totalPlayers: 3,

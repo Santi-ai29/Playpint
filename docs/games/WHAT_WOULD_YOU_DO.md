@@ -21,6 +21,7 @@ Exemplo:
 - Tempo de votacao: 18 segundos.
 - Rondas por defeito: 10.
 - Banco inicial: mais de 100 dilemas unicos, simples e feitos para dividir a mesa.
+- Cada dilema pode trazer uma categoria discreta, como `Tecnologia`, `Social`, `Picantes`, `Dinheiro`, `Escola`, `Trabalho`, `Viagens`, `Comida`, `Absurdas` ou `Dia a dia`.
 - O modo entra no registry backend e mobile como MVP.
 
 ## Fluxo da ronda
@@ -52,6 +53,7 @@ Ficheiro: `packages/contracts/src/whatWouldYouDo.ts`.
 Principais tipos:
 
 - `WhatWouldYouDoQuestion`
+- `WhatWouldYouDoQuestionCategory`
 - `WhatWouldYouDoOption`
 - `WhatWouldYouDoVoteRequest`
 - `WhatWouldYouDoPublicState`
@@ -69,6 +71,7 @@ Modulo: `apps/backend/src/modules/games/what-would-you-do`.
 Responsabilidades:
 
 - escolher um dilema do deck;
+- anexar a categoria oficial do dilema para a UI mostrar uma tag pequena;
 - abrir e fechar janelas oficiais de ronda/votacao;
 - validar voto unico por jogador;
 - validar jogador votante;
@@ -100,6 +103,7 @@ Direcao visual:
 
 - mesmo fundo premium escuro dos outros jogos;
 - logo local do Playpint;
+- tag discreta de categoria por cima da pergunta;
 - duas opcoes grandes em formato duelo;
 - animacao de entrada da pergunta;
 - animacao dos botoes de opcao;

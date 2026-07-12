@@ -3,6 +3,19 @@ const QUESTION_SECONDS = 20;
 const players = ["Ana", "Bruno", "Carla", "Diogo", "Marta"];
 const currentPlayerId = "preview_me";
 
+const questionCategories = {
+  dinheiro: { id: "dinheiro", label: "Dinheiro" },
+  tecnologia: { id: "tecnologia", label: "Tecnologia" },
+  social: { id: "social", label: "Social" },
+  picantes: { id: "picantes", label: "Picantes" },
+  escola: { id: "escola", label: "Escola" },
+  trabalho: { id: "trabalho", label: "Trabalho" },
+  viagens: { id: "viagens", label: "Viagens" },
+  comida: { id: "comida", label: "Comida" },
+  absurdas: { id: "absurdas", label: "Absurdas" },
+  dia_a_dia: { id: "dia_a_dia", label: "Dia a dia" },
+};
+
 const questions = [
   {
     id: "wwyd_0001",
@@ -132,7 +145,7 @@ const questions = [
       { id: "b", label: "Todos os instrumentos" },
     ],
   },
-];
+].map(withQuestionCategory);
 
 let phase = "intro";
 let questionOrder = createQuestionOrder(questions.length);
@@ -351,14 +364,7 @@ function renderQuestion() {
 
   questionPanel.classList.toggle("is-compact", phase === "result");
   prompt.textContent = question.prompt;
-  eyebrow.textContent =
-    phase === "voting"
-      ? "Votacao ativa"
-      : phase === "submitted"
-        ? "Voto enviado"
-        : phase === "result"
-          ? "Resultado"
-          : "Aguardando pergunta";
+  eyebrow.textContent = question.category.label;
 }
 
 function renderOptions() {
@@ -601,4 +607,57 @@ function escapeHtml(value) {
 
     return entities[character];
   });
+}
+
+function withQuestionCategory(question) {
+  return {
+    ...question,
+    category: getQuestionCategory(question.prompt),
+  };
+}
+
+function getQuestionCategory(promptText) {
+  const normalized = promptText.toLowerCase();
+
+  if (matchesAny(normalized, ["dinheiro", "euros", "rico", "salario", "lotaria"])) {
+    return questionCategories.dinheiro;
+  }
+
+  if (matchesAny(normalized, ["telemovel", "internet", "passwords", "carregadores", "gps", "fones", "algoritmo", "notificacoes"])) {
+    return questionCategories.tecnologia;
+  }
+
+  if (matchesAny(normalized, ["crush", "ex", "date", "amor", "relacoes"])) {
+    return questionCategories.picantes;
+  }
+
+  if (matchesAny(normalized, ["escola", "testes", "trabalhos de casa", "trabalhos de grupo"])) {
+    return questionCategories.escola;
+  }
+
+  if (matchesAny(normalized, ["trabalho", "emprego", "chefe", "reunioes", "colegas"])) {
+    return questionCategories.trabalho;
+  }
+
+  if (matchesAny(normalized, ["viagem", "viajar", "pais", "hotel", "carrinha", "comboio"])) {
+    return questionCategories.viagens;
+  }
+
+  if (matchesAny(normalized, ["comida", "pizza", "cafe", "jantar", "cozinhar"])) {
+    return questionCategories.comida;
+  }
+
+  if (matchesAny(normalized, ["amigos", "amigo", "mesa", "segredo", "rumor", "aniversario", "conversa"])) {
+    return questionCategories.social;
+  }
+
+  if (matchesAny(normalized, ["invisivel", "ler mentes", "teletransportar", "voar", "tempo", "cao que fala", "clone"])) {
+    return questionCategories.absurdas;
+  }
+
+  return questionCategories.dia_a_dia;
+}
+
+function matchesAny(value, needles) {
+  return needles.some((needle) => value.includes(needle));
 }

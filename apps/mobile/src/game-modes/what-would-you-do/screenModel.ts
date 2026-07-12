@@ -2,6 +2,7 @@ import {
   WHAT_WOULD_YOU_DO_GAME_MANIFEST,
   WHAT_WOULD_YOU_DO_GAME_MODE_ID,
   type RoundSnapshot,
+  type WhatWouldYouDoQuestionCategory,
   type WhatWouldYouDoPlayerState,
   type WhatWouldYouDoPublicState,
   type WhatWouldYouDoVoteRequest,
@@ -43,6 +44,7 @@ export interface WhatWouldYouDoScreenModel {
   status: WhatWouldYouDoScreenStatus;
   questionId: string;
   prompt: string;
+  category: WhatWouldYouDoQuestionCategory;
   remainingSeconds: number;
   isExpired: boolean;
   progress: number;
@@ -103,6 +105,10 @@ export function createWhatWouldYouDoScreenModel(
     status: getStatus(Boolean(result), isVoting, hasVoted),
     questionId: snapshot.publicState.question.id,
     prompt: snapshot.publicState.question.prompt,
+    category: snapshot.publicState.question.category ?? {
+      id: "dia_a_dia",
+      label: "Dia a dia",
+    },
     remainingSeconds: timer.remainingSeconds,
     isExpired: timer.isExpired,
     progress: timer.progress,

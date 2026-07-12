@@ -24,7 +24,7 @@ test("ships an initial what_would_you_do question deck with two options each", (
   );
   assert.equal(
     defaultWhatWouldYouDoQuestionDeck.every(
-      (question) => question.options.length === 2,
+      (question) => question.options.length === 2 && question.category,
     ),
     true,
   );
@@ -63,6 +63,10 @@ test("starts with a dilemma and keeps option ids stable", () => {
     { id: "a", label: "Um mes sem telemovel" },
     { id: "b", label: "Um ano sem redes sociais" },
   ]);
+  assert.deepEqual(deck[0]?.category, {
+    id: "tecnologia",
+    label: "Tecnologia",
+  });
   assert.equal(deck[1]?.options[0].id, "a");
   assert.equal(deck[1]?.options[1].id, "b");
 });

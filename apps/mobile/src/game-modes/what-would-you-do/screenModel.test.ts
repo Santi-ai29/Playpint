@@ -26,6 +26,10 @@ test("shows the waiting question phase before voting opens", () => {
   assert.equal(model.header.phaseLabel, "Pergunta");
   assert.equal(model.header.timerLabel, "00:15");
   assert.equal(model.copy.waitingTitle, "A preparar o dilema");
+  assert.deepEqual(model.category, {
+    id: "tecnologia",
+    label: "Tecnologia",
+  });
   assert.equal(model.canVote, false);
   assert.equal(model.options.every((option) => option.disabled), true);
 });
@@ -161,6 +165,10 @@ function snapshot(input: {
           { id: "b", label: "Um ano sem redes sociais" },
         ],
         contentLevel: "friends",
+        category: {
+          id: "tecnologia",
+          label: "Tecnologia",
+        },
       },
       submittedCount: input.playerState?.hasVoted ? 1 : 0,
       totalPlayers: 3,

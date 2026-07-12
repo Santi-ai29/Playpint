@@ -464,9 +464,18 @@ button {
 }
 
 .eyebrow {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  min-height: 26px;
+  padding: 0 10px;
+  border: 1px solid rgba(255, 179, 35, 0.28);
+  border-radius: 999px;
+  background: #17110c;
   color: var(--orange);
   font-size: 12px;
   font-weight: 950;
+  letter-spacing: 0.45px;
   text-transform: uppercase;
 }
 
