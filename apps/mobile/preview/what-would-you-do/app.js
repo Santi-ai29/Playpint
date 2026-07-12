@@ -464,7 +464,8 @@ function renderFooter() {
     primaryAction.hidden = false;
     primaryAction.disabled = false;
     primaryAction.classList.remove("secondary");
-    primaryAction.textContent = "Comecar";
+    primaryAction.textContent = "COMEÇAR";
+    primaryAction.setAttribute("aria-label", "Começar jogo");
     return;
   }
 
@@ -472,7 +473,8 @@ function renderFooter() {
     primaryAction.hidden = false;
     primaryAction.disabled = false;
     primaryAction.classList.remove("secondary");
-    primaryAction.textContent = "Abrir votacao";
+    primaryAction.textContent = "Abrir votação";
+    primaryAction.setAttribute("aria-label", "Abrir votação");
     return;
   }
 
@@ -481,6 +483,7 @@ function renderFooter() {
     primaryAction.disabled = !selectedOptionId;
     primaryAction.classList.remove("secondary");
     primaryAction.textContent = "Confirmar voto";
+    primaryAction.setAttribute("aria-label", "Confirmar voto");
     return;
   }
 
@@ -492,7 +495,8 @@ function renderFooter() {
   primaryAction.hidden = false;
   primaryAction.disabled = false;
   primaryAction.classList.add("secondary");
-  primaryAction.textContent = "Proxima";
+  primaryAction.textContent = "Próxima";
+  primaryAction.setAttribute("aria-label", "Próxima pergunta");
 }
 
 function getResults() {
