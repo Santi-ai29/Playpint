@@ -6,6 +6,12 @@ const ROUND_OPTIONS = [4, 6, 8];
 const TIME_OPTIONS = [60, 90, 120];
 const DEFAULT_ACTIVE_CATEGORY_IDS = ["name", "city", "animal", "food", "object", "profession"];
 const DEFAULT_ACTIVE_LETTERS = [...LETTERS];
+const COUNTDOWN_SEQUENCE = [
+  { value: "3", duration: 1000 },
+  { value: "2", duration: 1000 },
+  { value: "1", duration: 1000 },
+  { value: "JÁ!", duration: 620 },
+];
 const categoryCatalog = [
   { id: "name", label: "Nome", placeholder: "Nome proprio" },
   { id: "city", label: "Cidade", placeholder: "Cidade" },
@@ -115,7 +121,9 @@ let state = {
   rouletteDone: false,
   rouletteSequence: [],
   customCategoryCount: 0,
-  countdownValue: 3,
+  countdownValue: COUNTDOWN_SEQUENCE[0].value,
+  countdownStepIndex: 0,
+  countdownStartedAt: 0,
   answers: {},
   submissions: [],
   reviewCategoryId: "name",
@@ -130,6 +138,7 @@ let rouletteTimer = null;
 let countdownTimer = null;
 let reviewWaitTimer = null;
 let lastRenderedPhase = "";
+let countdownRunId = 0;
 
 const phaseLabel = document.querySelector("#phaseLabel");
 const timerLabel = document.querySelector("#timerLabel");
@@ -153,6 +162,7 @@ const lettersSummary = document.querySelector("#lettersSummary");
 const rouletteReel = document.querySelector("#rouletteReel");
 const rouletteSpotlight = document.querySelector("#rouletteSpotlight");
 const countdownNumber = document.querySelector("#countdownNumber");
+const countdownProgress = document.querySelector("#countdownProgress");
 const roundLetter = document.querySelector("#roundLetter");
 const submissionCount = document.querySelector("#submissionCount");
 const answersForm = document.querySelector("#answersForm");
@@ -344,7 +354,9 @@ function beginLetterRoulette() {
   state.letter = pickRoundLetter();
   state.rouletteCursor = 0;
   state.rouletteDone = false;
-  state.countdownValue = 3;
+  state.countdownValue = COUNTDOWN_SEQUENCE[0].value;
+  state.countdownStepIndex = 0;
+  state.countdownStartedAt = 0;
   state.rouletteSequence = createRouletteSequence(state.letter);
   state.answers = {};
   state.submissions = [];
@@ -361,26 +373,35 @@ function beginCountdown() {
   clearRouletteTimer();
   clearCountdownTimer();
   state.phase = "countdown";
-  state.countdownValue = 3;
+  state.countdownValue = COUNTDOWN_SEQUENCE[0].value;
+  state.countdownStepIndex = 0;
+  state.countdownStartedAt = performance.now();
   render();
-  scheduleCountdownStep();
+  scheduleCountdownStep(++countdownRunId);
 }
 
-function scheduleCountdownStep() {
-  countdownTimer = window.setTimeout(() => {
-    if (state.phase !== "countdown") {
-      return;
-    }
+function scheduleCountdownStep(runId) {
+  if (runId !== countdownRunId || state.phase !== "countdown") {
+    return;
+  }
 
-    if (state.countdownValue <= 1) {
-      startRound();
-      return;
-    }
+  const elapsed = performance.now() - state.countdownStartedAt;
+  const stepIndex = getCountdownStepIndex(elapsed);
 
-    state.countdownValue -= 1;
+  if (stepIndex < 0) {
+    startRound();
+    return;
+  }
+
+  if (stepIndex !== state.countdownStepIndex) {
+    state.countdownStepIndex = stepIndex;
+    state.countdownValue = COUNTDOWN_SEQUENCE[stepIndex].value;
     renderCountdown();
-    scheduleCountdownStep();
-  }, 760);
+  }
+
+  const nextBoundary = state.countdownStartedAt + getCountdownBoundary(stepIndex + 1);
+  const delay = Math.max(16, nextBoundary - performance.now() + 2);
+  countdownTimer = window.setTimeout(() => scheduleCountdownStep(runId), delay);
 }
 
 function startRound() {
@@ -677,11 +698,39 @@ function renderCountdown() {
     return;
   }
 
-  countdownPanel.dataset.count = String(state.countdownValue);
-  countdownNumber.textContent = String(state.countdownValue);
-  countdownNumber.style.animation = "none";
-  window.requestAnimationFrame(() => {
-    countdownNumber.style.animation = "";
+  const step = COUNTDOWN_SEQUENCE[state.countdownStepIndex] ?? COUNTDOWN_SEQUENCE[0];
+  const isFinalStep = step.value === "JÁ!";
+
+  countdownPanel.dataset.count = step.value;
+  countdownPanel.dataset.step = String(state.countdownStepIndex);
+  countdownPanel.classList.toggle("final-hit", isFinalStep);
+  countdownPanel.style.setProperty("--countdown-step-duration", `${step.duration}ms`);
+  countdownPanel.style.setProperty("--countdown-tick-unit", `${step.duration / 16}ms`);
+  countdownNumber.innerHTML = isFinalStep ? "JÁ<em>!</em>" : step.value;
+  countdownNumber.setAttribute("aria-label", isFinalStep ? "Ja" : step.value);
+
+  const progressItems = Array.from(countdownProgress.children);
+  progressItems.forEach((item, index) => {
+    item.classList.toggle("done", index < state.countdownStepIndex);
+    item.classList.toggle("current", index === state.countdownStepIndex);
+  });
+
+  resetCountdownAnimations();
+}
+
+function resetCountdownAnimations() {
+  const animatedElements = countdownPanel.querySelectorAll(
+    ".countdown-animate, .progress-value, .countdown-ticks i, .countdown-burst i, .countdown-particles i, .countdown-speedline",
+  );
+
+  animatedElements.forEach((element) => {
+    element.style.animation = "none";
+  });
+
+  countdownPanel.offsetHeight;
+
+  animatedElements.forEach((element) => {
+    element.style.animation = "";
   });
 }
 
@@ -1128,6 +1177,27 @@ function pickRoundLetter() {
   return activeLetters[seed % activeLetters.length] ?? "A";
 }
 
+function getCountdownStepIndex(elapsed) {
+  let boundary = 0;
+
+  for (let index = 0; index < COUNTDOWN_SEQUENCE.length; index += 1) {
+    boundary += COUNTDOWN_SEQUENCE[index].duration;
+
+    if (elapsed < boundary) {
+      return index;
+    }
+  }
+
+  return -1;
+}
+
+function getCountdownBoundary(stepIndex) {
+  return COUNTDOWN_SEQUENCE.slice(0, stepIndex).reduce(
+    (total, step) => total + step.duration,
+    0,
+  );
+}
+
 function clearRouletteTimer() {
   window.clearTimeout(rouletteTimer);
   rouletteTimer = null;
@@ -1136,6 +1206,7 @@ function clearRouletteTimer() {
 function clearCountdownTimer() {
   window.clearTimeout(countdownTimer);
   countdownTimer = null;
+  countdownRunId += 1;
 }
 
 function clearReviewWaitTimer() {

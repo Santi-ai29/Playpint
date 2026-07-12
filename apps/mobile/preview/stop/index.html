@@ -70,14 +70,61 @@
         </section>
 
         <section id="countdownPanel" class="countdown-panel hidden" aria-label="Contagem">
-          <div class="countdown-core">
-            <span class="countdown-ring ring-a"></span>
-            <span class="countdown-ring ring-b"></span>
-            <span class="countdown-flare"></span>
-            <strong id="countdownNumber">3</strong>
+          <div class="countdown-header countdown-animate">
+            <span>Ronda a comecar</span>
+            <strong>Prepara-te!</strong>
+          </div>
+
+          <div class="countdown-core countdown-animate">
+            <span class="countdown-speedline speedline-a" aria-hidden="true"></span>
+            <span class="countdown-speedline speedline-b" aria-hidden="true"></span>
+
             <div class="countdown-ticks" aria-hidden="true">
-              <i></i><i></i><i></i><i></i><i></i><i></i>
-              <i></i><i></i><i></i><i></i><i></i><i></i>
+              <i style="--tick-index: 0"></i><i style="--tick-index: 1"></i>
+              <i style="--tick-index: 2"></i><i style="--tick-index: 3"></i>
+              <i style="--tick-index: 4"></i><i style="--tick-index: 5"></i>
+              <i style="--tick-index: 6"></i><i style="--tick-index: 7"></i>
+              <i style="--tick-index: 8"></i><i style="--tick-index: 9"></i>
+              <i style="--tick-index: 10"></i><i style="--tick-index: 11"></i>
+              <i style="--tick-index: 12"></i><i style="--tick-index: 13"></i>
+              <i style="--tick-index: 14"></i><i style="--tick-index: 15"></i>
+            </div>
+
+            <svg class="countdown-progress-ring" viewBox="0 0 320 320" aria-hidden="true">
+              <defs>
+                <linearGradient id="countdownProgressGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#FFC13D"></stop>
+                  <stop offset="100%" stop-color="#FF4A0A"></stop>
+                </linearGradient>
+              </defs>
+              <circle class="progress-track" cx="160" cy="160" r="142"></circle>
+              <circle class="progress-value" cx="160" cy="160" r="142" pathLength="1"></circle>
+            </svg>
+
+            <div class="countdown-burst" aria-hidden="true">
+              <i style="--burst-index: 0"></i><i style="--burst-index: 1"></i>
+              <i style="--burst-index: 2"></i><i style="--burst-index: 3"></i>
+              <i style="--burst-index: 4"></i><i style="--burst-index: 5"></i>
+              <i style="--burst-index: 6"></i><i style="--burst-index: 7"></i>
+              <i style="--burst-index: 8"></i><i style="--burst-index: 9"></i>
+            </div>
+
+            <div class="countdown-particles" aria-hidden="true">
+              <i style="--particle-index: 0"></i><i style="--particle-index: 1"></i>
+              <i style="--particle-index: 2"></i><i style="--particle-index: 3"></i>
+              <i style="--particle-index: 4"></i><i style="--particle-index: 5"></i>
+              <i style="--particle-index: 6"></i><i style="--particle-index: 7"></i>
+            </div>
+
+            <div class="countdown-disc">
+              <strong id="countdownNumber" aria-live="assertive">3</strong>
+            </div>
+          </div>
+
+          <div class="countdown-bottom countdown-animate">
+            <p>Pensa rapido. Escreve ainda mais rapido.</p>
+            <div id="countdownProgress" class="countdown-progress" aria-hidden="true">
+              <span></span><span></span><span></span><span></span>
             </div>
           </div>
         </section>
