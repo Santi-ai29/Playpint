@@ -117,6 +117,7 @@ let state = {
   activeCategoryIds: [...DEFAULT_ACTIVE_CATEGORY_IDS],
   activeLetters: [...DEFAULT_ACTIVE_LETTERS],
   letter: "A",
+  usedLetters: [],
   rouletteDone: false,
   rouletteRotation: 0,
   rouletteSpinDuration: 0,
@@ -344,6 +345,7 @@ function startGame() {
     ]),
   );
   state.roundIndex = 0;
+  state.usedLetters = [];
   beginLetterRoulette();
 }
 
@@ -504,6 +506,7 @@ function resetGameIntro() {
   clearReviewWaitTimer();
   state.phase = "intro";
   state.roundIndex = 0;
+  state.usedLetters = [];
   state.seconds = state.roundSeconds;
   state.answers = {};
   state.submissions = [];
@@ -1170,6 +1173,9 @@ function toggleLetter(letter) {
     }
 
     state.activeLetters = state.activeLetters.filter((activeLetter) => activeLetter !== letter);
+    state.usedLetters = state.usedLetters.filter((usedLetter) =>
+      state.activeLetters.includes(usedLetter),
+    );
     return;
   }
 
@@ -1180,9 +1186,37 @@ function toggleLetter(letter) {
 
 function pickRoundLetter() {
   const activeLetters = getActiveLetters();
-  const seed = state.roundIndex * 7 + 1;
+  let availableLetters = activeLetters.filter(
+    (letter) => !state.usedLetters.includes(letter),
+  );
 
-  return activeLetters[seed % activeLetters.length] ?? "A";
+  if (availableLetters.length === 0) {
+    state.usedLetters = [];
+    availableLetters = activeLetters;
+  }
+
+  const pickedLetter = availableLetters[getRandomIndex(availableLetters.length)] ?? "A";
+  state.usedLetters = [...state.usedLetters, pickedLetter].filter(
+    (letter, index, letters) =>
+      activeLetters.includes(letter) && letters.indexOf(letter) === index,
+  );
+
+  return pickedLetter;
+}
+
+function getRandomIndex(length) {
+  if (length <= 1) {
+    return 0;
+  }
+
+  if (window.crypto?.getRandomValues) {
+    const values = new Uint32Array(1);
+    window.crypto.getRandomValues(values);
+
+    return values[0] % length;
+  }
+
+  return Math.floor(Math.random() * length);
 }
 
 function calculateWheelSpin({
