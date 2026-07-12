@@ -306,62 +306,104 @@ body[data-phase="round"] .phone-screen::after {
   overflow: hidden;
 }
 
+.roulette-machine::before,
+.roulette-machine::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+}
+
+.roulette-machine::before {
+  width: min(84vw, 352px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, rgba(255, 195, 66, 0.18), transparent 57%),
+    conic-gradient(from 18deg, transparent 0 18%, rgba(255, 195, 66, 0.28) 24%, transparent 32% 54%, rgba(255, 74, 10, 0.18) 62%, transparent 72% 100%);
+  filter: drop-shadow(0 18px 44px rgba(255, 74, 10, 0.1));
+  opacity: 0.58;
+  animation: roulette-orbit 18s linear infinite;
+}
+
+.roulette-machine::after {
+  width: min(70vw, 300px);
+  height: 116px;
+  border-radius: 999px;
+  background: radial-gradient(ellipse, rgba(255, 195, 66, 0.16), rgba(255, 74, 10, 0.08) 44%, transparent 72%);
+  opacity: 0.72;
+  transform: translateY(78px);
+  filter: blur(5px);
+}
+
 .slot-shell {
   position: relative;
   z-index: 2;
   display: grid;
   place-items: center;
-  width: min(70vw, 276px);
-  height: min(56vh, 328px);
-  max-height: 338px;
-  min-height: 278px;
+  width: min(74vw, 314px);
+  height: min(48vh, 300px);
+  max-height: 316px;
+  min-height: 260px;
   overflow: hidden;
-  border: 1px solid rgba(255, 195, 66, 0.3);
-  border-radius: 28px;
+  border: 0;
+  border-radius: 50%;
   background:
-    linear-gradient(180deg, rgba(255, 243, 213, 0.05), transparent 30% 70%, rgba(255, 243, 213, 0.035)),
-    rgba(18, 12, 7, 0.66);
-  box-shadow:
-    0 0 0 1px rgba(255, 243, 213, 0.03),
-    0 28px 64px rgba(0, 0, 0, 0.36);
+    radial-gradient(circle at 50% 50%, rgba(255, 195, 66, 0.12), transparent 44%),
+    radial-gradient(circle at 50% 50%, rgba(255, 74, 10, 0.1), transparent 64%);
+  box-shadow: none;
+  isolation: isolate;
 }
 
 .slot-shell::before,
 .slot-shell::after {
   content: "";
   position: absolute;
-  left: 20px;
-  right: 20px;
-  z-index: 2;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(255, 195, 66, 0.34), transparent);
+  z-index: -1;
+  border-radius: 50%;
+  pointer-events: none;
 }
 
 .slot-shell::before {
-  top: 36%;
+  inset: 10%;
+  border: 1px solid rgba(255, 195, 66, 0.2);
+  background:
+    radial-gradient(circle, transparent 58%, rgba(255, 195, 66, 0.12) 60%, transparent 62%),
+    conic-gradient(from 220deg, transparent 0 28%, rgba(255, 195, 66, 0.22), transparent 42% 68%, rgba(34, 224, 222, 0.12), transparent 78% 100%);
+  opacity: 0.74;
+  animation: roulette-orbit 12s linear infinite reverse;
 }
 
 .slot-shell::after {
-  bottom: 36%;
+  width: 86%;
+  aspect-ratio: 1;
+  background: radial-gradient(circle, rgba(255, 195, 66, 0.15), transparent 64%);
+  filter: blur(12px);
+  opacity: 0.78;
 }
 
 .roulette-spotlight {
+  position: relative;
+  z-index: 2;
   display: grid;
   place-items: center;
-  width: 154px;
-  height: 154px;
-  border-radius: 28px;
+  width: 156px;
+  height: 156px;
+  border-radius: 50%;
   background:
-    radial-gradient(circle at 50% 24%, rgba(255, 243, 213, 0.36), transparent 28%),
-    linear-gradient(145deg, rgba(255, 195, 66, 1), rgba(255, 167, 48, 0.98));
+    radial-gradient(circle at 34% 24%, rgba(255, 243, 213, 0.55), transparent 27%),
+    radial-gradient(circle at 66% 80%, rgba(255, 74, 10, 0.22), transparent 42%),
+    linear-gradient(145deg, rgba(255, 204, 82, 1), rgba(255, 174, 48, 0.98));
   color: var(--black);
   font-size: clamp(104px, 30vw, 144px);
   font-weight: 950;
   line-height: 0.8;
   text-shadow: 0 2px 0 rgba(255, 255, 255, 0.18);
   box-shadow:
-    0 0 0 1px rgba(5, 4, 3, 0.16),
-    0 22px 52px rgba(255, 74, 10, 0.16);
+    inset 0 -14px 26px rgba(255, 74, 10, 0.15),
+    inset 0 12px 22px rgba(255, 243, 213, 0.18),
+    0 0 0 1px rgba(5, 4, 3, 0.12),
+    0 18px 48px rgba(255, 74, 10, 0.18),
+    0 0 50px rgba(255, 195, 66, 0.14);
 }
 
 .roulette-ghost {
@@ -370,19 +412,19 @@ body[data-phase="round"] .phone-screen::after {
   place-items: center;
   width: 92px;
   height: 72px;
-  color: rgba(255, 243, 213, 0.26);
+  color: rgba(255, 243, 213, 0.23);
   font-size: 44px;
   font-weight: 950;
-  filter: blur(0.5px);
+  filter: blur(0.8px);
   transform: scale(0.92);
 }
 
 .roulette-ghost.top {
-  top: 46px;
+  top: 36px;
 }
 
 .roulette-ghost.bottom {
-  bottom: 46px;
+  bottom: 36px;
 }
 
 .roulette-panel:not(.settled) .slot-shell {
@@ -1231,16 +1273,23 @@ body[data-phase="countdown"] .game-footer {
 @keyframes slot-hum {
   0%,
   100% {
-    box-shadow:
-      0 0 0 1px rgba(255, 243, 213, 0.03),
-      0 28px 64px rgba(0, 0, 0, 0.36);
+    opacity: 0.9;
+    transform: scale(0.985);
   }
 
   50% {
-    box-shadow:
-      0 0 0 1px rgba(255, 243, 213, 0.05),
-      0 28px 64px rgba(0, 0, 0, 0.36),
-      0 0 34px rgba(255, 74, 10, 0.1);
+    opacity: 1;
+    transform: scale(1.012);
+  }
+}
+
+@keyframes roulette-orbit {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
   }
 }
 
@@ -1458,16 +1507,16 @@ body[data-phase="countdown"] .game-footer {
   }
 
   .slot-shell {
-    width: min(68vw, 240px);
+    width: min(68vw, 260px);
     min-height: 248px;
-    height: 278px;
-    border-radius: 26px;
+    height: 260px;
+    border-radius: 50%;
   }
 
   .roulette-spotlight {
     width: 132px;
     height: 132px;
-    border-radius: 22px;
+    border-radius: 50%;
     font-size: clamp(88px, 27vw, 120px);
   }
 
