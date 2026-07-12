@@ -59,6 +59,44 @@ test("starts a playable what_would_you_do session with a first round", () => {
   ]);
 });
 
+test("varies the opening question between fresh session starts", () => {
+  const firstQuestionIds = new Set(
+    Array.from({ length: 8 }, (_, index) => {
+      const started = startWhatWouldYouDoSession({
+        roomId: "room_1",
+        players,
+        now: `2026-06-25T20:00:0${index}.000Z`,
+        totalRounds: 2,
+        deck: [
+          ...deck,
+          {
+            id: "q3",
+            prompt: "Se alguem pedisse para ver a tua ultima conversa, o que fazias?",
+            options: [
+              { id: "a", label: "Mostrava sem medo" },
+              { id: "b", label: "Bloqueava o telemovel" },
+            ],
+            contentLevel: "bar",
+          },
+          {
+            id: "q4",
+            prompt: "Se a tua crush elogiasse o teu amigo, o que fazias?",
+            options: [
+              { id: "a", label: "Ficava tranquilo" },
+              { id: "b", label: "Mudava de assunto" },
+            ],
+            contentLevel: "bar",
+          },
+        ],
+      });
+
+      return started.state.currentRound?.question.id;
+    }),
+  );
+
+  assert.ok(firstQuestionIds.size > 1);
+});
+
 test("publishes an official result after a completed round", () => {
   const session = openVoting(startSession());
   const first = vote(session, "p1", "a", "2026-06-25T20:00:22.000Z");

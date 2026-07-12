@@ -20,8 +20,8 @@ test("shows the waiting question phase before voting opens", () => {
   );
 
   assert.equal(model.status, "waiting_question");
-  assert.equal(model.header.brandLogoText, "O Que Fazias?");
-  assert.equal(model.header.brandLogoAsset, "./assets/what-fazias-logo.png");
+  assert.equal(model.header.brandLogoText, "Playpint");
+  assert.equal(model.header.brandLogoAsset, "./assets/playpint-logo.png");
   assert.equal(model.header.modeLabel, "O Que Fazias?");
   assert.equal(model.header.phaseLabel, "Pergunta");
   assert.equal(model.header.timerLabel, "00:15");

@@ -101,16 +101,17 @@ button {
 
 .topbar {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
   gap: 12px;
-  min-height: 50px;
+  min-height: 66px;
 }
 
 .brand-block {
   display: grid;
   min-width: 0;
-  row-gap: 5px;
+  row-gap: 0;
+  align-items: start;
 }
 
 .brand-logo,
@@ -122,18 +123,30 @@ button {
 
 .brand-logo {
   display: block;
-  width: clamp(142px, 43vw, 188px);
+  width: clamp(126px, 35vw, 164px);
   height: auto;
-  margin: -19px 0 -10px -12px;
+  margin: -14px 0 -11px -9px;
   object-fit: contain;
   filter:
     drop-shadow(0 10px 18px rgba(0, 0, 0, 0.34))
     drop-shadow(0 0 12px rgba(255, 195, 66, 0.12));
 }
 
-.game-mode-logo {
-  max-height: 76px;
+.playpint-brand-logo {
+  max-height: 74px;
   object-fit: contain;
+}
+
+.mode-logo-small {
+  display: block;
+  width: clamp(86px, 24vw, 116px);
+  height: auto;
+  margin: -11px 0 0 20px;
+  object-fit: contain;
+  opacity: 0.96;
+  filter:
+    drop-shadow(0 7px 14px rgba(0, 0, 0, 0.34))
+    drop-shadow(0 0 10px rgba(255, 195, 66, 0.1));
 }
 
 .mode {
@@ -180,9 +193,9 @@ button {
   position: relative;
   display: grid;
   justify-items: center;
-  gap: 16px;
+  gap: 12px;
   min-height: 0;
-  padding: 20px 0 8px;
+  padding: 14px 0 8px;
   text-align: center;
   isolation: isolate;
   animation: intro-enter 520ms cubic-bezier(0.2, 1, 0.25, 1) both;
@@ -227,8 +240,53 @@ button {
   position: relative;
   display: grid;
   place-items: center;
-  width: min(92vw, 380px);
-  min-height: min(45vh, 320px);
+  width: min(76vw, 322px);
+  min-height: 178px;
+}
+
+.intro-brand-lockup {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  width: min(92vw, 390px);
+}
+
+.intro-playpint-logo {
+  position: relative;
+  z-index: 2;
+  width: min(70vw, 274px);
+  height: auto;
+  object-fit: contain;
+  filter:
+    drop-shadow(0 22px 34px rgba(0, 0, 0, 0.42))
+    drop-shadow(0 0 18px rgba(255, 195, 66, 0.16));
+  animation: logo-settle 680ms cubic-bezier(0.16, 1, 0.2, 1) both;
+}
+
+.intro-logo-wrap::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  width: min(68vw, 282px);
+  height: 124px;
+  border: 1px solid transparent;
+  border-radius: 50%;
+  background:
+    linear-gradient(rgba(5, 4, 3, 0), rgba(5, 4, 3, 0)) padding-box,
+    conic-gradient(
+      from 0deg,
+      rgba(255, 195, 66, 0),
+      rgba(255, 195, 66, 0.75),
+      rgba(255, 74, 10, 0.48),
+      rgba(34, 224, 222, 0.45),
+      rgba(255, 195, 66, 0)
+    ) border-box;
+  opacity: 0.78;
+  filter:
+    drop-shadow(0 0 16px rgba(255, 195, 66, 0.18))
+    drop-shadow(0 0 22px rgba(255, 74, 10, 0.1));
+  transform: rotate(-8deg);
+  animation: logo-orbit 6.2s linear infinite;
 }
 
 .intro-logo-wrap::after {
@@ -236,7 +294,7 @@ button {
   position: absolute;
   left: 11%;
   right: 11%;
-  bottom: 32px;
+  bottom: 21px;
   height: 9px;
   border-radius: 999px;
   background: radial-gradient(ellipse, rgba(255, 74, 10, 0.4), transparent 70%);
@@ -247,13 +305,13 @@ button {
 .intro-logo {
   position: relative;
   z-index: 1;
-  width: min(90vw, 374px);
+  width: min(73vw, 308px);
   height: auto;
   object-fit: contain;
   filter:
-    drop-shadow(0 24px 38px rgba(0, 0, 0, 0.42))
+    drop-shadow(0 18px 30px rgba(0, 0, 0, 0.42))
     drop-shadow(0 0 26px rgba(255, 195, 66, 0.2));
-  animation: logo-settle 720ms cubic-bezier(0.16, 1, 0.2, 1) both;
+  animation: logo-settle 720ms cubic-bezier(0.16, 1, 0.2, 1) 80ms both;
 }
 
 .choice-duel {
@@ -262,7 +320,6 @@ button {
   grid-template-columns: 66px 70px 66px;
   align-items: center;
   gap: 10px;
-  margin-top: -14px;
   animation: duel-enter 520ms ease-out 260ms both;
 }
 
@@ -811,6 +868,16 @@ body[data-phase="result"] .result-panel {
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes logo-orbit {
+  from {
+    transform: rotate(-8deg);
+  }
+
+  to {
+    transform: rotate(352deg);
   }
 }
 

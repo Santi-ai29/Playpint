@@ -135,7 +135,8 @@ const questions = [
 ];
 
 let phase = "intro";
-let questionIndex = 0;
+let questionOrder = createQuestionOrder(questions.length);
+let questionCursor = 0;
 let selectedOptionId = null;
 let hasVoted = false;
 let seconds = QUESTION_SECONDS;
@@ -188,7 +189,7 @@ shuffleQuestion.addEventListener("click", () => {
     return;
   }
 
-  questionIndex += 1;
+  advanceQuestion();
   selectedOptionId = null;
   votes = [];
   render();
@@ -274,7 +275,7 @@ function submitVote() {
 
 function addPreviewTableVotes() {
   const question = getCurrentQuestion();
-  const baseOffset = questionIndex + (selectedOptionId === "a" ? 0 : 1);
+  const baseOffset = getCurrentQuestionIndex() + (selectedOptionId === "a" ? 0 : 1);
 
   players.forEach((nickname, index) => {
     const option = question.options[(baseOffset + index) % question.options.length];
@@ -302,7 +303,7 @@ function showResult() {
 }
 
 function nextQuestion() {
-  questionIndex += 1;
+  advanceQuestion();
   phase = "waiting";
   selectedOptionId = null;
   hasVoted = false;
@@ -324,7 +325,7 @@ function render() {
 }
 
 function renderHeader() {
-  const round = (questionIndex % questions.length) + 1;
+  const round = questionCursor + 1;
 
   phaseLabel.textContent =
     phase === "intro"
@@ -546,7 +547,48 @@ function getResultMessage(winner, isTie) {
 }
 
 function getCurrentQuestion() {
-  return questions[questionIndex % questions.length];
+  return questions[getCurrentQuestionIndex()];
+}
+
+function getCurrentQuestionIndex() {
+  return questionOrder[questionCursor % questionOrder.length] ?? 0;
+}
+
+function advanceQuestion() {
+  const previousQuestionIndex = getCurrentQuestionIndex();
+  questionCursor += 1;
+
+  if (questionCursor < questionOrder.length) {
+    return;
+  }
+
+  questionOrder = createQuestionOrder(questions.length, previousQuestionIndex);
+  questionCursor = 0;
+}
+
+function createQuestionOrder(length, avoidFirstIndex) {
+  const order = Array.from({ length }, (_, index) => index);
+
+  for (let index = order.length - 1; index > 0; index -= 1) {
+    const swapIndex = getRandomInt(index + 1);
+    [order[index], order[swapIndex]] = [order[swapIndex], order[index]];
+  }
+
+  if (order.length > 1 && order[0] === avoidFirstIndex) {
+    [order[0], order[1]] = [order[1], order[0]];
+  }
+
+  return order;
+}
+
+function getRandomInt(limit) {
+  if (window.crypto?.getRandomValues) {
+    const values = new Uint32Array(1);
+    window.crypto.getRandomValues(values);
+    return values[0] % limit;
+  }
+
+  return Math.floor(Math.random() * limit);
 }
 
 function escapeHtml(value) {

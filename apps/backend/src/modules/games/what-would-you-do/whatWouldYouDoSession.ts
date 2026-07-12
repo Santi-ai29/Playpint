@@ -12,7 +12,7 @@ import type {
   WhatWouldYouDoQuestion,
   WhatWouldYouDoVoteRequest,
 } from "../../../../../../packages/contracts/src";
-import { createRejectedSubmissionAck, type DateInput } from "../core";
+import { createRejectedSubmissionAck, toIso, type DateInput } from "../core";
 import {
   getWhatWouldYouDoSnapshot,
   type WhatWouldYouDoRoundState,
@@ -72,7 +72,11 @@ export function startWhatWouldYouDoSession(
     players: input.players,
     now: input.now,
     deck,
-    questionId: pickUnusedQuestion(deck, [], `${input.roomId}:1`),
+    questionId: pickUnusedQuestion(
+      deck,
+      [],
+      createQuestionSeed(input.roomId, 1, input.now),
+    ),
   });
 
   return {
@@ -181,7 +185,7 @@ export function startNextWhatWouldYouDoRound(
     questionId: pickUnusedQuestion(
       state.deck,
       state.usedQuestionIds,
-      `${state.roomId}:${nextRoundNumber}`,
+      createQuestionSeed(state.roomId, nextRoundNumber, now),
     ),
   });
 
@@ -254,11 +258,23 @@ function pickUnusedQuestion(
   return deck[0]?.id ?? "";
 }
 
+function createQuestionSeed(
+  roomId: string,
+  roundNumber: number,
+  now: DateInput,
+): string {
+  return `${roomId}:${roundNumber}:${toIso(now)}`;
+}
+
 function hashString(value: string): number {
-  return [...value].reduce(
-    (total, character) => total + character.charCodeAt(0),
-    0,
-  );
+  let hash = 2166136261;
+
+  for (const character of value) {
+    hash ^= character.charCodeAt(0);
+    hash = Math.imul(hash, 16777619);
+  }
+
+  return hash >>> 0;
 }
 
 function normalizeTotalRounds(totalRounds: number, deckSize: number): number {

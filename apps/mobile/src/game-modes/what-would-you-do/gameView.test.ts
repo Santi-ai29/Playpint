@@ -19,8 +19,8 @@ test("creates the Playpint-branded waiting question view", () => {
   );
 
   assert.equal(view.backgroundStyle, "premium_illustrated_bar");
-  assert.equal(view.brand.logoText, "O Que Fazias?");
-  assert.equal(view.brand.logoAsset, "./assets/what-fazias-logo.png");
+  assert.equal(view.brand.logoText, "Playpint");
+  assert.equal(view.brand.logoAsset, "./assets/playpint-logo.png");
   assert.equal(view.brand.modeLabel, "O Que Fazias?");
   assert.equal(view.optionLayout, "duel_buttons");
   assert.equal(view.options.every((option) => option.visualState === "disabled"), true);
