@@ -13,6 +13,7 @@ test("ships an initial what_would_you_do question deck with two options each", (
     defaultWhatWouldYouDoQuestionDeck.length >=
       WHAT_WOULD_YOU_DO_DEFAULT_TOTAL_ROUNDS,
   );
+  assert.ok(defaultWhatWouldYouDoQuestionDeck.length >= 100);
   assert.equal(
     new Set(defaultWhatWouldYouDoQuestionDeck.map((question) => question.prompt)).size,
     defaultWhatWouldYouDoQuestionDeck.length,
@@ -24,6 +25,26 @@ test("ships an initial what_would_you_do question deck with two options each", (
   assert.equal(
     defaultWhatWouldYouDoQuestionDeck.every(
       (question) => question.options.length === 2,
+    ),
+    true,
+  );
+});
+
+test("keeps the default questions spicy, social, and easy to understand", () => {
+  const prompts = defaultWhatWouldYouDoQuestionDeck
+    .map((question) => question.prompt.toLowerCase())
+    .join(" ");
+
+  assert.match(
+    prompts,
+    /crush|ex|ciumes|segredo|mensagem|prints|telemovel|drama/,
+  );
+  assert.equal(
+    defaultWhatWouldYouDoQuestionDeck.every(
+      (question) =>
+        question.prompt.startsWith("Se ") &&
+        question.prompt.endsWith("?") &&
+        question.options.every((option) => option.label.split(" ").length <= 6),
     ),
     true,
   );

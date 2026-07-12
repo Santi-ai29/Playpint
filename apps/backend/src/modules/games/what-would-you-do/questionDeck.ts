@@ -167,6 +167,511 @@ const questionSeeds: QuestionSeed[] = [
     options: ["Escolhia logo", "Recusava diplomaticamente"],
     contentLevel: "friends",
   },
+  {
+    prompt: "Se descobrisses que um amigo ficou com a tua crush, o que fazias?",
+    options: ["Fingia calma", "Chamava para conversar"],
+    contentLevel: "bar",
+  },
+  {
+    prompt: "Se o teu ex entrasse no mesmo bar, o que fazias?",
+    options: ["Ignorava com classe", "Fazia questao de ser visto"],
+    contentLevel: "bar",
+  },
+  {
+    prompt: "Se alguem da mesa desse like antigo no teu perfil, o que fazias?",
+    options: ["Perguntava logo", "Guardava para atacar depois"],
+    contentLevel: "bar",
+  },
+  {
+    prompt: "Se recebesses uma mensagem suspeita durante a noite, o que fazias?",
+    options: ["Mostrava a mesa", "Virava o telemovel"],
+    contentLevel: "bar",
+  },
+  {
+    prompt: "Se tivesses de escolher entre lealdade e uma crush, o que fazias?",
+    options: ["Escolhia lealdade", "Arriscava a crush"],
+    contentLevel: "bar",
+  },
+  {
+    prompt: "Se alguem dissesse que o teu outfit esta fraco, o que fazias?",
+    options: ["Defendia o look", "Atacava o outfit dele"],
+    contentLevel: "friends",
+  },
+  {
+    prompt: "Se o grupo descobrisse uma mentira tua, o que fazias?",
+    options: ["Assumia logo", "Dizia que era estrategia"],
+    contentLevel: "bar",
+  },
+  {
+    prompt: "Se a tua crush elogiasse o teu amigo, o que fazias?",
+    options: ["Ficava tranquilo", "Mudava de assunto"],
+    contentLevel: "bar",
+  },
+  {
+    prompt: "Se alguem te deixasse em visto a noite toda, o que fazias?",
+    options: ["Nao respondia mais", "Mandava outra mensagem"],
+    contentLevel: "bar",
+  },
+  {
+    prompt: "Se tivesses de escolher quem paga a rodada, o que fazias?",
+    options: ["Escolhia o atrasado", "Fazia sorteio injusto"],
+    contentLevel: "bar",
+  },
+  {
+    prompt: "Se um segredo teu fosse parar ao grupo, o que fazias?",
+    options: ["Perguntava quem contou", "Ria para disfarcar"],
+    contentLevel: "bar",
+  },
+  {
+    prompt: "Se um amigo flertasse com alguem que tu querias, o que fazias?",
+    options: ["Deixava rolar", "Entrava na disputa"],
+    contentLevel: "bar",
+  },
+  {
+    prompt: "Se tivesses prova de uma mentira da mesa, o que fazias?",
+    options: ["Mostrava o print", "Guardava para o momento certo"],
+    contentLevel: "bar",
+  },
+  {
+    prompt: "Se alguem pedisse para ver a tua ultima conversa, o que fazias?",
+    options: ["Mostrava sem medo", "Bloqueava o telemovel"],
+    contentLevel: "bar",
+  },
+  {
+    prompt: "Se a mesa te acusasse de estar com ciumes, o que fazias?",
+    options: ["Negava ate ao fim", "Assumia um bocadinho"],
+    contentLevel: "bar",
+  },
+  {
+    prompt: "Se tivesses de escolher entre verdade e paz, o que fazias?",
+    options: ["Dizia a verdade", "Mantinha a paz"],
+    contentLevel: "friends",
+  },
+  {
+    prompt: "Se um amigo cancelasse planos por uma crush, o que fazias?",
+    options: ["Perdoava", "Cobrava publicamente"],
+    contentLevel: "bar",
+  },
+  {
+    prompt: "Se alguem da mesa dissesse que manda melhor mensagem que tu, o que fazias?",
+    options: ["Aceitava o desafio", "Chamava isso de mentira"],
+    contentLevel: "bar",
+  },
+  {
+    prompt: "Se tivesses de escolher o mais dramatico da mesa, o que fazias?",
+    options: ["Apontava logo", "Fingia neutralidade"],
+    contentLevel: "friends",
+  },
+  {
+    prompt: "Se a tua crush chamasse outro de engracado, o que fazias?",
+    options: ["Ria junto", "Virava comediante"],
+    contentLevel: "bar",
+  },
+  {
+    prompt: "Se alguem mandasse uma indireta sobre ti, o que fazias?",
+    options: ["Respondia direto", "Mandava outra indireta"],
+    contentLevel: "bar",
+  },
+  {
+    prompt: "Se tivesses de escolher quem tem mais segredos, o que fazias?",
+    options: ["Dizia o nome", "Protegia a pessoa"],
+    contentLevel: "friends",
+  },
+  {
+    prompt: "Se um amigo pedisse para mentires por ele, o que fazias?",
+    options: ["Cobria o amigo", "Nao me metia"],
+    contentLevel: "bar",
+  },
+  {
+    prompt: "Se o teu par ideal estivesse com outra pessoa, o que fazias?",
+    options: ["Respeitava", "Tentava chamar atencao"],
+    contentLevel: "bar",
+  },
+  {
+    prompt: "Se alguem da mesa dissesse que tu mudas quando bebes, o que fazias?",
+    options: ["Negava tudo", "Pedia exemplos"],
+    contentLevel: "bar",
+  },
+  {
+    prompt: "Se a tua ultima pesquisa aparecesse no ecra, o que fazias?",
+    options: ["Apagava rapido", "Defendia a pesquisa"],
+    contentLevel: "bar",
+  },
+  {
+    prompt: "Se tivesses de entregar o teu telemovel desbloqueado por 1 minuto, o que fazias?",
+    options: ["Entregava", "Preferia pagar castigo"],
+    contentLevel: "bar",
+  },
+  {
+    prompt: "Se um amigo dissesse que o teu gosto e duvidoso, o que fazias?",
+    options: ["Defendia com orgulho", "Atacava o gosto dele"],
+    contentLevel: "friends",
+  },
+  {
+    prompt: "Se a mesa votasse em quem e mais falso, o que fazias?",
+    options: ["Votava sincero", "Votava seguro"],
+    contentLevel: "bar",
+  },
+  {
+    prompt: "Se tivesses de escolher entre perdoar ou expor, o que fazias?",
+    options: ["Perdoava", "Expunha tudo"],
+    contentLevel: "bar",
+  },
+  {
+    prompt: "Se um amigo roubasse a tua piada e todos rissem, o que fazias?",
+    options: ["Deixava passar", "Reclamava credito"],
+    contentLevel: "friends",
+  },
+  {
+    prompt: "Se recebesses uma mensagem de 'saudades', o que fazias?",
+    options: ["Respondia", "Mandava para o grupo"],
+    contentLevel: "bar",
+  },
+  {
+    prompt: "Se alguem te chamasse de segunda opcao, o que fazias?",
+    options: ["Ria da audacia", "Cortava contacto"],
+    contentLevel: "bar",
+  },
+  {
+    prompt: "Se a pessoa errada te desse match, o que fazias?",
+    options: ["Desfazia logo", "Investigava primeiro"],
+    contentLevel: "bar",
+  },
+  {
+    prompt: "Se tivesses de escolher quem nunca superou o ex, o que fazias?",
+    options: ["Dizia a verdade", "Protegia a pessoa"],
+    contentLevel: "bar",
+  },
+  {
+    prompt: "Se alguem da mesa te chamasse toxico a brincar, o que fazias?",
+    options: ["Entrava na piada", "Pedia explicacao"],
+    contentLevel: "bar",
+  },
+  {
+    prompt: "Se tivesses de decidir quem manda pior audio, o que fazias?",
+    options: ["Nomeava alguem", "Recusava julgar"],
+    contentLevel: "friends",
+  },
+  {
+    prompt: "Se um amigo desse em cima de alguem comprometido, o que fazias?",
+    options: ["Travava o amigo", "Deixava aprender"],
+    contentLevel: "bar",
+  },
+  {
+    prompt: "Se a mesa descobrisse o teu contacto mais suspeito, o que fazias?",
+    options: ["Explicava tudo", "Mudava de assunto"],
+    contentLevel: "bar",
+  },
+  {
+    prompt: "Se alguem revelasse que ja gostou de ti, o que fazias?",
+    options: ["Ficava curioso", "Fingia surpresa"],
+    contentLevel: "bar",
+  },
+  {
+    prompt: "Se tivesses de escolher quem da mesa beija melhor, o que fazias?",
+    options: ["Votava com coragem", "Fingia que nao sei"],
+    contentLevel: "bar",
+  },
+  {
+    prompt: "Se um amigo pedisse opiniao sobre uma mensagem para o crush, o que fazias?",
+    options: ["Editava tudo", "Mandava como estava"],
+    contentLevel: "bar",
+  },
+  {
+    prompt: "Se alguem dissesse que tu gostas de drama, o que fazias?",
+    options: ["Negava", "Pedia detalhes"],
+    contentLevel: "bar",
+  },
+  {
+    prompt: "Se tivesses de escolher quem se apaixona mais rapido, o que fazias?",
+    options: ["Apontava sem pena", "Dizia que somos todos"],
+    contentLevel: "friends",
+  },
+  {
+    prompt: "Se o teu amigo mandasse mensagem ao teu ex, o que fazias?",
+    options: ["Perguntava por que", "Cortava a confianca"],
+    contentLevel: "bar",
+  },
+  {
+    prompt: "Se a mesa pedisse para veres os teus arquivados, o que fazias?",
+    options: ["Mostrava", "Dizia que nao existem"],
+    contentLevel: "bar",
+  },
+  {
+    prompt: "Se alguem te dissesse 'tu sabes o que fizeste', o que fazias?",
+    options: ["Fingia calma", "Perguntava logo"],
+    contentLevel: "bar",
+  },
+  {
+    prompt: "Se tivesses de defender o teu pior comportamento, o que fazias?",
+    options: ["Assumia erro", "Chamava personalidade"],
+    contentLevel: "bar",
+  },
+  {
+    prompt: "Se um amigo ficasse com alguem que tu recusaste, o que fazias?",
+    options: ["Aplaudia", "Julgava em silencio"],
+    contentLevel: "bar",
+  },
+  {
+    prompt: "Se a mesa te acusasse de escolher sempre mal, o que fazias?",
+    options: ["Defendia escolhas", "Aceitava o historico"],
+    contentLevel: "bar",
+  },
+  {
+    prompt: "Se tivesses de dizer quem faz mais show, o que fazias?",
+    options: ["Dizia o nome", "Dizia que sou eu"],
+    contentLevel: "friends",
+  },
+  {
+    prompt: "Se alguem te desse unfollow depois da noite, o que fazias?",
+    options: ["Perguntava", "Dava unfollow tambem"],
+    contentLevel: "bar",
+  },
+  {
+    prompt: "Se recebesses uma chamada privada durante o jogo, o que fazias?",
+    options: ["Atendia fora", "Deixava tocar"],
+    contentLevel: "bar",
+  },
+  {
+    prompt: "Se tivesses de escolher quem guarda mais prints, o que fazias?",
+    options: ["Apontava logo", "Protegia o arquivo"],
+    contentLevel: "bar",
+  },
+  {
+    prompt: "Se alguem dissesse que o teu crush nao combina contigo, o que fazias?",
+    options: ["Defendia a crush", "Ficava a pensar"],
+    contentLevel: "bar",
+  },
+  {
+    prompt: "Se a mesa descobrisse uma conversa antiga tua, o que fazias?",
+    options: ["Dava contexto", "Pedia para parar"],
+    contentLevel: "bar",
+  },
+  {
+    prompt: "Se tivesses de escolher entre orgulho e saudade, o que fazias?",
+    options: ["Escolhia orgulho", "Mandava mensagem"],
+    contentLevel: "bar",
+  },
+  {
+    prompt: "Se um amigo fizesse cena por pouca coisa, o que fazias?",
+    options: ["Chamava a atencao", "Dava palco"],
+    contentLevel: "friends",
+  },
+  {
+    prompt: "Se alguem te chamasse intenso demais, o que fazias?",
+    options: ["Aceitava", "Dizia que e paixao"],
+    contentLevel: "bar",
+  },
+  {
+    prompt: "Se tivesses de escolher quem mente melhor, o que fazias?",
+    options: ["Votava sem medo", "Nao alimentava isso"],
+    contentLevel: "bar",
+  },
+  {
+    prompt: "Se a tua crush pedisse para ver o teu Instagram, o que fazias?",
+    options: ["Entregava logo", "Revista antes"],
+    contentLevel: "bar",
+  },
+  {
+    prompt: "Se alguem da mesa dissesse que tu das sinais confusos, o que fazias?",
+    options: ["Negava", "Assumia estrategia"],
+    contentLevel: "bar",
+  },
+  {
+    prompt: "Se tivesses de escolher quem tem mais cara de santo, o que fazias?",
+    options: ["Escolhia o mais suspeito", "Escolhia o mais calmo"],
+    contentLevel: "friends",
+  },
+  {
+    prompt: "Se um amigo se aproximasse da tua pessoa favorita, o que fazias?",
+    options: ["Confiava", "Ficava atento"],
+    contentLevel: "bar",
+  },
+  {
+    prompt: "Se a mesa lesse a tua ultima nota do telemovel, o que fazias?",
+    options: ["Apagava antes", "Dizia que e poesia"],
+    contentLevel: "bar",
+  },
+  {
+    prompt: "Se tivesses de escolher entre amizade e oportunidade, o que fazias?",
+    options: ["Escolhia amizade", "Aproveitava oportunidade"],
+    contentLevel: "bar",
+  },
+  {
+    prompt: "Se alguem confessasse que falou mal de ti, o que fazias?",
+    options: ["Queria saber tudo", "Cortava conversa"],
+    contentLevel: "bar",
+  },
+  {
+    prompt: "Se o teu amigo voltasse para o ex, o que fazias?",
+    options: ["Apoiava", "Dizia 'eu avisei'"],
+    contentLevel: "bar",
+  },
+  {
+    prompt: "Se tivesses de escolher quem e mais ciumento, o que fazias?",
+    options: ["Votava sincero", "Votava em mim"],
+    contentLevel: "bar",
+  },
+  {
+    prompt: "Se alguem da mesa te pedisse desculpa por mensagem, o que fazias?",
+    options: ["Respondia na hora", "Deixava pensar"],
+    contentLevel: "friends",
+  },
+  {
+    prompt: "Se tivesses de escolher quem causa mais problemas no grupo, o que fazias?",
+    options: ["Dizia o nome", "Dizia que e energia"],
+    contentLevel: "friends",
+  },
+  {
+    prompt: "Se a tua crush aparecesse com alguem novo, o que fazias?",
+    options: ["Fingia normalidade", "Ia embora cedo"],
+    contentLevel: "bar",
+  },
+  {
+    prompt: "Se um amigo pedisse segredo e fosse demasiado bom, o que fazias?",
+    options: ["Guardava", "Contava so a um"],
+    contentLevel: "bar",
+  },
+  {
+    prompt: "Se alguem te mandasse mensagem so de madrugada, o que fazias?",
+    options: ["Respondia", "Perguntava intencao"],
+    contentLevel: "bar",
+  },
+  {
+    prompt: "Se tivesses de escolher quem tem mais contatinhos, o que fazias?",
+    options: ["Apontava logo", "Fingia nao saber"],
+    contentLevel: "bar",
+  },
+  {
+    prompt: "Se a mesa te chamasse de emocionado, o que fazias?",
+    options: ["Aceitava com orgulho", "Defendia a intensidade"],
+    contentLevel: "bar",
+  },
+  {
+    prompt: "Se alguem dissesse que tu foges de conversa seria, o que fazias?",
+    options: ["Mudava de assunto", "Provava o contrario"],
+    contentLevel: "bar",
+  },
+  {
+    prompt: "Se tivesses de escolher quem mais exagera historias, o que fazias?",
+    options: ["Escolhia sem duvida", "Dizia que todos exageram"],
+    contentLevel: "friends",
+  },
+  {
+    prompt: "Se um amigo te trocasse por um date, o que fazias?",
+    options: ["Desejava sorte", "Cobrava depois"],
+    contentLevel: "bar",
+  },
+  {
+    prompt: "Se alguem da mesa dissesse que tu gostas de complicar, o que fazias?",
+    options: ["Complicava mais", "Fingia maturidade"],
+    contentLevel: "friends",
+  },
+  {
+    prompt: "Se tivesses de escolher quem e mais perigoso solteiro, o que fazias?",
+    options: ["Dizia o nome", "Dizia que depende da noite"],
+    contentLevel: "bar",
+  },
+  {
+    prompt: "Se a tua crush perguntasse se estas solteiro, o que fazias?",
+    options: ["Respondia direto", "Respondia com charme"],
+    contentLevel: "bar",
+  },
+  {
+    prompt: "Se alguem pedisse o teu historico de chamadas, o que fazias?",
+    options: ["Mostrava", "Dizia que e privado"],
+    contentLevel: "bar",
+  },
+  {
+    prompt: "Se tivesses de escolher quem mais promete e nao cumpre, o que fazias?",
+    options: ["Apontava logo", "Dava segunda chance"],
+    contentLevel: "friends",
+  },
+  {
+    prompt: "Se um amigo se metesse numa relacao confusa, o que fazias?",
+    options: ["Avisava", "Deixava viver"],
+    contentLevel: "bar",
+  },
+  {
+    prompt: "Se a mesa descobrisse o teu pior date, o que fazias?",
+    options: ["Contava tudo", "Cortava detalhes"],
+    contentLevel: "bar",
+  },
+  {
+    prompt: "Se tivesses de escolher quem flerta por desporto, o que fazias?",
+    options: ["Nomeava alguem", "Dizia que e simpatia"],
+    contentLevel: "bar",
+  },
+  {
+    prompt: "Se alguem te perguntasse se ainda pensas no ex, o que fazias?",
+    options: ["Negava rapido", "Dizia a verdade"],
+    contentLevel: "bar",
+  },
+  {
+    prompt: "Se a mesa te desse carta branca para expor alguem, o que fazias?",
+    options: ["Usava com cuidado", "Abriria o arquivo"],
+    contentLevel: "bar",
+  },
+  {
+    prompt: "Se tivesses de escolher quem mais cria clima do nada, o que fazias?",
+    options: ["Dizia o nome", "Dizia que e talento"],
+    contentLevel: "bar",
+  },
+  {
+    prompt: "Se uma pessoa que te ignorou voltasse a falar contigo, o que fazias?",
+    options: ["Ignorava tambem", "Respondia curioso"],
+    contentLevel: "bar",
+  },
+  {
+    prompt: "Se alguem dissesse que tu tens padroes baixos, o que fazias?",
+    options: ["Defendia escolhas", "Culpava a fase"],
+    contentLevel: "bar",
+  },
+  {
+    prompt: "Se tivesses de escolher entre vinganca e elegancia, o que fazias?",
+    options: ["Escolhia elegancia", "Planeava vinganca"],
+    contentLevel: "bar",
+  },
+  {
+    prompt: "Se o grupo perguntasse quem nao devia voltar para o ex, o que fazias?",
+    options: ["Dizia o nome", "Fingia que nao ouvi"],
+    contentLevel: "bar",
+  },
+  {
+    prompt: "Se alguem da mesa te pedisse para desbloquear uma pessoa, o que fazias?",
+    options: ["Desbloqueava", "Mantinha bloqueado"],
+    contentLevel: "bar",
+  },
+  {
+    prompt: "Se tivesses de escolher quem mais manda indiretas, o que fazias?",
+    options: ["Apontava sem medo", "Dizia que e arte"],
+    contentLevel: "bar",
+  },
+  {
+    prompt: "Se descobrisses que foste assunto numa conversa, o que fazias?",
+    options: ["Pedia prints", "Ia perguntar direto"],
+    contentLevel: "bar",
+  },
+  {
+    prompt: "Se a mesa pedisse para veres a tua galeria, o que fazias?",
+    options: ["Mostrava fotos recentes", "Recusava imediatamente"],
+    contentLevel: "bar",
+  },
+  {
+    prompt: "Se alguem dissesse que tu gostas de atencao, o que fazias?",
+    options: ["Assumia", "Dizia que e carisma"],
+    contentLevel: "friends",
+  },
+  {
+    prompt: "Se tivesses de escolher quem e mais dificil de conquistar, o que fazias?",
+    options: ["Escolhia o exigente", "Escolhia o indeciso"],
+    contentLevel: "bar",
+  },
+  {
+    prompt: "Se alguem da mesa te fizesse uma pergunta demasiado direta, o que fazias?",
+    options: ["Respondia", "Devolvia pior"],
+    contentLevel: "bar",
+  },
 ];
 
 export const defaultWhatWouldYouDoQuestionDeck =

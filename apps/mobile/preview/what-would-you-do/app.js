@@ -44,6 +44,94 @@ const questions = [
       { id: "b", label: "Dizia que era arte" },
     ],
   },
+  {
+    id: "wwyd_0006",
+    prompt: "Se o teu ex entrasse no mesmo bar, o que fazias?",
+    options: [
+      { id: "a", label: "Ignorava com classe" },
+      { id: "b", label: "Fazia questao de ser visto" },
+    ],
+  },
+  {
+    id: "wwyd_0007",
+    prompt: "Se a tua crush elogiasse o teu amigo, o que fazias?",
+    options: [
+      { id: "a", label: "Ficava tranquilo" },
+      { id: "b", label: "Mudava de assunto" },
+    ],
+  },
+  {
+    id: "wwyd_0008",
+    prompt: "Se alguem pedisse para ver a tua ultima conversa, o que fazias?",
+    options: [
+      { id: "a", label: "Mostrava sem medo" },
+      { id: "b", label: "Bloqueava o telemovel" },
+    ],
+  },
+  {
+    id: "wwyd_0009",
+    prompt: "Se a mesa te acusasse de estar com ciumes, o que fazias?",
+    options: [
+      { id: "a", label: "Negava ate ao fim" },
+      { id: "b", label: "Assumia um bocadinho" },
+    ],
+  },
+  {
+    id: "wwyd_0010",
+    prompt: "Se recebesses uma mensagem de 'saudades', o que fazias?",
+    options: [
+      { id: "a", label: "Respondia" },
+      { id: "b", label: "Mandava para o grupo" },
+    ],
+  },
+  {
+    id: "wwyd_0011",
+    prompt: "Se o teu amigo mandasse mensagem ao teu ex, o que fazias?",
+    options: [
+      { id: "a", label: "Perguntava por que" },
+      { id: "b", label: "Cortava a confianca" },
+    ],
+  },
+  {
+    id: "wwyd_0012",
+    prompt: "Se tivesses de entregar o telemovel desbloqueado por 1 minuto, o que fazias?",
+    options: [
+      { id: "a", label: "Entregava" },
+      { id: "b", label: "Preferia pagar castigo" },
+    ],
+  },
+  {
+    id: "wwyd_0013",
+    prompt: "Se a mesa votasse em quem e mais falso, o que fazias?",
+    options: [
+      { id: "a", label: "Votava sincero" },
+      { id: "b", label: "Votava seguro" },
+    ],
+  },
+  {
+    id: "wwyd_0014",
+    prompt: "Se tivesses de escolher quem nunca superou o ex, o que fazias?",
+    options: [
+      { id: "a", label: "Dizia a verdade" },
+      { id: "b", label: "Protegia a pessoa" },
+    ],
+  },
+  {
+    id: "wwyd_0015",
+    prompt: "Se a tua crush perguntasse se estas solteiro, o que fazias?",
+    options: [
+      { id: "a", label: "Respondia direto" },
+      { id: "b", label: "Respondia com charme" },
+    ],
+  },
+  {
+    id: "wwyd_0016",
+    prompt: "Se descobrisses que foste assunto numa conversa, o que fazias?",
+    options: [
+      { id: "a", label: "Pedia prints" },
+      { id: "b", label: "Ia perguntar direto" },
+    ],
+  },
 ];
 
 let phase = "intro";

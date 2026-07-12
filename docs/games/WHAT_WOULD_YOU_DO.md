@@ -20,7 +20,7 @@ Exemplo:
 - Tempo de pergunta/ronda: 20 segundos.
 - Tempo de votacao: 18 segundos.
 - Rondas por defeito: 10.
-- Banco inicial: perguntas estaticas com duas opcoes cada.
+- Banco inicial: mais de 100 perguntas unicas, picantes, simples e feitas para dividir a mesa.
 - O modo entra no registry backend e mobile como MVP.
 
 ## Fluxo da ronda
