@@ -1,6 +1,8 @@
 import {
   MOST_LIKELY_GAME_MANIFEST,
   MOST_LIKELY_GAME_MODE_ID,
+  WHAT_WOULD_YOU_DO_GAME_MANIFEST,
+  WHAT_WOULD_YOU_DO_GAME_MODE_ID,
   type GameModeManifest,
 } from "../../../../packages/contracts/src";
 
@@ -41,7 +43,10 @@ export function createGameModeRegistry(
   };
 }
 
-export const MVP_GAME_MODE_MANIFESTS = [MOST_LIKELY_GAME_MANIFEST] as const;
+export const MVP_GAME_MODE_MANIFESTS = [
+  MOST_LIKELY_GAME_MANIFEST,
+  WHAT_WOULD_YOU_DO_GAME_MANIFEST,
+] as const;
 
 export const gameModeRegistry = createGameModeRegistry(MVP_GAME_MODE_MANIFESTS);
 
@@ -50,5 +55,8 @@ export function getMvpGameModeIds(): string[] {
 }
 
 export function isMvpGameMode(gameModeId: string): boolean {
-  return gameModeId === MOST_LIKELY_GAME_MODE_ID;
+  return (
+    gameModeId === MOST_LIKELY_GAME_MODE_ID ||
+    gameModeId === WHAT_WOULD_YOU_DO_GAME_MODE_ID
+  );
 }

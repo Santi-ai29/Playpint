@@ -8,7 +8,8 @@ O backend escolhe uma pergunta do tipo "Quem e mais provavel...?" e todos os jog
 
 ## Estado MVP
 
-- Unico modo exposto no registry: `most_likely`.
+- Modo original exposto no registry: `most_likely`.
+- O MVP tambem expoe `what_would_you_do` como jogo independente.
 - Outros modos como `would_you_rather`, `impostor`, `stop`, `quiz` e similares ficam fora deste MVP.
 - Minimo tecnico: 2 jogadores.
 - Minimo recomendado: 3 jogadores.
@@ -128,10 +129,11 @@ Direcao visual aprovada:
 
 ## Registry
 
-O MVP expoe apenas:
+O MVP expoe:
 
 ```text
 most_likely
+what_would_you_do
 ```
 
 Novos jogos devem entrar como modulos independentes no backend, contratos proprios em `packages/contracts`, e screen models proprios no mobile.

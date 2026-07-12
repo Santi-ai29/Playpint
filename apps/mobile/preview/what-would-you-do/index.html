@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="pt">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Playpint - O Que Fazias?</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="app-shell" aria-live="polite">
+      <section class="phone-screen">
+        <div class="ambient ambient-glass"></div>
+        <div class="ambient ambient-candle"></div>
+        <div class="ambient ambient-card card-a"></div>
+        <div class="ambient ambient-card card-b"></div>
+
+        <header class="topbar">
+          <div class="brand-block">
+            <img class="brand-logo" src="./assets/playpint-logo.png" alt="Playpint" />
+            <p class="mode">O Que Fazias?</p>
+          </div>
+          <div class="round-pill">
+            <span id="phaseLabel">Pergunta 1</span>
+            <strong id="timerLabel">00:20</strong>
+          </div>
+        </header>
+
+        <section id="questionPanel" class="question-panel">
+          <p class="eyebrow" id="eyebrow">Aguardando pergunta</p>
+          <button id="shuffleQuestion" class="question-swap" type="button">Trocar</button>
+          <h1 id="prompt">Se um tubarao aparecesse a tua frente, o que fazias?</h1>
+        </section>
+
+        <section id="optionsPanel" class="options-panel" aria-label="Opcoes de voto"></section>
+
+        <section id="statusPanel" class="status-panel hidden">
+          <div class="status-check">✓</div>
+          <strong>Voto enviado</strong>
+          <span id="voteCountLabel">A espera da mesa</span>
+        </section>
+
+        <section id="resultPanel" class="result-panel hidden">
+          <p class="result-title">A mesa decidiu</p>
+          <div class="winner-card">
+            <div>
+              <h2 id="winnerName">Fugia</h2>
+              <p id="winnerLabel">opcao mais escolhida</p>
+            </div>
+            <strong id="winnerPercentage">66.7%</strong>
+          </div>
+          <p class="result-message" id="resultMessage">A mesa falou.</p>
+          <div class="result-bars" id="resultBars"></div>
+        </section>
+
+        <footer class="game-footer">
+          <button id="primaryAction" class="primary-action" type="button">Abrir votacao</button>
+        </footer>
+      </section>
+    </main>
+    <script src="./app.js"></script>
+  </body>
+</html>
