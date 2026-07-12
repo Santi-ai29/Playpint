@@ -203,26 +203,41 @@ button {
 .intro-panel::before {
   inset: -18px -16px 0;
   background:
-    radial-gradient(circle at 50% 35%, rgba(255, 195, 66, 0.15), transparent 27%),
-    radial-gradient(circle at 61% 46%, rgba(34, 224, 222, 0.12), transparent 30%),
-    linear-gradient(154deg, rgba(255, 195, 66, 0.08), transparent 39%),
-    linear-gradient(26deg, rgba(255, 74, 10, 0.08), transparent 42%);
-  background-size: 110% 110%, 115% 115%, 100% 100%, 100% 100%;
-  opacity: 0.86;
-  animation: intro-light-flow 8s ease-in-out infinite alternate;
+    radial-gradient(ellipse at 50% 37%, rgba(255, 195, 66, 0.22), transparent 38%),
+    radial-gradient(ellipse at 63% 47%, rgba(34, 224, 222, 0.15), transparent 36%),
+    radial-gradient(ellipse at 38% 58%, rgba(255, 74, 10, 0.14), transparent 42%),
+    conic-gradient(
+      from 210deg at 52% 44%,
+      transparent 0deg,
+      rgba(255, 195, 66, 0.12) 58deg,
+      transparent 126deg,
+      rgba(34, 224, 222, 0.1) 186deg,
+      transparent 250deg,
+      rgba(255, 74, 10, 0.09) 306deg,
+      transparent 360deg
+    );
+  background-position:
+    50% 37%,
+    58% 46%,
+    42% 58%,
+    50% 44%;
+  background-size:
+    118% 118%,
+    122% 122%,
+    135% 135%,
+    130% 130%;
+  opacity: 0.82;
+  animation: intro-ambient-flow 9s ease-in-out infinite alternate;
 }
 
 .intro-panel::after {
-  inset: 23% 14% auto;
-  width: 72%;
-  height: 34%;
+  inset: 10% -10% 18%;
   background:
-    linear-gradient(128deg, rgba(255, 195, 66, 0.1), transparent 45%),
-    linear-gradient(36deg, rgba(34, 224, 222, 0.11), transparent 54%),
-    rgba(255, 243, 213, 0.025);
-  clip-path: polygon(12% 0, 100% 18%, 86% 100%, 0 80%);
-  opacity: 0.62;
-  animation: intro-panel-shift 7s ease-in-out infinite alternate;
+    radial-gradient(ellipse at 48% 42%, rgba(255, 243, 213, 0.09), transparent 42%),
+    radial-gradient(ellipse at 55% 58%, rgba(255, 195, 66, 0.1), transparent 44%),
+    radial-gradient(ellipse at 60% 36%, rgba(34, 224, 222, 0.08), transparent 46%);
+  opacity: 0.76;
+  animation: intro-breathing-light 6.8s ease-in-out infinite alternate;
 }
 
 .intro-logo-wrap {
@@ -824,29 +839,37 @@ body[data-phase="result"] .result-panel {
   }
 }
 
-@keyframes intro-light-flow {
+@keyframes intro-ambient-flow {
   from {
-    background-position: 0% 30%;
-    opacity: 0.66;
-    transform: translateY(8px);
+    background-position:
+      46% 34%,
+      62% 47%,
+      38% 62%,
+      48% 42%;
+    opacity: 0.72;
+    transform: translate3d(0, 7px, 0) scale(1);
   }
 
   to {
-    background-position: 100% 72%;
-    opacity: 0.9;
-    transform: translateY(-8px);
+    background-position:
+      54% 40%,
+      55% 43%,
+      44% 54%,
+      54% 46%;
+    opacity: 0.92;
+    transform: translate3d(0, -8px, 0) scale(1.03);
   }
 }
 
-@keyframes intro-panel-shift {
+@keyframes intro-breathing-light {
   from {
-    opacity: 0.52;
-    transform: translate3d(-4px, 6px, 0) skewY(-1deg);
+    opacity: 0.48;
+    transform: translate3d(-5px, 8px, 0) scale(0.96);
   }
 
   to {
-    opacity: 0.78;
-    transform: translate3d(6px, -5px, 0) skewY(1deg);
+    opacity: 0.82;
+    transform: translate3d(6px, -6px, 0) scale(1.04);
   }
 }
 
