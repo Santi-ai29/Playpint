@@ -41,8 +41,8 @@ Categorias disponiveis:
 4. Quando alguem carrega `STOP`, os inputs fecham imediatamente e a ronda
    passa para revisao.
 5. Se ninguem carregar `STOP`, os inputs fecham no prazo oficial.
-6. Na revisao, o host ve uma categoria de cada vez e cada resposta precisa de
-   decisao `OK` ou `Anular` antes de avancar.
+6. Na revisao, o host ve uma categoria de cada vez, pode anular respostas e
+   avancar. O jogo fica a aguardar a mesa quando ainda faltam confirmacoes.
 7. So depois da ultima categoria e que o backend calcula a pontuacao oficial.
 8. Depois de fechada, novas respostas e edicoes sao rejeitadas.
 9. O resultado oficial inclui respostas por jogador, pontos por categoria,
@@ -116,6 +116,7 @@ Direcao visual:
 
 Preview local em `apps/mobile/preview/stop`.
 
-Ela assume que a mesa ja foi personalizada antes do modo, mostra uma intro
-simples do Stop, sorteia a letra num slot visual limpo, faz uma contagem `3 2 1`
-e abre a ronda ativa com review por categoria e ranking geral acumulado.
+Ela assume que a mesa ja foi personalizada antes do modo, mostra uma intro do
+Stop com logos em movimento, sorteia a letra num slot visual limpo, faz uma
+contagem `3 2 1` animada e abre a ronda ativa com review por categoria e
+ranking geral acumulado.

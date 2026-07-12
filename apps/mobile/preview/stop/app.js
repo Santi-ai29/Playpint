@@ -112,7 +112,7 @@ let state = {
   submissions: [],
   reviewCategoryId: "name",
   invalidatedAnswers: {},
-  reviewDecisions: {},
+  reviewWaiting: false,
   roundResult: null,
   overallScores: {},
   scoresAppliedForRound: false,
@@ -120,6 +120,7 @@ let state = {
 
 let rouletteTimer = null;
 let countdownTimer = null;
+let reviewWaitTimer = null;
 
 const phaseLabel = document.querySelector("#phaseLabel");
 const timerLabel = document.querySelector("#timerLabel");
@@ -150,21 +151,19 @@ const rankingList = document.querySelector("#rankingList");
 window.setInterval(tick, 1000);
 
 reviewBoard.addEventListener("click", (event) => {
-  const button = event.target.closest("[data-review-decision]");
+  const button = event.target.closest("[data-review-toggle]");
 
-  if (!button) {
+  if (!button || state.reviewWaiting) {
     return;
   }
 
-  const key = button.dataset.reviewKey;
-  const decision = button.dataset.reviewDecision;
+  const key = button.dataset.reviewToggle;
 
-  if (!key || (decision !== "valid" && decision !== "invalid")) {
+  if (!key) {
     return;
   }
 
-  state.reviewDecisions[key] = decision;
-  state.invalidatedAnswers[key] = decision === "invalid";
+  state.invalidatedAnswers[key] = !state.invalidatedAnswers[key];
   renderReview();
   renderFooter();
 });
@@ -238,6 +237,7 @@ function startGame() {
 function beginLetterRoulette() {
   clearRouletteTimer();
   clearCountdownTimer();
+  clearReviewWaitTimer();
   state.phase = "roulette";
   state.letter = pickRoundLetter();
   state.rouletteCursor = 0;
@@ -247,7 +247,7 @@ function beginLetterRoulette() {
   state.answers = {};
   state.submissions = [];
   state.invalidatedAnswers = {};
-  state.reviewDecisions = {};
+  state.reviewWaiting = false;
   state.roundResult = null;
   state.reviewCategoryId = getActiveCategories()[0]?.id ?? "name";
   state.scoresAppliedForRound = false;
@@ -284,12 +284,13 @@ function scheduleCountdownStep() {
 function startRound() {
   clearRouletteTimer();
   clearCountdownTimer();
+  clearReviewWaitTimer();
   state.phase = "round";
   state.seconds = state.roundSeconds;
   state.answers = {};
   state.submissions = [];
   state.invalidatedAnswers = {};
-  state.reviewDecisions = {};
+  state.reviewWaiting = false;
   state.roundResult = null;
   state.reviewCategoryId = getActiveCategories()[0]?.id ?? "name";
   state.scoresAppliedForRound = false;
@@ -338,13 +339,21 @@ function showScores() {
 }
 
 function advanceReview() {
-  const categories = getActiveCategories();
-  const currentIndex = getCurrentReviewCategoryIndex(categories);
-
-  if (!isCurrentReviewComplete()) {
-    renderFooter();
+  if (state.reviewWaiting) {
     return;
   }
+
+  state.reviewWaiting = true;
+  renderReview();
+  renderFooter();
+
+  reviewWaitTimer = window.setTimeout(finishReviewAdvance, 880);
+}
+
+function finishReviewAdvance() {
+  state.reviewWaiting = false;
+  const categories = getActiveCategories();
+  const currentIndex = getCurrentReviewCategoryIndex(categories);
 
   if (currentIndex < categories.length - 1) {
     state.reviewCategoryId = categories[currentIndex + 1].id;
@@ -368,13 +377,14 @@ function nextRound() {
 function resetGameIntro() {
   clearRouletteTimer();
   clearCountdownTimer();
+  clearReviewWaitTimer();
   state.phase = "intro";
   state.roundIndex = 0;
   state.seconds = state.roundSeconds;
   state.answers = {};
   state.submissions = [];
   state.invalidatedAnswers = {};
-  state.reviewDecisions = {};
+  state.reviewWaiting = false;
   state.roundResult = null;
   state.reviewCategoryId = getActiveCategories()[0]?.id ?? "name";
   state.overallScores = {};
@@ -478,6 +488,7 @@ function renderCountdown() {
     return;
   }
 
+  countdownPanel.dataset.count = String(state.countdownValue);
   countdownNumber.textContent = String(state.countdownValue);
   countdownNumber.style.animation = "none";
   window.requestAnimationFrame(() => {
@@ -532,29 +543,27 @@ function renderReview() {
 
   reviewLetterLabel.textContent = `Letra ${state.letter}`;
   reviewTitle.textContent = selectedCategory.label;
-  reviewSubtitle.textContent = getStoppedBy()
-    ? `${getStoppedBy().nickname} carregou Stop`
-    : "Tempo esgotado";
+  reviewSubtitle.textContent = state.reviewWaiting
+    ? "A aguardar mesa"
+    : getStoppedBy()
+      ? `${getStoppedBy().nickname} carregou Stop`
+      : "Tempo esgotado";
   reviewBoard.innerHTML = state.submissions
     .map((submission, index) => {
       const answer = submission.answers[selectedCategory.id] ?? "";
       const key = getReviewKey(submission.player.playerId, selectedCategory.id);
-      const decision = state.reviewDecisions[key];
-      const approved = decision === "valid";
-      const invalidated = decision === "invalid";
+      const invalidated = Boolean(state.invalidatedAnswers[key]);
       const validLetter = isValidAnswer(answer);
       const stateLabel = invalidated
         ? "Anulada"
-        : approved
-          ? "OK"
-          : validLetter
-            ? "Por decidir"
-            : answer.trim()
-              ? "Letra errada"
-              : "Vazia";
+        : validLetter
+          ? "Valida"
+          : answer.trim()
+            ? "Letra errada"
+            : "Vazia";
 
       return `
-        <article class="review-row ${approved ? "approved" : ""} ${invalidated ? "invalidated" : ""}" style="--enter-index: ${index}">
+        <article class="review-row ${invalidated ? "invalidated" : ""}" style="--enter-index: ${index}">
           <div class="review-player">
             <span class="player-avatar">${escapeHtml(getInitial(submission.player.nickname))}</span>
             <strong>${escapeHtml(submission.player.nickname)}</strong>
@@ -563,24 +572,14 @@ function renderReview() {
             <span>${escapeHtml(answer || "-")}</span>
             <em>${stateLabel}</em>
           </div>
-          <div class="review-actions">
-            <button
-              class="review-choice approve ${approved ? "selected" : ""}"
-              type="button"
-              data-review-key="${escapeHtml(key)}"
-              data-review-decision="valid"
-            >
-              OK
-            </button>
-            <button
-              class="review-choice reject ${invalidated ? "selected" : ""}"
-              type="button"
-              data-review-key="${escapeHtml(key)}"
-              data-review-decision="invalid"
-            >
-              Anular
-            </button>
-          </div>
+          <button
+            class="review-choice reject ${invalidated ? "selected" : ""}"
+            type="button"
+            data-review-toggle="${escapeHtml(key)}"
+            ${state.reviewWaiting ? "disabled" : ""}
+          >
+            ${invalidated ? "Repor" : "Anular"}
+          </button>
         </article>
       `;
     })
@@ -659,9 +658,12 @@ function renderFooter() {
   }
 
   if (state.phase === "review") {
-    primaryAction.textContent = getReviewPrimaryActionLabel();
-    primaryAction.disabled = !isCurrentReviewComplete();
-    primaryAction.classList.remove("secondary", "spinning");
+    primaryAction.textContent = state.reviewWaiting
+      ? "A aguardar mesa"
+      : getReviewPrimaryActionLabel();
+    primaryAction.disabled = state.reviewWaiting;
+    primaryAction.classList.toggle("spinning", state.reviewWaiting);
+    primaryAction.classList.remove("secondary");
     return;
   }
 
@@ -858,6 +860,11 @@ function clearCountdownTimer() {
   countdownTimer = null;
 }
 
+function clearReviewWaitTimer() {
+  window.clearTimeout(reviewWaitTimer);
+  reviewWaitTimer = null;
+}
+
 function previousLetterFor(letter) {
   const index = Math.max(0, LETTERS.indexOf(letter));
 
@@ -872,23 +879,6 @@ function nextLetterFor(letter) {
 
 function getStoppedBy() {
   return state.submissions.find((submission) => submission.stoppedRound)?.player;
-}
-
-function isCurrentReviewComplete() {
-  return isReviewCategoryComplete(state.reviewCategoryId);
-}
-
-function isReviewCategoryComplete(categoryId) {
-  if (!categoryId || state.submissions.length === 0) {
-    return false;
-  }
-
-  return state.submissions.every((submission) => {
-    const decision =
-      state.reviewDecisions[getReviewKey(submission.player.playerId, categoryId)];
-
-    return decision === "valid" || decision === "invalid";
-  });
 }
 
 function getReviewPrimaryActionLabel() {
