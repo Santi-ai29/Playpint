@@ -1,7 +1,11 @@
 const MIN_PLAYERS = 2;
+const MIN_ROUND_CATEGORIES = 3;
 const MAX_ROUND_CATEGORIES = 6;
 const LETTERS = ["A", "B", "C", "D", "E", "F", "G", "I", "J", "L", "M", "N", "O", "P", "R", "S", "T", "V"];
-const ROUND_LETTERS = ["B", "A", "P", "S", "M", "R"];
+const ROUND_OPTIONS = [4, 6, 8];
+const TIME_OPTIONS = [60, 90, 120];
+const DEFAULT_ACTIVE_CATEGORY_IDS = ["name", "city", "animal", "food", "object", "profession"];
+const DEFAULT_ACTIVE_LETTERS = [...LETTERS];
 const categoryCatalog = [
   { id: "name", label: "Nome", placeholder: "Nome proprio" },
   { id: "city", label: "Cidade", placeholder: "Cidade" },
@@ -14,6 +18,7 @@ const categoryCatalog = [
   { id: "celebrity", label: "Celebridade", placeholder: "Celebridade" },
   { id: "spicy", label: "Picante", placeholder: "Resposta de mesa" },
 ];
+const isAdminPreview = new URLSearchParams(window.location.search).get("role") !== "player";
 const wordBank = {
   A: {
     name: ["Ana", "Alice", "Antonio", "Andre"],
@@ -91,6 +96,7 @@ const wordBank = {
 
 let state = {
   phase: "intro",
+  isAdmin: isAdminPreview,
   roomName: "Mesa Stop",
   roundLimit: 6,
   roundSeconds: 90,
@@ -102,11 +108,13 @@ let state = {
     { playerId: "p3", nickname: "Carla" },
     { playerId: "p4", nickname: "Dinis" },
   ],
-  activeCategoryIds: ["name", "city", "animal", "food", "object", "profession"],
+  activeCategoryIds: [...DEFAULT_ACTIVE_CATEGORY_IDS],
+  activeLetters: [...DEFAULT_ACTIVE_LETTERS],
   letter: "A",
   rouletteCursor: 0,
   rouletteDone: false,
   rouletteSequence: [],
+  customCategoryCount: 0,
   countdownValue: 3,
   answers: {},
   submissions: [],
@@ -121,18 +129,29 @@ let state = {
 let rouletteTimer = null;
 let countdownTimer = null;
 let reviewWaitTimer = null;
+let lastRenderedPhase = "";
 
 const phaseLabel = document.querySelector("#phaseLabel");
 const timerLabel = document.querySelector("#timerLabel");
+const phoneScreen = document.querySelector(".phone-screen");
 const introPanel = document.querySelector("#introPanel");
+const settingsPanel = document.querySelector("#settingsPanel");
 const roulettePanel = document.querySelector("#roulettePanel");
 const countdownPanel = document.querySelector("#countdownPanel");
 const roundPanel = document.querySelector("#roundPanel");
 const resultPanel = document.querySelector("#resultPanel");
 const scorePanel = document.querySelector("#scorePanel");
+const settingsSummary = document.querySelector("#settingsSummary");
+const roundOptions = document.querySelector("#roundOptions");
+const timeOptions = document.querySelector("#timeOptions");
+const categoryToggles = document.querySelector("#categoryToggles");
+const resetCategories = document.querySelector("#resetCategories");
+const addCategoryForm = document.querySelector("#addCategoryForm");
+const categoryInput = document.querySelector("#categoryInput");
+const letterToggles = document.querySelector("#letterToggles");
+const lettersSummary = document.querySelector("#lettersSummary");
+const rouletteReel = document.querySelector("#rouletteReel");
 const rouletteSpotlight = document.querySelector("#rouletteSpotlight");
-const roulettePrevious = document.querySelector("#roulettePrevious");
-const rouletteNext = document.querySelector("#rouletteNext");
 const countdownNumber = document.querySelector("#countdownNumber");
 const roundLetter = document.querySelector("#roundLetter");
 const submissionCount = document.querySelector("#submissionCount");
@@ -167,8 +186,83 @@ reviewBoard.addEventListener("click", (event) => {
   renderFooter();
 });
 
+settingsPanel.addEventListener("click", (event) => {
+  const roundButton = event.target.closest("[data-rounds]");
+  const timeButton = event.target.closest("[data-seconds]");
+  const categoryButton = event.target.closest("[data-category-toggle]");
+  const letterButton = event.target.closest("[data-letter-toggle]");
+  const removeButton = event.target.closest("[data-category-remove]");
+
+  if (!state.isAdmin) {
+    return;
+  }
+
+  if (roundButton) {
+    state.roundLimit = Number(roundButton.dataset.rounds);
+    renderSettings();
+    renderHeader();
+    return;
+  }
+
+  if (timeButton) {
+    state.roundSeconds = Number(timeButton.dataset.seconds);
+    state.seconds = state.roundSeconds;
+    renderSettings();
+    return;
+  }
+
+  if (categoryButton) {
+    toggleCategory(categoryButton.dataset.categoryToggle);
+    renderSettings();
+    renderFooter();
+    return;
+  }
+
+  if (letterButton) {
+    toggleLetter(letterButton.dataset.letterToggle);
+    renderSettings();
+    return;
+  }
+
+  if (removeButton) {
+    removeCategory(removeButton.dataset.categoryRemove);
+    renderSettings();
+    renderFooter();
+  }
+});
+
+resetCategories.addEventListener("click", () => {
+  if (!state.isAdmin) {
+    return;
+  }
+
+  state.activeCategoryIds = [...DEFAULT_ACTIVE_CATEGORY_IDS];
+  renderSettings();
+  renderFooter();
+});
+
+addCategoryForm.addEventListener("submit", (event) => {
+  event.preventDefault();
+
+  if (!state.isAdmin) {
+    return;
+  }
+
+  addCustomCategory(categoryInput.value);
+  categoryInput.value = "";
+  renderSettings();
+  renderFooter();
+});
+
 primaryAction.addEventListener("click", () => {
   if (state.phase === "intro") {
+    if (state.isAdmin) {
+      openSettings();
+    }
+    return;
+  }
+
+  if (state.phase === "settings") {
     startGame();
     return;
   }
@@ -212,8 +306,17 @@ answersForm.addEventListener("input", (event) => {
 
 render();
 
+function openSettings() {
+  state.phase = "settings";
+  render();
+}
+
 function startGame() {
-  if (state.players.length < MIN_PLAYERS) {
+  if (
+    state.players.length < MIN_PLAYERS ||
+    getActiveCategories().length < MIN_ROUND_CATEGORIES ||
+    state.activeLetters.length < 1
+  ) {
     return;
   }
 
@@ -396,13 +499,14 @@ function spinRouletteStep(index) {
     return;
   }
 
+  const activeLetters = getActiveLetters();
   const sequenceLetter = state.rouletteSequence[index] ?? state.letter;
-  state.rouletteCursor = Math.max(0, LETTERS.indexOf(sequenceLetter));
+  state.rouletteCursor = Math.max(0, activeLetters.indexOf(sequenceLetter));
   renderRoulette();
 
   if (index >= state.rouletteSequence.length - 1) {
     state.rouletteDone = true;
-    state.rouletteCursor = LETTERS.indexOf(state.letter);
+    state.rouletteCursor = Math.max(0, activeLetters.indexOf(state.letter));
     renderRoulette();
     renderFooter();
     return;
@@ -414,21 +518,43 @@ function spinRouletteStep(index) {
 }
 
 function render() {
+  const phaseChanged = state.phase !== lastRenderedPhase;
   document.body.dataset.phase = state.phase;
   renderHeader();
   renderIntro();
+  renderSettings();
   renderRoulette();
   renderCountdown();
   renderRound();
   renderReview();
   renderScores();
   renderFooter();
+
+  if (phaseChanged) {
+    lastRenderedPhase = state.phase;
+    document.activeElement?.blur?.();
+    window.requestAnimationFrame(resetShellScroll);
+    window.setTimeout(resetShellScroll, 40);
+    window.setTimeout(resetShellScroll, 180);
+  }
+}
+
+function resetShellScroll() {
+  phoneScreen.scrollTop = 0;
+  document.documentElement.scrollTop = 0;
+  document.body.scrollTop = 0;
 }
 
 function renderHeader() {
   if (state.phase === "intro") {
     phaseLabel.textContent = "A seguir";
     timerLabel.textContent = "Stop";
+    return;
+  }
+
+  if (state.phase === "settings") {
+    phaseLabel.textContent = "Admin";
+    timerLabel.textContent = "Temas";
     return;
   }
 
@@ -459,6 +585,58 @@ function renderIntro() {
   introPanel.classList.toggle("hidden", state.phase !== "intro");
 }
 
+function renderSettings() {
+  settingsPanel.classList.toggle("hidden", state.phase !== "settings");
+
+  if (state.phase !== "settings") {
+    return;
+  }
+
+  const activeCategories = getActiveCategories();
+  settingsSummary.textContent = `${activeCategories.length} temas`;
+  lettersSummary.textContent = String(state.activeLetters.length);
+  roundOptions.innerHTML = ROUND_OPTIONS.map(
+    (rounds) => `
+      <button class="option-chip ${state.roundLimit === rounds ? "active" : ""}" type="button" data-rounds="${rounds}">
+        ${rounds}
+      </button>
+    `,
+  ).join("");
+  timeOptions.innerHTML = TIME_OPTIONS.map(
+    (seconds) => `
+      <button class="option-chip ${state.roundSeconds === seconds ? "active" : ""}" type="button" data-seconds="${seconds}">
+        ${seconds}s
+      </button>
+    `,
+  ).join("");
+  categoryToggles.innerHTML = categoryCatalog.map((category) => {
+    const active = state.activeCategoryIds.includes(category.id);
+    const canToggle = active || activeCategories.length < MAX_ROUND_CATEGORIES;
+    const custom = category.id.startsWith("custom_");
+
+    return `
+      <span class="category-pill ${active ? "active" : ""} ${custom ? "custom" : ""}">
+        <button
+          class="category-toggle ${active ? "active" : ""}"
+          type="button"
+          data-category-toggle="${escapeHtml(category.id)}"
+          ${canToggle ? "" : "disabled"}
+        >
+          ${escapeHtml(category.label)}
+        </button>
+        ${custom ? `<button class="category-remove" type="button" data-category-remove="${escapeHtml(category.id)}">x</button>` : ""}
+      </span>
+    `;
+  }).join("");
+  letterToggles.innerHTML = LETTERS.map(
+    (letter) => `
+      <button class="letter-toggle ${state.activeLetters.includes(letter) ? "active" : ""}" type="button" data-letter-toggle="${letter}">
+        ${letter}
+      </button>
+    `,
+  ).join("");
+}
+
 function renderRoulette() {
   roulettePanel.classList.toggle("hidden", state.phase !== "roulette");
   roulettePanel.classList.toggle("settled", state.rouletteDone);
@@ -467,17 +645,29 @@ function renderRoulette() {
     return;
   }
 
+  const activeLetters = getActiveLetters();
   const activeIndex = state.rouletteCursor;
-  const activeLetter = LETTERS[activeIndex] ?? state.letter;
-  const previousLetter = LETTERS[(activeIndex - 1 + LETTERS.length) % LETTERS.length];
-  const nextLetter = LETTERS[(activeIndex + 1) % LETTERS.length];
+  const activeLetter = activeLetters[activeIndex] ?? state.letter;
+  const reelOffsets = [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6];
 
   roulettePanel.dataset.spinTick = String(activeIndex % 2);
-  roulettePrevious.textContent = state.rouletteDone
-    ? previousLetterFor(state.letter)
-    : previousLetter;
   rouletteSpotlight.textContent = state.rouletteDone ? state.letter : activeLetter;
-  rouletteNext.textContent = state.rouletteDone ? nextLetterFor(state.letter) : nextLetter;
+  rouletteReel.innerHTML = reelOffsets
+    .map((offset) => {
+      const letter = activeLetters[
+        (activeIndex + offset + activeLetters.length) % activeLetters.length
+      ];
+
+      return `
+        <span
+          class="reel-letter ${offset === 0 ? "active" : ""}"
+          style="--distance: ${Math.abs(offset)}; --offset: ${offset}"
+        >
+          ${letter}
+        </span>
+      `;
+    })
+    .join("");
 }
 
 function renderCountdown() {
@@ -622,9 +812,18 @@ function renderScores() {
 
 function renderFooter() {
   if (state.phase === "intro") {
-    primaryAction.textContent =
-      state.players.length < MIN_PLAYERS ? "A espera da mesa" : "Sortear letra";
-    primaryAction.disabled = state.players.length < MIN_PLAYERS;
+    primaryAction.textContent = state.isAdmin ? "Personalizar jogo" : "Aguardar admin";
+    primaryAction.disabled = !state.isAdmin || state.players.length < MIN_PLAYERS;
+    primaryAction.classList.remove("secondary", "spinning");
+    return;
+  }
+
+  if (state.phase === "settings") {
+    primaryAction.textContent = "Sortear letra";
+    primaryAction.disabled =
+      state.players.length < MIN_PLAYERS ||
+      getActiveCategories().length < MIN_ROUND_CATEGORIES ||
+      state.activeLetters.length < 1;
     primaryAction.classList.remove("secondary", "spinning");
     return;
   }
@@ -830,12 +1029,92 @@ function getOverallRanking() {
   );
 }
 
+function toggleCategory(categoryId) {
+  if (!categoryId) {
+    return;
+  }
+
+  if (state.activeCategoryIds.includes(categoryId)) {
+    if (state.activeCategoryIds.length <= MIN_ROUND_CATEGORIES) {
+      return;
+    }
+
+    state.activeCategoryIds = state.activeCategoryIds.filter((id) => id !== categoryId);
+    return;
+  }
+
+  if (state.activeCategoryIds.length >= MAX_ROUND_CATEGORIES) {
+    return;
+  }
+
+  state.activeCategoryIds = [...state.activeCategoryIds, categoryId];
+}
+
+function addCustomCategory(rawLabel) {
+  const label = rawLabel.trim().slice(0, 18);
+
+  if (!label) {
+    return;
+  }
+
+  const existing = categoryCatalog.some(
+    (category) => category.label.toLowerCase() === label.toLowerCase(),
+  );
+
+  if (existing) {
+    return;
+  }
+
+  state.customCategoryCount += 1;
+  const id = `custom_${state.customCategoryCount}`;
+  categoryCatalog.push({
+    id,
+    label,
+    placeholder: label,
+  });
+
+  if (state.activeCategoryIds.length < MAX_ROUND_CATEGORIES) {
+    state.activeCategoryIds = [...state.activeCategoryIds, id];
+  }
+}
+
+function removeCategory(categoryId) {
+  const index = categoryCatalog.findIndex((category) => category.id === categoryId);
+
+  if (index < 0 || !categoryId.startsWith("custom_")) {
+    return;
+  }
+
+  categoryCatalog.splice(index, 1);
+  state.activeCategoryIds = state.activeCategoryIds.filter((id) => id !== categoryId);
+}
+
+function toggleLetter(letter) {
+  if (!LETTERS.includes(letter)) {
+    return;
+  }
+
+  if (state.activeLetters.includes(letter)) {
+    if (state.activeLetters.length <= 1) {
+      return;
+    }
+
+    state.activeLetters = state.activeLetters.filter((activeLetter) => activeLetter !== letter);
+    return;
+  }
+
+  state.activeLetters = LETTERS.filter(
+    (activeLetter) => activeLetter === letter || state.activeLetters.includes(activeLetter),
+  );
+}
+
 function createRouletteSequence(finalLetter) {
   const seed = state.roundIndex * 3 + 2;
   const sequence = [];
+  const activeLetters = getActiveLetters();
 
-  for (let index = 0; index < 42; index += 1) {
-    sequence.push(LETTERS[(seed + index * 5) % LETTERS.length]);
+  for (let index = 0; index < 44; index += 1) {
+    sequence.push(activeLetters[(seed + index * 5) % activeLetters.length]);
   }
 
   sequence.push(finalLetter);
@@ -843,7 +1122,10 @@ function createRouletteSequence(finalLetter) {
 }
 
 function pickRoundLetter() {
-  return ROUND_LETTERS[state.roundIndex % ROUND_LETTERS.length];
+  const activeLetters = getActiveLetters();
+  const seed = state.roundIndex * 7 + 1;
+
+  return activeLetters[seed % activeLetters.length] ?? "A";
 }
 
 function clearRouletteTimer() {
@@ -897,6 +1179,10 @@ function getActiveCategories() {
   return categoryCatalog.filter((category) =>
     state.activeCategoryIds.includes(category.id),
   );
+}
+
+function getActiveLetters() {
+  return LETTERS.filter((letter) => state.activeLetters.includes(letter));
 }
 
 function getReviewKey(playerId, categoryId) {

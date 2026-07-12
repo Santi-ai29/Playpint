@@ -126,6 +126,29 @@ body[data-phase="round"] .phone-screen::after {
   animation: none;
 }
 
+body[data-phase="settings"] .phone-screen,
+body[data-phase="roulette"] .phone-screen {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+body[data-phase="settings"] .topbar,
+body[data-phase="roulette"] .topbar {
+  display: none;
+}
+
+body[data-phase="settings"] .setup-panel,
+body[data-phase="roulette"] .roulette-panel {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+body[data-phase="settings"] .game-footer,
+body[data-phase="roulette"] .game-footer {
+  flex: 0 0 auto;
+}
+
 .topbar {
   display: flex;
   align-items: flex-start;
@@ -295,34 +318,21 @@ body[data-phase="round"] .phone-screen::after {
 .roulette-panel {
   position: relative;
   display: grid;
-  grid-template-rows: auto minmax(0, 1fr);
-  align-items: center;
-  gap: 14px;
+  place-items: center;
   overflow: hidden;
-  padding: 8px 0 6px;
+  padding: 0;
   animation: intro-rise 420ms ease-out both;
-}
-
-.roulette-copy {
-  display: grid;
-  gap: 3px;
-}
-
-.roulette-copy h2 {
-  margin: 0;
-  color: var(--cream);
-  font-size: clamp(31px, 8.5vw, 42px);
-  font-weight: 950;
-  line-height: 1;
-  letter-spacing: 0;
 }
 
 .roulette-machine {
   position: relative;
   display: grid;
   place-items: center;
-  min-height: 390px;
-  overflow: visible;
+  width: 100%;
+  min-height: min(66vh, 520px);
+  overflow: hidden;
+  isolation: isolate;
+  mask-image: linear-gradient(180deg, transparent 0%, #000 18%, #000 82%, transparent 100%);
 }
 
 .roulette-machine::before,
@@ -333,138 +343,121 @@ body[data-phase="round"] .phone-screen::after {
 }
 
 .roulette-machine::before {
-  width: min(84vw, 352px);
-  aspect-ratio: 1;
-  border-radius: 50%;
+  z-index: 0;
+  width: min(54vw, 216px);
+  height: min(62vh, 456px);
+  border: 1px solid rgba(255, 195, 66, 0.2);
+  border-radius: 44px;
   background:
-    radial-gradient(circle at 50% 50%, rgba(255, 195, 66, 0.16), transparent 54%),
-    radial-gradient(ellipse at 28% 52%, rgba(34, 224, 222, 0.09), transparent 52%),
-    radial-gradient(ellipse at 72% 42%, rgba(255, 74, 10, 0.11), transparent 56%);
-  filter: blur(8px);
-  opacity: 0.74;
-  animation: roulette-breathe 7.2s ease-in-out infinite;
+    linear-gradient(180deg, rgba(255, 195, 66, 0.03), transparent 19% 81%, rgba(255, 74, 10, 0.04)),
+    radial-gradient(ellipse at 50% 50%, rgba(255, 195, 66, 0.14), transparent 58%),
+    rgba(12, 8, 5, 0.56);
+  box-shadow:
+    inset 0 0 42px rgba(255, 195, 66, 0.06),
+    inset 0 0 0 1px rgba(255, 243, 213, 0.03),
+    0 22px 60px rgba(0, 0, 0, 0.34);
+  opacity: 1;
 }
 
 .roulette-machine::after {
-  width: min(70vw, 300px);
-  height: 116px;
-  border-radius: 999px;
-  background: radial-gradient(ellipse, rgba(255, 195, 66, 0.16), rgba(255, 74, 10, 0.08) 44%, transparent 72%);
-  opacity: 0.72;
-  transform: translateY(78px);
-  filter: blur(5px);
+  z-index: 2;
+  width: min(74vw, 300px);
+  height: 104px;
+  border-top: 1px solid rgba(255, 195, 66, 0.3);
+  border-bottom: 1px solid rgba(255, 195, 66, 0.24);
+  border-radius: 28px;
+  background:
+    linear-gradient(90deg, transparent, rgba(255, 195, 66, 0.1) 18%, rgba(255, 195, 66, 0.16) 50%, rgba(255, 195, 66, 0.1) 82%, transparent),
+    radial-gradient(ellipse at 50% 50%, rgba(255, 195, 66, 0.17), rgba(255, 74, 10, 0.08) 48%, transparent 74%);
+  box-shadow:
+    0 0 38px rgba(255, 195, 66, 0.11),
+    inset 0 0 24px rgba(255, 195, 66, 0.05);
+  opacity: 0.92;
 }
 
-.slot-shell {
-  position: relative;
-  z-index: 2;
+.roulette-reel {
+  position: absolute;
+  z-index: 1;
+  display: grid;
+  gap: 10px;
+  place-items: center;
+  width: min(44vw, 176px);
+  min-height: 480px;
+  transform: translateY(0);
+  transition: transform 145ms cubic-bezier(0.16, 1, 0.2, 1);
+  will-change: transform;
+}
+
+.reel-letter {
   display: grid;
   place-items: center;
-  width: min(74vw, 314px);
-  height: min(48vh, 300px);
-  max-height: 316px;
-  min-height: 260px;
-  overflow: visible;
+  width: 100%;
+  min-height: 42px;
   border: 0;
-  border-radius: 50%;
-  background:
-    radial-gradient(circle at 50% 50%, rgba(255, 195, 66, 0.12), transparent 44%),
-    radial-gradient(circle at 50% 50%, rgba(255, 74, 10, 0.1), transparent 64%);
-  box-shadow: none;
-  isolation: isolate;
+  border-radius: 18px;
+  background: transparent;
+  color: rgba(255, 243, 213, 0.42);
+  font-size: clamp(22px, 7vw, 34px);
+  font-weight: 950;
+  opacity: calc(0.82 - (var(--distance) * 0.105));
+  text-shadow: 0 8px 18px rgba(0, 0, 0, 0.38);
+  transform:
+    translateX(calc(var(--offset) * 1.7px))
+    scale(calc(1 - (var(--distance) * 0.045)));
+  filter: blur(calc(var(--distance) * 0.16px));
 }
 
-.slot-shell::before,
-.slot-shell::after {
-  content: "";
-  position: absolute;
-  z-index: -1;
-  border-radius: 50%;
-  pointer-events: none;
-}
-
-.slot-shell::before {
-  inset: 10%;
-  border: 1px solid rgba(255, 195, 66, 0.2);
-  background:
-    radial-gradient(circle, transparent 58%, rgba(255, 195, 66, 0.13) 60%, transparent 62%),
-    radial-gradient(circle at 50% 18%, rgba(255, 195, 66, 0.16), transparent 22%),
-    radial-gradient(circle at 50% 82%, rgba(34, 224, 222, 0.08), transparent 24%);
-  box-shadow:
-    0 0 0 18px rgba(255, 195, 66, 0.018),
-    inset 0 0 28px rgba(255, 195, 66, 0.08);
-  opacity: 0.76;
-  animation: roulette-breathe 6.4s ease-in-out infinite reverse;
-}
-
-.slot-shell::after {
-  width: 86%;
-  aspect-ratio: 1;
-  background: radial-gradient(circle, rgba(255, 195, 66, 0.15), transparent 64%);
-  filter: blur(12px);
-  opacity: 0.78;
+.reel-letter.active {
+  opacity: 0;
 }
 
 .roulette-spotlight {
-  position: relative;
-  z-index: 2;
+  position: absolute;
+  z-index: 3;
   display: grid;
   place-items: center;
-  width: 156px;
-  height: 156px;
-  border-radius: 50%;
+  width: min(35vw, 138px);
+  aspect-ratio: 1;
+  border-radius: 999px;
   background:
-    radial-gradient(circle at 34% 24%, rgba(255, 243, 213, 0.55), transparent 27%),
-    radial-gradient(circle at 66% 80%, rgba(255, 74, 10, 0.22), transparent 42%),
-    linear-gradient(145deg, rgba(255, 204, 82, 1), rgba(255, 174, 48, 0.98));
+    radial-gradient(circle at 34% 26%, rgba(255, 243, 213, 0.58), transparent 27%),
+    radial-gradient(circle at 68% 76%, rgba(255, 74, 10, 0.22), transparent 38%),
+    linear-gradient(150deg, #ffd66a, var(--yellow) 58%, #ff9f2e);
   color: var(--black);
-  font-size: clamp(104px, 30vw, 144px);
+  font-size: clamp(82px, 27vw, 116px);
   font-weight: 950;
   line-height: 0.8;
   text-shadow: 0 2px 0 rgba(255, 255, 255, 0.18);
   box-shadow:
-    inset 0 -14px 26px rgba(255, 74, 10, 0.15),
-    inset 0 12px 22px rgba(255, 243, 213, 0.18),
+    inset 0 -16px 28px rgba(255, 74, 10, 0.16),
+    inset 0 12px 22px rgba(255, 243, 213, 0.2),
     0 0 0 1px rgba(5, 4, 3, 0.12),
-    0 18px 48px rgba(255, 74, 10, 0.18),
-    0 0 50px rgba(255, 195, 66, 0.14);
-}
-
-.roulette-ghost {
-  position: absolute;
-  display: grid;
-  place-items: center;
-  width: 92px;
-  height: 72px;
-  color: rgba(255, 243, 213, 0.23);
-  font-size: 44px;
-  font-weight: 950;
-  filter: blur(0.8px);
-  transform: scale(0.92);
-}
-
-.roulette-ghost.top {
-  top: 36px;
-}
-
-.roulette-ghost.bottom {
-  bottom: 36px;
-}
-
-.roulette-panel:not(.settled) .slot-shell {
-  animation: slot-hum 560ms ease-in-out infinite;
+    0 18px 50px rgba(255, 74, 10, 0.16),
+    0 0 58px rgba(255, 195, 66, 0.2);
+  transition:
+    transform 145ms cubic-bezier(0.16, 1, 0.2, 1),
+    filter 145ms ease;
+  will-change: transform;
 }
 
 .roulette-panel:not(.settled) .roulette-spotlight {
-  animation: slot-letter-roll 150ms ease-out infinite;
+  filter: brightness(1.05);
 }
 
-.roulette-panel:not(.settled) .roulette-ghost.top {
-  animation: ghost-up 150ms ease-out infinite;
+.roulette-panel[data-spin-tick="0"]:not(.settled) .roulette-reel {
+  transform: translateY(12px);
 }
 
-.roulette-panel:not(.settled) .roulette-ghost.bottom {
-  animation: ghost-down 150ms ease-out infinite;
+.roulette-panel[data-spin-tick="1"]:not(.settled) .roulette-reel {
+  transform: translateY(-12px);
+}
+
+.roulette-panel[data-spin-tick="0"]:not(.settled) .roulette-spotlight {
+  transform: translateY(2px) scale(0.99);
+}
+
+.roulette-panel[data-spin-tick="1"]:not(.settled) .roulette-spotlight {
+  transform: translateY(-2px) scale(1.01);
 }
 
 .roulette-panel.settled .roulette-spotlight {
@@ -587,6 +580,26 @@ body[data-phase="countdown"] .game-footer {
   display: none;
 }
 
+.settings-status {
+  display: flex;
+  justify-content: flex-end;
+  min-height: 24px;
+}
+
+.settings-status strong {
+  display: inline-grid;
+  place-items: center;
+  min-height: 24px;
+  padding: 0 10px;
+  border: 1px solid rgba(255, 195, 66, 0.26);
+  border-radius: 999px;
+  background: rgba(18, 12, 7, 0.74);
+  color: var(--yellow);
+  font-size: 11px;
+  font-weight: 950;
+  text-transform: uppercase;
+}
+
 .setup-title {
   display: flex;
   align-items: end;
@@ -661,6 +674,52 @@ body[data-phase="countdown"] .game-footer {
 
 .setting-counter:nth-child(3) {
   border-color: rgba(34, 224, 222, 0.28);
+}
+
+.settings-quick {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.option-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+  margin-top: 9px;
+}
+
+.option-chip,
+.letter-toggle,
+.tiny-action,
+.category-remove {
+  border: 1px solid rgba(255, 195, 66, 0.22);
+  background: rgba(255, 195, 66, 0.09);
+  color: var(--muted);
+  font-weight: 950;
+}
+
+.option-chip {
+  min-height: 34px;
+  border-radius: 12px;
+  font-size: 13px;
+}
+
+.option-chip.active,
+.letter-toggle.active {
+  border-color: rgba(255, 195, 66, 0.72);
+  background: var(--yellow);
+  color: var(--black);
+  box-shadow: 0 0 24px rgba(255, 195, 66, 0.14);
+}
+
+.tiny-action {
+  min-height: 28px;
+  border-radius: 10px;
+  padding: 0 10px;
+  color: var(--yellow);
+  font-size: 11px;
+  text-transform: uppercase;
 }
 
 .stepper {
@@ -797,9 +856,11 @@ body[data-phase="countdown"] .game-footer {
 
 .category-toggles {
   display: flex;
-  gap: 8px;
-  overflow-x: auto;
-  padding-bottom: 2px;
+  flex-wrap: wrap;
+  gap: 7px;
+  max-height: 154px;
+  overflow: auto;
+  padding: 1px 0 2px;
   scrollbar-width: none;
 }
 
@@ -819,6 +880,17 @@ body[data-phase="countdown"] .game-footer {
   padding: 0 12px;
 }
 
+.category-pill {
+  display: inline-grid;
+  grid-template-columns: minmax(0, auto);
+  align-items: center;
+  gap: 4px;
+}
+
+.category-pill.custom {
+  grid-template-columns: minmax(0, auto) 28px;
+}
+
 .category-toggle.active {
   border-color: rgba(255, 195, 66, 0.7);
   background: var(--yellow);
@@ -827,6 +899,36 @@ body[data-phase="countdown"] .game-footer {
 
 .category-toggle:disabled {
   opacity: 0.38;
+}
+
+.category-remove {
+  width: 28px;
+  min-height: 28px;
+  border-radius: 10px;
+  color: var(--orange);
+  text-transform: uppercase;
+}
+
+.category-add-form {
+  grid-template-columns: minmax(0, 1fr) 76px;
+}
+
+.letters-setup {
+  display: grid;
+  gap: 8px;
+}
+
+.letter-toggles {
+  display: grid;
+  grid-template-columns: repeat(9, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.letter-toggle {
+  aspect-ratio: 1;
+  min-width: 0;
+  border-radius: 50%;
+  font-size: 13px;
 }
 
 .round-panel {
@@ -1294,68 +1396,6 @@ body[data-phase="countdown"] .game-footer {
   }
 }
 
-@keyframes slot-hum {
-  0%,
-  100% {
-    opacity: 0.9;
-    transform: scale(0.985);
-  }
-
-  50% {
-    opacity: 1;
-    transform: scale(1.012);
-  }
-}
-
-@keyframes roulette-breathe {
-  0%,
-  100% {
-    transform: scale(0.97);
-    opacity: 0.64;
-  }
-
-  50% {
-    transform: scale(1.04);
-    opacity: 0.82;
-  }
-}
-
-@keyframes slot-letter-roll {
-  from {
-    transform: translateY(16px) scale(0.98);
-    filter: brightness(0.96);
-  }
-
-  to {
-    transform: translateY(-10px) scale(1.02);
-    filter: brightness(1.08);
-  }
-}
-
-@keyframes ghost-up {
-  from {
-    opacity: 0.2;
-    transform: translateY(18px) scale(0.86);
-  }
-
-  to {
-    opacity: 0.5;
-    transform: translateY(-12px) scale(0.96);
-  }
-}
-
-@keyframes ghost-down {
-  from {
-    opacity: 0.5;
-    transform: translateY(12px) scale(0.96);
-  }
-
-  to {
-    opacity: 0.2;
-    transform: translateY(-18px) scale(0.86);
-  }
-}
-
 @keyframes roulette-settle {
   0% {
     transform: translateY(-10px) scale(0.92);
@@ -1530,35 +1570,21 @@ body[data-phase="countdown"] .game-footer {
   }
 
   .roulette-machine {
-    min-height: 310px;
-  }
-
-  .slot-shell {
-    width: min(68vw, 260px);
-    min-height: 248px;
-    height: 260px;
-    border-radius: 50%;
+    min-height: 360px;
   }
 
   .roulette-spotlight {
-    width: 132px;
-    height: 132px;
-    border-radius: 50%;
-    font-size: clamp(88px, 27vw, 120px);
+    width: min(32vw, 118px);
+    font-size: clamp(76px, 25vw, 104px);
   }
 
-  .roulette-ghost {
-    width: 76px;
-    height: 58px;
-    font-size: 34px;
+  .roulette-reel {
+    min-height: 420px;
   }
 
-  .roulette-ghost.top {
-    top: 40px;
-  }
-
-  .roulette-ghost.bottom {
-    bottom: 40px;
+  .reel-letter {
+    min-height: 38px;
+    font-size: clamp(20px, 6.4vw, 30px);
   }
 
   .countdown-core {

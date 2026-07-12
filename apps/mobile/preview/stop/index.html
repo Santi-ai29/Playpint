@@ -22,21 +22,50 @@
         <section id="introPanel" class="intro-panel">
           <div class="intro-stop-logo" aria-hidden="true">
             <strong class="stop-symbol">STOP</strong>
-            <img class="intro-playpint-logo" src="./assets/playpint-logo.png" alt="" />
           </div>
         </section>
 
-        <section id="roulettePanel" class="roulette-panel hidden">
-          <div class="roulette-copy">
-            <p class="eyebrow">Roleta Stop</p>
-            <h2>Sorteio da letra</h2>
+        <section id="settingsPanel" class="setup-panel settings-panel hidden" aria-label="Definicoes admin">
+          <div class="settings-status">
+            <strong id="settingsSummary">6 temas</strong>
           </div>
-          <div class="roulette-machine" aria-label="Roleta de letras">
-            <div class="slot-shell">
-              <div id="roulettePrevious" class="roulette-ghost top">A</div>
-              <div id="rouletteSpotlight" class="roulette-spotlight">A</div>
-              <div id="rouletteNext" class="roulette-ghost bottom">B</div>
+
+          <div class="settings-quick">
+            <div class="setting-counter">
+              <span>Rondas</span>
+              <div id="roundOptions" class="option-row"></div>
             </div>
+            <div class="setting-counter">
+              <span>Tempo</span>
+              <div id="timeOptions" class="option-row"></div>
+            </div>
+          </div>
+
+          <div class="categories-setup">
+            <div class="section-head">
+              <span>Temas</span>
+              <button id="resetCategories" class="tiny-action" type="button">Reset</button>
+            </div>
+            <div id="categoryToggles" class="category-toggles"></div>
+            <form id="addCategoryForm" class="add-player-form category-add-form">
+              <input id="categoryInput" type="text" maxlength="18" autocomplete="off" placeholder="Novo tema" />
+              <button type="submit">Add</button>
+            </form>
+          </div>
+
+          <div class="letters-setup">
+            <div class="section-head">
+              <span>Letras</span>
+              <small id="lettersSummary">18</small>
+            </div>
+            <div id="letterToggles" class="letter-toggles"></div>
+          </div>
+        </section>
+
+        <section id="roulettePanel" class="roulette-panel hidden" aria-label="Sorteio da letra">
+          <div class="roulette-machine" aria-label="Roleta de letras">
+            <div id="rouletteReel" class="roulette-reel"></div>
+            <div id="rouletteSpotlight" class="roulette-spotlight">A</div>
           </div>
         </section>
 
