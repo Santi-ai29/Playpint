@@ -9,6 +9,16 @@
   <body>
     <main class="app-shell" aria-live="polite">
       <section class="phone-screen">
+        <div class="animated-game-background" aria-hidden="true">
+          <div class="game-bg-base"></div>
+          <div class="ambient-glow ambient-glow-one"></div>
+          <div class="ambient-glow ambient-glow-two"></div>
+          <div class="ambient-glow ambient-glow-three"></div>
+          <canvas id="embersCanvas" class="embers-canvas" aria-hidden="true"></canvas>
+          <div class="grain-overlay"></div>
+          <div class="vignette-overlay"></div>
+        </div>
+
         <header class="topbar">
           <div class="brand-block">
             <img class="brand-logo mode-logo-top" src="./assets/what-fazias-logo.png" alt="O Que Tu Fazias?" />
@@ -78,6 +88,7 @@
         </footer>
       </section>
     </main>
+    <script src="./animatedBackground.js"></script>
     <script src="./app.js"></script>
   </body>
 </html>
