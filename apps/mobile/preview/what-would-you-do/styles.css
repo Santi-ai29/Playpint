@@ -178,13 +178,14 @@ button {
 
 .intro-panel {
   grid-row: 1;
-  align-self: center;
+  align-self: stretch;
   position: relative;
   display: grid;
+  align-content: center;
   justify-items: center;
   gap: 14px;
   min-height: 0;
-  padding: 14px 0 8px;
+  padding: 58px 0 12px;
   text-align: center;
   isolation: isolate;
   animation: intro-enter 520ms cubic-bezier(0.2, 1, 0.25, 1) both;
@@ -195,26 +196,33 @@ button {
   content: "";
   position: absolute;
   z-index: -1;
-  border-radius: 50%;
+  border-radius: 0;
   pointer-events: none;
 }
 
 .intro-panel::before {
-  width: min(100vw, 430px);
-  height: 360px;
-  border-radius: 0;
+  inset: -18px -16px 0;
   background:
-    linear-gradient(142deg, transparent 12%, rgba(255, 195, 66, 0.11) 38%, transparent 62%),
-    linear-gradient(28deg, transparent 18%, rgba(34, 224, 222, 0.085) 48%, transparent 76%),
-    linear-gradient(180deg, transparent, rgba(255, 74, 10, 0.065), transparent);
-  background-size: 185% 185%;
-  filter: blur(18px);
-  opacity: 0.62;
+    radial-gradient(circle at 50% 35%, rgba(255, 195, 66, 0.15), transparent 27%),
+    radial-gradient(circle at 61% 46%, rgba(34, 224, 222, 0.12), transparent 30%),
+    linear-gradient(154deg, rgba(255, 195, 66, 0.08), transparent 39%),
+    linear-gradient(26deg, rgba(255, 74, 10, 0.08), transparent 42%);
+  background-size: 110% 110%, 115% 115%, 100% 100%, 100% 100%;
+  opacity: 0.86;
   animation: intro-light-flow 8s ease-in-out infinite alternate;
 }
 
 .intro-panel::after {
-  display: none;
+  inset: 23% 14% auto;
+  width: 72%;
+  height: 34%;
+  background:
+    linear-gradient(128deg, rgba(255, 195, 66, 0.1), transparent 45%),
+    linear-gradient(36deg, rgba(34, 224, 222, 0.11), transparent 54%),
+    rgba(255, 243, 213, 0.025);
+  clip-path: polygon(12% 0, 100% 18%, 86% 100%, 0 80%);
+  opacity: 0.62;
+  animation: intro-panel-shift 7s ease-in-out infinite alternate;
 }
 
 .intro-logo-wrap {
@@ -233,15 +241,17 @@ button {
 }
 
 .intro-playpint-logo {
-  position: relative;
+  position: absolute;
+  top: clamp(0px, 1.5vh, 12px);
+  left: 0;
   z-index: 2;
-  width: min(72vw, 294px);
+  width: clamp(76px, 24vw, 108px);
   height: auto;
   object-fit: contain;
   filter:
-    drop-shadow(0 22px 34px rgba(0, 0, 0, 0.42))
-    drop-shadow(0 0 18px rgba(255, 195, 66, 0.16));
-  animation: logo-settle 680ms cubic-bezier(0.16, 1, 0.2, 1) both;
+    drop-shadow(0 10px 16px rgba(0, 0, 0, 0.36))
+    drop-shadow(0 0 8px rgba(255, 195, 66, 0.12));
+  animation: corner-logo-enter 520ms cubic-bezier(0.16, 1, 0.2, 1) both;
 }
 
 .intro-logo-wrap::before {
@@ -249,16 +259,7 @@ button {
 }
 
 .intro-logo-wrap::after {
-  content: "";
-  position: absolute;
-  left: 12%;
-  right: 12%;
-  bottom: 10px;
-  height: 9px;
-  border-radius: 999px;
-  background: radial-gradient(ellipse, rgba(255, 74, 10, 0.4), transparent 70%);
-  filter: blur(4px);
-  opacity: 0.74;
+  display: none;
 }
 
 .intro-logo {
@@ -384,7 +385,6 @@ button {
   border-radius: 24px;
   background: var(--surface);
   box-shadow: 0 22px 42px rgba(0, 0, 0, 0.38);
-  backdrop-filter: blur(18px);
   animation: question-enter 360ms ease-out both;
 }
 
@@ -827,14 +827,26 @@ body[data-phase="result"] .result-panel {
 @keyframes intro-light-flow {
   from {
     background-position: 0% 30%;
-    opacity: 0.46;
+    opacity: 0.66;
     transform: translateY(8px);
   }
 
   to {
     background-position: 100% 72%;
-    opacity: 0.68;
+    opacity: 0.9;
     transform: translateY(-8px);
+  }
+}
+
+@keyframes intro-panel-shift {
+  from {
+    opacity: 0.52;
+    transform: translate3d(-4px, 6px, 0) skewY(-1deg);
+  }
+
+  to {
+    opacity: 0.78;
+    transform: translate3d(6px, -5px, 0) skewY(1deg);
   }
 }
 
@@ -850,13 +862,23 @@ body[data-phase="result"] .result-panel {
   }
 }
 
+@keyframes corner-logo-enter {
+  from {
+    opacity: 0;
+    transform: translateX(-10px) scale(0.94);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
 @keyframes logo-settle {
   from {
     opacity: 0;
     transform: translateY(18px) scale(0.94);
-    filter:
-      blur(2px)
-      drop-shadow(0 18px 28px rgba(0, 0, 0, 0.28));
+    filter: drop-shadow(0 18px 28px rgba(0, 0, 0, 0.28));
   }
 
   to {
